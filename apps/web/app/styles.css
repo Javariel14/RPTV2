@@ -401,6 +401,14 @@ input[type='checkbox'] {
 .mobile-filters {
   display: none;
 }
+.crm-more-filters {
+  white-space: nowrap;
+}
+@media (max-width: 1023px) {
+  .crm-more-filters {
+    display: none;
+  }
+}
 .list-meta {
   display: flex;
   justify-content: space-between;

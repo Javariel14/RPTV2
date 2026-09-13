@@ -15,6 +15,9 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @rpt/web",
+    "dev:crm": "tsx scripts/crm-dev.ts",
+    "test:crm": "tsx --test --test-concurrency=1 tests/integration/crm.test.ts",
+    "test:crm:e2e": "playwright test --config tests/e2e/crm.config.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",

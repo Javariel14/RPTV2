@@ -8,9 +8,37 @@ import {
   type ErrorCode,
 } from '@rpt/contracts';
 import { allowed, decision, type Database, type AuthContext } from '@rpt/persistence';
+import { crmListQuery, crmSaveView, idempotencyKey } from '@rpt/contracts';
+import { crmContext, listCrm, listCrmViews, saveCrmView } from './crm.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  crmContext(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'crm.context', crmContext);
+  }
+  listCrm(identity: Identity, requestId: string, input: unknown) {
+    const query = crmListQuery.parse(input);
+    return this.execute(identity, requestId, requestId, 'crm.list', (client) =>
+      listCrm(client, query),
+    );
+  }
+  listCrmViews(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'crm.view', listCrmViews);
+  }
+  async saveCrmView(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = crmSaveView.parse(input);
+    idempotencyKey.parse(key);
+    const digest = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(JSON.stringify(command)),
+    );
+    const hash = Array.from(new Uint8Array(digest), (byte) =>
+      byte.toString(16).padStart(2, '0'),
+    ).join('');
+    return this.execute(identity, requestId, command.workspaceId, 'crm.view', (client, context) =>
+      saveCrmView(client, context, command, key, hash),
+    );
+  }
   private async execute<T>(
     identity: Identity,
     requestId: string,
