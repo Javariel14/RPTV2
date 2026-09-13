@@ -1,0 +1,145 @@
+{
+  "checked_at": "2026-09-03T21:42:48.0423836-05:00",
+  "operation": "read_only_preflight",
+  "workspace": {
+    "requested_path": "C:\\Proyectos JAVARIEL\\RoyalPerformanceTracker",
+    "exists": true,
+    "resolved_path": "C:\\Proyectos JAVARIEL\\RoyalPerformanceTracker",
+    "root_entries": [
+      {
+        "name": "docs",
+        "is_directory": true
+      }
+    ],
+    "git_present": false,
+    "branch": null,
+    "head": null,
+    "git_status": [],
+    "git_inspection_error": null,
+    "potential_sensitive_root_filenames": [],
+    "sensitive_scan_scope": "Root filenames only; no file contents read. Not a full secret scan."
+  },
+  "tools": [
+    {
+      "name": "git",
+      "available_on_path": true,
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "version": "git version 2.45.1.windows.1",
+      "version_exit_code": 0
+    },
+    {
+      "name": "node",
+      "available_on_path": true,
+      "executable": "C:\\Program Files\\nodejs\\node.exe",
+      "version": "v24.14.1",
+      "version_exit_code": 0
+    },
+    {
+      "name": "npm.cmd",
+      "available_on_path": true,
+      "executable": "C:\\Program Files\\nodejs\\npm.cmd",
+      "version": "11.11.0",
+      "version_exit_code": 0
+    },
+    {
+      "name": "pnpm.cmd",
+      "available_on_path": true,
+      "executable": "C:\\Users\\villa\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback\\pnpm.cmd",
+      "version": "11.19.0",
+      "version_exit_code": 0
+    },
+    {
+      "name": "flutter",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    },
+    {
+      "name": "dart",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    },
+    {
+      "name": "rustc",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    },
+    {
+      "name": "cargo",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    },
+    {
+      "name": "docker",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    },
+    {
+      "name": "psql",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    },
+    {
+      "name": "gh",
+      "available_on_path": false,
+      "executable": null,
+      "version": null,
+      "version_exit_code": null
+    }
+  ],
+  "limitations": [
+    "An executable on PATH does not certify a working build or compatibility.",
+    "A missing executable on PATH does not prove it is uninstalled.",
+    "No provider accounts, credentials, branch protection, CI, RLS, restore, or legal approvals are tested."
+  ],
+  "prompt_00_tests": {
+    "powershell_parser": "PASS",
+    "existing_workspace": "PASS",
+    "missing_workspace": "PASS",
+    "version_commands_exit_zero": 4,
+    "git_not_created": true
+  },
+  "initial_workspace": {
+    "entry_count_including_hidden": 0,
+    "git_present": false,
+    "branch": null,
+    "uncommitted_changes": "NOT_APPLICABLE_NO_GIT",
+    "technology_manifests": [],
+    "sensitive_files": []
+  },
+  "repository_candidate": {
+    "status": "PENDING_OFFICIAL_REPOSITORY",
+    "historical_candidate": "https://github.com/Javariel14/RoyalPerformanceTracker",
+    "connector_response": 404,
+    "git_read_access": "CONFIRMED",
+    "head_ref": "refs/heads/main",
+    "head_sha": "fd368790a811aa4cdce60a0989f837e84221f210",
+    "heads_observed": [
+      "main"
+    ],
+    "tags_observed": [],
+    "official_designation_current_phase": "NOT_CONFIRMED",
+    "cloned": false,
+    "files_workflows_issues_prs_branch_protection": "NOT_VERIFIED"
+  },
+  "source_read_counts": {
+    "canonical_text": 25,
+    "brand_text": 9,
+    "historical_metadata_only": 2,
+    "canonical_map_entries": 28
+  },
+  "limitations_additional": [
+    "No build, RLS, security, restore, visual QA or provider integration test ran."
+  ]
+}

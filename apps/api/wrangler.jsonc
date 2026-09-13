@@ -1,0 +1,40 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "rpt-foundation-api-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-03",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "vars": {
+    "RPT_ENV": "local",
+    "RPT_RELEASE_APPROVED": "false",
+    "AUTH_ISSUER": "https://unconfigured.invalid/auth/v1",
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "00000000000000000000000000000000",
+      "localConnectionString": "postgres://unconfigured:placeholder@127.0.0.1:5432/unconfigured",
+    },
+  ],
+  "env": {
+    "staging": {
+      "name": "rpt-foundation-api-staging",
+      "vars": {
+        "RPT_ENV": "staging",
+        "RPT_RELEASE_APPROVED": "false",
+        "AUTH_ISSUER": "https://unconfigured.invalid/auth/v1",
+      },
+    },
+    "production": {
+      "name": "rpt-foundation-api-production",
+      "vars": {
+        "RPT_ENV": "production",
+        "RPT_RELEASE_APPROVED": "false",
+        "AUTH_ISSUER": "https://unconfigured.invalid/auth/v1",
+      },
+    },
+  },
+}

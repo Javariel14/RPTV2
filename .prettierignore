@@ -1,0 +1,16 @@
+node_modules
+.next
+.open-next
+.wrangler
+dist
+work
+test-results
+playwright-report
+package-lock.json
+docs/governance/prompt-00
+packages/design-tokens/canonical.json
+packages/design-tokens/source-checksums.json
+apps/web/public/*.svg
+**/worker-configuration.d.ts
+**/next-env.d.ts
+supabase/migrations

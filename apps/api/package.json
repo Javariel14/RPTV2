@@ -1,0 +1,11 @@
+{
+  "name": "@rpt/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "wrangler deploy --dry-run --outdir dist --env=\"\"",
+    "dev": "wrangler dev --local --env=\"\"",
+    "types": "wrangler types"
+  }
+}

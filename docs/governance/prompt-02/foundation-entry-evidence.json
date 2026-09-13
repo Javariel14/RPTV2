@@ -1,0 +1,59 @@
+{
+  "completedAt": "2026-09-04T14:52:14.715Z",
+  "results": [
+    {
+      "script": "format:check",
+      "exitCode": 0,
+      "durationMs": 3837,
+      "log": "work/verification/format-check.log"
+    },
+    {
+      "script": "lint",
+      "exitCode": 0,
+      "durationMs": 17679,
+      "log": "work/verification/lint.log"
+    },
+    {
+      "script": "typecheck",
+      "exitCode": 0,
+      "durationMs": 25502,
+      "log": "work/verification/typecheck.log"
+    },
+    {
+      "script": "test:unit",
+      "exitCode": 0,
+      "durationMs": 4061,
+      "log": "work/verification/test-unit.log"
+    },
+    {
+      "script": "security",
+      "exitCode": 0,
+      "durationMs": 2076,
+      "log": "work/verification/security.log"
+    },
+    {
+      "script": "test:integration",
+      "exitCode": 0,
+      "durationMs": 45595,
+      "log": "work/verification/test-integration.log"
+    },
+    {
+      "script": "build",
+      "exitCode": 0,
+      "durationMs": 99372,
+      "log": "work/verification/build.log"
+    },
+    {
+      "script": "supply-chain",
+      "exitCode": 0,
+      "durationMs": 5827,
+      "log": "work/verification/supply-chain.log"
+    },
+    {
+      "script": "test:e2e",
+      "exitCode": 0,
+      "durationMs": 66364,
+      "log": "work/verification/test-e2e.log"
+    }
+  ]
+}

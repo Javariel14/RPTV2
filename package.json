@@ -1,0 +1,60 @@
+{
+  "name": "rpt-foundation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24.14.1 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.11.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @rpt/web",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && npm run typecheck --workspace @rpt/web",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:integration": "tsx --test --test-concurrency=1 tests/integration/*.test.ts",
+    "test:e2e": "playwright test",
+    "security": "tsx scripts/security-check.ts",
+    "supply-chain": "tsx scripts/supply-chain.ts",
+    "staging:check": "tsx scripts/staging-check.ts",
+    "verify:evidence": "tsx scripts/verify-foundation.ts",
+    "build": "npm run build:cloudflare --workspace @rpt/web && npm run build --workspace @rpt/api",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run security && npm run test:integration && npm run build"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.13.3",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "agent-browser": "0.36.0",
+    "embedded-postgres": "17.10.0-beta.17",
+    "eslint": "10.9.1",
+    "prettier": "3.9.6",
+    "supabase": "2.116.0",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.69.0",
+    "wrangler": "4.129.0"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/sdk-metrics": "2.11.0",
+    "@opentelemetry/sdk-trace-base": "2.11.0",
+    "hono": "4.13.5",
+    "jose": "6.2.10",
+    "pg": "8.23.0",
+    "uuid": "14.0.2",
+    "zod": "4.5.4"
+  }
+}

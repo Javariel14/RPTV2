@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" role="img" aria-label="RPT monograma R ascendente">
+<defs>
+<linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F80FF"/><stop offset="1" stop-color="#0B49D9"/></linearGradient>
+<linearGradient id="goldGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#B88422"/><stop offset="1" stop-color="#F2C25D"/></linearGradient>
+</defs>
+<path d="M 129 57 L 115 56 L 96 72 L 93 76 L 102 79 L 114 89 L 116 88 L 133 71 L 134 63 Z" fill="url(#blueGrad)"/>
+<path d="M 40 19 L 67 49 L 130 49 L 136 52 L 142 60 L 143 64 L 142 70 L 140 74 L 113 100 L 152 144 L 185 144 L 149 102 L 162 89 L 168 79 L 171 69 L 171 54 L 169 47 L 165 39 L 157 30 L 144 22 L 132 19 Z" fill="url(#blueGrad)"/>
+<path d="M 92 77 L 88 79 L 42 120 L 42 144 L 56 133 L 65 134 L 108 95 L 108 93 Z" fill="url(#goldGrad)"/>
+</svg>

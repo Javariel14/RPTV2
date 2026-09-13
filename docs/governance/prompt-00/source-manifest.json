@@ -1,0 +1,1617 @@
+{
+  "schema_version": 1,
+  "inspection_date_local": "2026-09-03",
+  "timezone": "America/Guayaquil",
+  "purpose": "Prompt 00 source map and read-only inspection. Not a replacement for canonical Drive sources.",
+  "official_workspace": "C:\\Proyectos JAVARIEL\\RoyalPerformanceTracker",
+  "official_drive_root": "https://drive.google.com/drive/folders/1xoTNYoIf6TO5aX4y4QxRnwy55twywd60",
+  "parent_chain_verified": [
+    "04 - JAVARIEL Corp",
+    "06 - Planificación Proyectos",
+    "01 - Royal Performance Tracker"
+  ],
+  "prompt": {
+    "path": "C:\\Users\\villa\\Downloads\\00_Prompt_Maestro_y_Orquestador_RPT.md",
+    "sha256": "0864C695F4D16AD66283E3DF24247E279F8CA00342CC2172AE9E7F1684C6FCBF"
+  },
+  "repository": {
+    "status": "PENDING_OFFICIAL_REPOSITORY",
+    "historical_candidate": "https://github.com/Javariel14/RoyalPerformanceTracker",
+    "connector_response": 404,
+    "git_read_access": "CONFIRMED",
+    "head_ref": "refs/heads/main",
+    "head_sha": "fd368790a811aa4cdce60a0989f837e84221f210",
+    "heads_observed": [
+      "main"
+    ],
+    "tags_observed": [],
+    "official_designation_current_phase": "NOT_CONFIRMED",
+    "cloned": false,
+    "files_workflows_issues_prs_branch_protection": "NOT_VERIFIED"
+  },
+  "canonical_map_16_to_43": [
+    {
+      "id": "1gG25EfdsIPguWPHl5pYmiJbffWnD7uJu",
+      "title": "16 — Gobierno — Decision Registry y Fuentes Canónicas — RPT.md",
+      "url": "https://drive.google.com/file/d/1gG25EfdsIPguWPHl5pYmiJbffWnD7uJu/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:12:47.433Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 14786,
+      "number": 16
+    },
+    {
+      "id": "1lwSrPa_J3FmvrofqEeYf_4WNR_O3gAIg",
+      "title": "17 — Calidad — Estándar JAVARIEL CRITICAL aplicado a RPT.md",
+      "url": "https://drive.google.com/file/d/1lwSrPa_J3FmvrofqEeYf_4WNR_O3gAIg/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:12:53.611Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 6095,
+      "number": 17
+    },
+    {
+      "id": "1l1j98VEK1DsiBW4LeLIKqPurTQZpW6j6",
+      "title": "18 — Arquitectura — Seguridad, DevSecOps y Recuperación — RPT.md",
+      "url": "https://drive.google.com/file/d/1l1j98VEK1DsiBW4LeLIKqPurTQZpW6j6/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:01.215Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 8896,
+      "number": 18
+    },
+    {
+      "id": "1YRBbEXN8_SqLEkYf1iZn0xk2_WNb0XL6",
+      "title": "19 — Alcance — Scope Freeze Beta, V1 y Post-V1 — RPT.md",
+      "url": "https://drive.google.com/file/d/1YRBbEXN8_SqLEkYf1iZn0xk2_WNb0XL6/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:06.404Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 4833,
+      "number": 19
+    },
+    {
+      "id": "1VhexPKlHIvx5CZFOG0Nqe-GIkjcjXNrD",
+      "title": "20 — Gobierno — Gate Maestro para Inicio de Desarrollo — RPT.md",
+      "url": "https://drive.google.com/file/d/1VhexPKlHIvx5CZFOG0Nqe-GIkjcjXNrD/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:11.157Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 6111,
+      "number": 20
+    },
+    {
+      "id": "1zGXadn60TzyW53FwglCABvOaf4kEKg2E",
+      "title": "21 — IA Comercial — Knowledge Pack: Objeciones, AIDA, Referidos y Reclutamiento — RPT.md",
+      "url": "https://drive.google.com/file/d/1zGXadn60TzyW53FwglCABvOaf4kEKg2E/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:18.404Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 8090,
+      "number": 21
+    },
+    {
+      "id": "13YG02h2inajC3AlDbhcqLNjAxzOYajqL",
+      "title": "22 — IA Formación — Book Intelligence Layer: 6 Libros — CANÓNICO — RPT.md",
+      "url": "https://drive.google.com/file/d/13YG02h2inajC3AlDbhcqLNjAxzOYajqL/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:23.131Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 3640,
+      "number": 22
+    },
+    {
+      "id": "1TT4Ub-4tAPX0T6niGp4yt7MO0Brox9zj",
+      "title": "HISTÓRICO — 23 — DUPLICADO de 22 — Book Intelligence Layer — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1TT4Ub-4tAPX0T6niGp4yt7MO0Brox9zj/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:27.832Z",
+      "reading_status": "HISTORICAL_METADATA_ONLY_DO_NOT_IMPLEMENT",
+      "text_characters_read": 0,
+      "number": 23,
+      "superseded_by": 22
+    },
+    {
+      "id": "1dmEl26UpaaLKI182jz3ZSCHVwxzt7Ut5",
+      "title": "HISTÓRICO — 24 — DUPLICADO de 22 — Book Intelligence Layer — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1dmEl26UpaaLKI182jz3ZSCHVwxzt7Ut5/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:32.132Z",
+      "reading_status": "HISTORICAL_METADATA_ONLY_DO_NOT_IMPLEMENT",
+      "text_characters_read": 0,
+      "number": 24,
+      "superseded_by": 22
+    },
+    {
+      "id": "1VQ4j1_Xo5HEoVCeOhf12bDxqVr3w78ne",
+      "title": "25 — IA Conocimiento — Ingesta Visual: 70 Fuentes, Skills y Governance — RPT.md",
+      "url": "https://drive.google.com/file/d/1VQ4j1_Xo5HEoVCeOhf12bDxqVr3w78ne/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:37.760Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 5346,
+      "number": 25
+    },
+    {
+      "id": "1aed0DJ8Yy9Q4qVRXmzotAtKwumi1YVIA",
+      "title": "26 — Datos — Modelo de Datos y ERD — CANÓNICO v5 — RPT.md",
+      "url": "https://drive.google.com/file/d/1aed0DJ8Yy9Q4qVRXmzotAtKwumi1YVIA/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:13:42.644Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 31047,
+      "number": 26
+    },
+    {
+      "id": "1bEtf8M-Vu3w6pCx-fpT0tFNrx0dVPd9-",
+      "title": "27 — Datos — Diccionario, Event Model y Lifecycle — RPT.md",
+      "url": "https://drive.google.com/file/d/1bEtf8M-Vu3w6pCx-fpT0tFNrx0dVPd9-/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:17.085Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 4677,
+      "number": 27
+    },
+    {
+      "id": "1cn4s-cDmtz-1WiAxlPda0T9864Br97N1",
+      "title": "28 — Seguridad — Arquitectura de Permisos y Matriz de Acceso — RPT.md",
+      "url": "https://drive.google.com/file/d/1cn4s-cDmtz-1WiAxlPda0T9864Br97N1/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:22.803Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 3449,
+      "number": 28
+    },
+    {
+      "id": "1MOWIPHdyPIHQMZ65opT93Jk8AkovTI9k",
+      "title": "29 — Seguridad — Threat Model, Controles e Incidentes — RPT.md",
+      "url": "https://drive.google.com/file/d/1MOWIPHdyPIHQMZ65opT93Jk8AkovTI9k/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:28.289Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 2741,
+      "number": 29
+    },
+    {
+      "id": "16ZCfAlGIZMOt6ZSC5-HJp6peQr-S0_yo",
+      "title": "30 — Infraestructura — Proveedores, Capacidad y Costos — RPT.md",
+      "url": "https://drive.google.com/file/d/16ZCfAlGIZMOt6ZSC5-HJp6peQr-S0_yo/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:32.964Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 3822,
+      "number": 30
+    },
+    {
+      "id": "1zAaYJG9dfH-cPv3Jyr4QEFn4aDiNdWUA",
+      "title": "31 — Calidad — QA, Releases, DR y Observabilidad — RPT.md",
+      "url": "https://drive.google.com/file/d/1zAaYJG9dfH-cPv3Jyr4QEFn4aDiNdWUA/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:38.011Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 1957,
+      "number": 31
+    },
+    {
+      "id": "18xd2Zy2mTnLgM-mQo6SIUwN3YZ2675hR",
+      "title": "32 — Legal — Privacidad, Consentimiento y Gobierno de Datos — RPT.md",
+      "url": "https://drive.google.com/file/d/18xd2Zy2mTnLgM-mQo6SIUwN3YZ2675hR/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:42.726Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 2105,
+      "number": 32
+    },
+    {
+      "id": "1SXrVIoyRqnDEoaNe0TD9vcyNqHY-xu7c",
+      "title": "33 — Producto — PRD Consolidado y Backlog — RPT.md",
+      "url": "https://drive.google.com/file/d/1SXrVIoyRqnDEoaNe0TD9vcyNqHY-xu7c/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:48.325Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 3310,
+      "number": 33
+    },
+    {
+      "id": "1yup4KKrViQ8F1Hy3PpGgZxLptc0RCWpj",
+      "title": "34 — Gobierno — Auditoría Final y Readiness — RPT.md",
+      "url": "https://drive.google.com/file/d/1yup4KKrViQ8F1Hy3PpGgZxLptc0RCWpj/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:52.999Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 1893,
+      "number": 34
+    },
+    {
+      "id": "1xT_DkuKYsY2QbQCzVhDV9c97HeJJxdcZ",
+      "title": "35 — IA Runtime — Model Routing, Evals y Speech Benchmark — RPT.md",
+      "url": "https://drive.google.com/file/d/1xT_DkuKYsY2QbQCzVhDV9c97HeJJxdcZ/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:14:56.987Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 4846,
+      "number": 35
+    },
+    {
+      "id": "1KL7bF4UXS3rhDzyyKPge1lflvWOrfUdb",
+      "title": "36 — Integraciones — Contratos, OAuth y Reliability — RPT.md",
+      "url": "https://drive.google.com/file/d/1KL7bF4UXS3rhDzyyKPge1lflvWOrfUdb/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:15:01.669Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 4243,
+      "number": 36
+    },
+    {
+      "id": "1ddwFaw0kBgbgcjeI5KWPfldu1L4F0Rj8",
+      "title": "37 — UX Técnico — Design Tokens y Component Contracts — BASELINE — RPT.md",
+      "url": "https://drive.google.com/file/d/1ddwFaw0kBgbgcjeI5KWPfldu1L4F0Rj8/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:15:05.945Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 4745,
+      "number": 37
+    },
+    {
+      "id": "1HkTLaDD6_uDMQruGh13115k9XVRTb_yy",
+      "title": "38 — Desarrollo — ADR, Contratos API y Paquete Codex — RPT.md",
+      "url": "https://drive.google.com/file/d/1HkTLaDD6_uDMQruGh13115k9XVRTb_yy/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-04T00:15:11.382Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 3784,
+      "number": 38
+    },
+    {
+      "id": "1rn1sbrDiubP209KURUGrJzXNyZFu2MlfpTbd_yabwbk",
+      "title": "39 — Integraciones — Hy Cite, INCITE y DocuCite — RPT",
+      "url": "https://docs.google.com/document/d/1rn1sbrDiubP209KURUGrJzXNyZFu2MlfpTbd_yabwbk/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-04T00:15:17.786Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 5342,
+      "number": 39
+    },
+    {
+      "id": "14dYzVdfelLTyLuAvBq_SfMDmbm86Ew1YeTuZnKBTVtM",
+      "title": "40 — Integraciones — WhatsApp Business Multi-tenant — RPT",
+      "url": "https://docs.google.com/document/d/14dYzVdfelLTyLuAvBq_SfMDmbm86Ew1YeTuZnKBTVtM/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-04T00:15:23.590Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 10005,
+      "number": 40
+    },
+    {
+      "id": "1j9Pd5MmcFTqG562Aeh4cJALgKzkGsY6WJ0_Ye1IRDs8",
+      "title": "41 — Legal — Revisión Jurídica y Compliance Ecuador — RPT",
+      "url": "https://docs.google.com/document/d/1j9Pd5MmcFTqG562Aeh4cJALgKzkGsY6WJ0_Ye1IRDs8/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-04T00:15:29.354Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 10958,
+      "number": 41
+    },
+    {
+      "id": "1Ey4qK__-slfjaReGwnJjC7IIT9TEe-YKAvOxBeVAX1I",
+      "title": "42 — Implementación — Prompt Maestro v2 — RPT",
+      "url": "https://docs.google.com/document/d/1Ey4qK__-slfjaReGwnJjC7IIT9TEe-YKAvOxBeVAX1I/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-04T02:19:19.154Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 29750,
+      "number": 42
+    },
+    {
+      "number": 43,
+      "id": "13PbgKP2TOwuzDMZgSYr9liY50IChNgPm",
+      "title": "43 — Marca y Sistema Visual — CANÓNICO — RPT",
+      "url": "https://drive.google.com/drive/folders/13PbgKP2TOwuzDMZgSYr9liY50IChNgPm",
+      "reading_status": "READ_DOCUMENT_TEXT_00_TO_08_ASSETS_INVENTORIED_NOT_VISUALLY_VALIDATED"
+    }
+  ],
+  "brand_documents": [
+    {
+      "id": "1vu04cernw-J4Bt0AbRdmMLTzhP-6IghU7E7akaePNgg",
+      "title": "00 - Índice y Fuente de Verdad Visual — RPT",
+      "url": "https://docs.google.com/document/d/1vu04cernw-J4Bt0AbRdmMLTzhP-6IghU7E7akaePNgg/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T19:58:11.554Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 7399
+    },
+    {
+      "id": "13RieTo7x1DUKtidFfZ3Q0Et8HvkvbKoktA96anuXt54",
+      "title": "01 - Manual Maestro de Marca — Royal Performance Tracker (RPT)",
+      "url": "https://docs.google.com/document/d/13RieTo7x1DUKtidFfZ3Q0Et8HvkvbKoktA96anuXt54/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T19:56:39.714Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 12037
+    },
+    {
+      "id": "1DUqRLGVMeotf70I_p6fDKJQlRYSSV2vwWpi05ljXuI8",
+      "title": "02 - Identidad Visual, Logo, Color y Tipografía — RPT",
+      "url": "https://docs.google.com/document/d/1DUqRLGVMeotf70I_p6fDKJQlRYSSV2vwWpi05ljXuI8/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T19:56:23.837Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 9280
+    },
+    {
+      "id": "1da5a29peUG7J4UQynGnTzNK8E6sKvO6yLbPwWuyoK58",
+      "title": "03 - Arquitectura UX/UI, Layout, Grid, Densidad y Responsive — RPT",
+      "url": "https://docs.google.com/document/d/1da5a29peUG7J4UQynGnTzNK8E6sKvO6yLbPwWuyoK58/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T18:21:57.015Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 10279
+    },
+    {
+      "id": "1Y3wCepaeQQhxE5gOi0SBOU4OvgqcFXny44VxZXct9yo",
+      "title": "04 - Componentes, CRM, Kanban, Tablas y Patrones de Interacción — RPT",
+      "url": "https://docs.google.com/document/d/1Y3wCepaeQQhxE5gOi0SBOU4OvgqcFXny44VxZXct9yo/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T18:22:59.281Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 14473
+    },
+    {
+      "id": "15SrLrti2i0iFLTFW-uIK5VnLSrX-BGWOApcJk9XP6dI",
+      "title": "05 - Pantallas por Rol y Blueprints Visuales — RPT",
+      "url": "https://docs.google.com/document/d/15SrLrti2i0iFLTFW-uIK5VnLSrX-BGWOApcJk9XP6dI/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T18:24:10.949Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 12952
+    },
+    {
+      "id": "19jUNsdQvTB-7mE_s5y9-1O9dymxhp2F1QJL5EoLJ4eg",
+      "title": "06 - Voz, Microcopy, Iconografía, Imagen y Motion — RPT",
+      "url": "https://docs.google.com/document/d/19jUNsdQvTB-7mE_s5y9-1O9dymxhp2F1QJL5EoLJ4eg/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T18:25:05.607Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 11778
+    },
+    {
+      "id": "1meeHepcPK0MmvbMnPHCyho5r_HiB_W95q6G0z3Nuta0",
+      "title": "07 - Visual QA, Figma-to-Code y Definition of Done — RPT",
+      "url": "https://docs.google.com/document/d/1meeHepcPK0MmvbMnPHCyho5r_HiB_W95q6G0z3Nuta0/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T18:26:00.656Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 12771
+    },
+    {
+      "id": "1c62SOlcJiz4CuTAly_fCx0JeKCpmQ6nsfb01cCospeg",
+      "title": "08 - Logo Oficial RPT — Opción B, Especificación, Variables y Handoff",
+      "url": "https://docs.google.com/document/d/1c62SOlcJiz4CuTAly_fCx0JeKCpmQ6nsfb01cCospeg/edit?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T19:55:45.195Z",
+      "reading_status": "READ_TEXT_VISUAL_ANNEX_NOT_REVIEWED",
+      "text_characters_read": 6146
+    }
+  ],
+  "additional_text_sources": [
+    {
+      "id": "1WO4SjepO2Qd9-qjrJ7TZKtwBrTB-4ThZ",
+      "title": "README.md",
+      "url": "https://drive.google.com/file/d/1WO4SjepO2Qd9-qjrJ7TZKtwBrTB-4ThZ/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-09-03T19:53:39.086Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 1624
+    },
+    {
+      "id": "1pQwmVyU8lCEgjOTNWA7OBOcwoONYiR5a",
+      "title": "RPT_logo_source_and_licensing_notes.txt",
+      "url": "https://drive.google.com/file/d/1pQwmVyU8lCEgjOTNWA7OBOcwoONYiR5a/view?usp=drivesdk",
+      "mime_type": "text/plain",
+      "modified_time": "2026-09-03T19:57:55.271Z",
+      "reading_status": "READ_TEXT",
+      "text_characters_read": 1167
+    }
+  ],
+  "machine_tokens": {
+    "id": "1Xa8Tq9XIuWKVGMsW_5xG86QA8l29MvAj",
+    "title": "rpt-design-tokens.json",
+    "url": "https://drive.google.com/file/d/1Xa8Tq9XIuWKVGMsW_5xG86QA8l29MvAj/view?usp=drivesdk",
+    "mime_type": "application/json",
+    "modified_time": "2026-09-03T19:52:46.620Z",
+    "reading_status": "LOCATED_RAW_REFERENCE_RETURNED_NOT_MATERIALIZED",
+    "text_characters_read": 0,
+    "reported_raw_size_bytes": 3032,
+    "semantic_parity_verified": false
+  },
+  "root_inventory": [
+    {
+      "id": "1Ey4qK__-slfjaReGwnJjC7IIT9TEe-YKAvOxBeVAX1I",
+      "title": "42 — Implementación — Prompt Maestro v2 — RPT",
+      "url": "https://docs.google.com/document/d/1Ey4qK__-slfjaReGwnJjC7IIT9TEe-YKAvOxBeVAX1I/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "19984"
+    },
+    {
+      "id": "1_5G7At3yo-7CbRU9IoVy7e0sA9UCDQ1l",
+      "title": "REFERENCIA — Proceso Comercial — Ciclo de Ventas Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1_5G7At3yo-7CbRU9IoVy7e0sA9UCDQ1l/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "122874"
+    },
+    {
+      "id": "1WNpnLjfCMHgdyEntbqOKt4g16FxIMllU",
+      "title": "FUENTE — 10 — Ventas — Método AIDA — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1WNpnLjfCMHgdyEntbqOKt4g16FxIMllU/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "215003"
+    },
+    {
+      "id": "13_RWuH8kDhnjRjrxmQkLwlK2zxbJNLbu",
+      "title": "FUENTE — 09 — Prospección — Memory Jogger: Familia, Colegas y Redes — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/13_RWuH8kDhnjRjrxmQkLwlK2zxbJNLbu/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "312175"
+    },
+    {
+      "id": "1M2ioNxINoV4K-eVNZpV0gWlwCdb6tMBx",
+      "title": "FUENTE — 08 — Prospección — Memory Jogger: Pasado y Perfiles — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1M2ioNxINoV4K-eVNZpV0gWlwCdb6tMBx/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "310699"
+    },
+    {
+      "id": "1F7k8lynmh1eKOPDd6mk59Bi-gn6XR_KS",
+      "title": "FUENTE — 07 — Prospección — Memory Jogger: Profesiones — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1F7k8lynmh1eKOPDd6mk59Bi-gn6XR_KS/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "325671"
+    },
+    {
+      "id": "1y1aYTj4YasujpYmvzvQ9cCnAhyYCH6pB",
+      "title": "FUENTE — 06 — Formación — Libros, Seminarios y Habilidades — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1y1aYTj4YasujpYmvzvQ9cCnAhyYCH6pB/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "248156"
+    },
+    {
+      "id": "1EzVBi_vJcRkw5ASs_-ZZSlaX8_P5EQ1n",
+      "title": "FUENTE — 05 — Reclutamiento — Fuentes y Personalizado — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1EzVBi_vJcRkw5ASs_-ZZSlaX8_P5EQ1n/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "242518"
+    },
+    {
+      "id": "15yMHaPIP5u6yCmC4pyw-wi6iJL2bVor7",
+      "title": "FUENTE — 04 — Producto — Razones por las que Sí y Claims — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/15yMHaPIP5u6yCmC4pyw-wi6iJL2bVor7/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "193985"
+    },
+    {
+      "id": "177vBv5Nzen41r7lszrCcRQp01qTUt6TX",
+      "title": "FUENTE — 03 — Negocio — Plan de Compañía y Network — Notas 2 — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/177vBv5Nzen41r7lszrCcRQp01qTUt6TX/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "286315"
+    },
+    {
+      "id": "1oXgpzhWxkVbi4iRSTlYDclaqPv_c8JeY",
+      "title": "FUENTE — 02 — Negocio — Plan de Compañía y Network — Notas 1 — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1oXgpzhWxkVbi4iRSTlYDclaqPv_c8JeY/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "259697"
+    },
+    {
+      "id": "1E5EbNgdqzzHZnhCck4sc4WwCDs-rdpib",
+      "title": "FUENTE — 01 — Ventas — Ley de las 6 Objeciones y Cierre — Royal Prestige.jpg",
+      "url": "https://drive.google.com/file/d/1E5EbNgdqzzHZnhCck4sc4WwCDs-rdpib/view?usp=drivesdk",
+      "mime_type": "image/jpeg",
+      "size": "228725"
+    },
+    {
+      "id": "13PbgKP2TOwuzDMZgSYr9liY50IChNgPm",
+      "title": "43 — Marca y Sistema Visual — CANÓNICO — RPT",
+      "url": "https://drive.google.com/drive/folders/13PbgKP2TOwuzDMZgSYr9liY50IChNgPm",
+      "mime_type": "application/vnd.google-apps.folder",
+      "size": null
+    },
+    {
+      "id": "1j9Pd5MmcFTqG562Aeh4cJALgKzkGsY6WJ0_Ye1IRDs8",
+      "title": "41 — Legal — Revisión Jurídica y Compliance Ecuador — RPT",
+      "url": "https://docs.google.com/document/d/1j9Pd5MmcFTqG562Aeh4cJALgKzkGsY6WJ0_Ye1IRDs8/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "8049"
+    },
+    {
+      "id": "14dYzVdfelLTyLuAvBq_SfMDmbm86Ew1YeTuZnKBTVtM",
+      "title": "40 — Integraciones — WhatsApp Business Multi-tenant — RPT",
+      "url": "https://docs.google.com/document/d/14dYzVdfelLTyLuAvBq_SfMDmbm86Ew1YeTuZnKBTVtM/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "7577"
+    },
+    {
+      "id": "1rn1sbrDiubP209KURUGrJzXNyZFu2MlfpTbd_yabwbk",
+      "title": "39 — Integraciones — Hy Cite, INCITE y DocuCite — RPT",
+      "url": "https://docs.google.com/document/d/1rn1sbrDiubP209KURUGrJzXNyZFu2MlfpTbd_yabwbk/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "4489"
+    },
+    {
+      "id": "1HkTLaDD6_uDMQruGh13115k9XVRTb_yy",
+      "title": "38 — Desarrollo — ADR, Contratos API y Paquete Codex — RPT.md",
+      "url": "https://drive.google.com/file/d/1HkTLaDD6_uDMQruGh13115k9XVRTb_yy/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3813"
+    },
+    {
+      "id": "1ddwFaw0kBgbgcjeI5KWPfldu1L4F0Rj8",
+      "title": "37 — UX Técnico — Design Tokens y Component Contracts — BASELINE — RPT.md",
+      "url": "https://drive.google.com/file/d/1ddwFaw0kBgbgcjeI5KWPfldu1L4F0Rj8/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "4777"
+    },
+    {
+      "id": "1KL7bF4UXS3rhDzyyKPge1lflvWOrfUdb",
+      "title": "36 — Integraciones — Contratos, OAuth y Reliability — RPT.md",
+      "url": "https://drive.google.com/file/d/1KL7bF4UXS3rhDzyyKPge1lflvWOrfUdb/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "4290"
+    },
+    {
+      "id": "1xT_DkuKYsY2QbQCzVhDV9c97HeJJxdcZ",
+      "title": "35 — IA Runtime — Model Routing, Evals y Speech Benchmark — RPT.md",
+      "url": "https://drive.google.com/file/d/1xT_DkuKYsY2QbQCzVhDV9c97HeJJxdcZ/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "4914"
+    },
+    {
+      "id": "1yup4KKrViQ8F1Hy3PpGgZxLptc0RCWpj",
+      "title": "34 — Gobierno — Auditoría Final y Readiness — RPT.md",
+      "url": "https://drive.google.com/file/d/1yup4KKrViQ8F1Hy3PpGgZxLptc0RCWpj/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "1917"
+    },
+    {
+      "id": "1SXrVIoyRqnDEoaNe0TD9vcyNqHY-xu7c",
+      "title": "33 — Producto — PRD Consolidado y Backlog — RPT.md",
+      "url": "https://drive.google.com/file/d/1SXrVIoyRqnDEoaNe0TD9vcyNqHY-xu7c/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3357"
+    },
+    {
+      "id": "18xd2Zy2mTnLgM-mQo6SIUwN3YZ2675hR",
+      "title": "32 — Legal — Privacidad, Consentimiento y Gobierno de Datos — RPT.md",
+      "url": "https://drive.google.com/file/d/18xd2Zy2mTnLgM-mQo6SIUwN3YZ2675hR/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "2118"
+    },
+    {
+      "id": "1zAaYJG9dfH-cPv3Jyr4QEFn4aDiNdWUA",
+      "title": "31 — Calidad — QA, Releases, DR y Observabilidad — RPT.md",
+      "url": "https://drive.google.com/file/d/1zAaYJG9dfH-cPv3Jyr4QEFn4aDiNdWUA/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "1976"
+    },
+    {
+      "id": "16ZCfAlGIZMOt6ZSC5-HJp6peQr-S0_yo",
+      "title": "30 — Infraestructura — Proveedores, Capacidad y Costos — RPT.md",
+      "url": "https://drive.google.com/file/d/16ZCfAlGIZMOt6ZSC5-HJp6peQr-S0_yo/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3863"
+    },
+    {
+      "id": "1MOWIPHdyPIHQMZ65opT93Jk8AkovTI9k",
+      "title": "29 — Seguridad — Threat Model, Controles e Incidentes — RPT.md",
+      "url": "https://drive.google.com/file/d/1MOWIPHdyPIHQMZ65opT93Jk8AkovTI9k/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "2782"
+    },
+    {
+      "id": "1cn4s-cDmtz-1WiAxlPda0T9864Br97N1",
+      "title": "28 — Seguridad — Arquitectura de Permisos y Matriz de Acceso — RPT.md",
+      "url": "https://drive.google.com/file/d/1cn4s-cDmtz-1WiAxlPda0T9864Br97N1/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3492"
+    },
+    {
+      "id": "1bEtf8M-Vu3w6pCx-fpT0tFNrx0dVPd9-",
+      "title": "27 — Datos — Diccionario, Event Model y Lifecycle — RPT.md",
+      "url": "https://drive.google.com/file/d/1bEtf8M-Vu3w6pCx-fpT0tFNrx0dVPd9-/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "4706"
+    },
+    {
+      "id": "1PSmel82t_lK5Da53ZG9EjjLHco-Yszhj",
+      "title": "HISTÓRICO — 26 — Datos — ERD v4 — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1PSmel82t_lK5Da53ZG9EjjLHco-Yszhj/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "18684"
+    },
+    {
+      "id": "1Sf5EFY9jAhh0rxrh3ibkGxPu2bqE3cbB",
+      "title": "HISTÓRICO — 26 — Datos — ERD v3 — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1Sf5EFY9jAhh0rxrh3ibkGxPu2bqE3cbB/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "17198"
+    },
+    {
+      "id": "1eP5ZabH46EXoGO6z7hNU8REeT5uvJFIi",
+      "title": "HISTÓRICO — 26 — Datos — ERD v2 — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1eP5ZabH46EXoGO6z7hNU8REeT5uvJFIi/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "15916"
+    },
+    {
+      "id": "1bU7QOAq4DYihTxe6aFy2hLEqFHSJ74Qe",
+      "title": "HISTÓRICO — 26 — Datos — ERD v1 — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1bU7QOAq4DYihTxe6aFy2hLEqFHSJ74Qe/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "12064"
+    },
+    {
+      "id": "1MkIhw6EL0t94x89EKYINX3LSe_EDL8Ub",
+      "title": "HISTÓRICO — 26 — Datos — ERD Inicial — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1MkIhw6EL0t94x89EKYINX3LSe_EDL8Ub/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "2655"
+    },
+    {
+      "id": "1aed0DJ8Yy9Q4qVRXmzotAtKwumi1YVIA",
+      "title": "26 — Datos — Modelo de Datos y ERD — CANÓNICO v5 — RPT.md",
+      "url": "https://drive.google.com/file/d/1aed0DJ8Yy9Q4qVRXmzotAtKwumi1YVIA/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "31647"
+    },
+    {
+      "id": "1VQ4j1_Xo5HEoVCeOhf12bDxqVr3w78ne",
+      "title": "25 — IA Conocimiento — Ingesta Visual: 70 Fuentes, Skills y Governance — RPT.md",
+      "url": "https://drive.google.com/file/d/1VQ4j1_Xo5HEoVCeOhf12bDxqVr3w78ne/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "5487"
+    },
+    {
+      "id": "1dmEl26UpaaLKI182jz3ZSCHVwxzt7Ut5",
+      "title": "HISTÓRICO — 24 — DUPLICADO de 22 — Book Intelligence Layer — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1dmEl26UpaaLKI182jz3ZSCHVwxzt7Ut5/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3716"
+    },
+    {
+      "id": "1TT4Ub-4tAPX0T6niGp4yt7MO0Brox9zj",
+      "title": "HISTÓRICO — 23 — DUPLICADO de 22 — Book Intelligence Layer — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1TT4Ub-4tAPX0T6niGp4yt7MO0Brox9zj/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3716"
+    },
+    {
+      "id": "13YG02h2inajC3AlDbhcqLNjAxzOYajqL",
+      "title": "22 — IA Formación — Book Intelligence Layer: 6 Libros — CANÓNICO — RPT.md",
+      "url": "https://drive.google.com/file/d/13YG02h2inajC3AlDbhcqLNjAxzOYajqL/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3716"
+    },
+    {
+      "id": "1zGXadn60TzyW53FwglCABvOaf4kEKg2E",
+      "title": "21 — IA Comercial — Knowledge Pack: Objeciones, AIDA, Referidos y Reclutamiento — RPT.md",
+      "url": "https://drive.google.com/file/d/1zGXadn60TzyW53FwglCABvOaf4kEKg2E/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "8336"
+    },
+    {
+      "id": "1VhexPKlHIvx5CZFOG0Nqe-GIkjcjXNrD",
+      "title": "20 — Gobierno — Gate Maestro para Inicio de Desarrollo — RPT.md",
+      "url": "https://drive.google.com/file/d/1VhexPKlHIvx5CZFOG0Nqe-GIkjcjXNrD/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "6167"
+    },
+    {
+      "id": "1YRBbEXN8_SqLEkYf1iZn0xk2_WNb0XL6",
+      "title": "19 — Alcance — Scope Freeze Beta, V1 y Post-V1 — RPT.md",
+      "url": "https://drive.google.com/file/d/1YRBbEXN8_SqLEkYf1iZn0xk2_WNb0XL6/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "4855"
+    },
+    {
+      "id": "1l1j98VEK1DsiBW4LeLIKqPurTQZpW6j6",
+      "title": "18 — Arquitectura — Seguridad, DevSecOps y Recuperación — RPT.md",
+      "url": "https://drive.google.com/file/d/1l1j98VEK1DsiBW4LeLIKqPurTQZpW6j6/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "9193"
+    },
+    {
+      "id": "1lwSrPa_J3FmvrofqEeYf_4WNR_O3gAIg",
+      "title": "17 — Calidad — Estándar JAVARIEL CRITICAL aplicado a RPT.md",
+      "url": "https://drive.google.com/file/d/1lwSrPa_J3FmvrofqEeYf_4WNR_O3gAIg/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "6149"
+    },
+    {
+      "id": "1gG25EfdsIPguWPHl5pYmiJbffWnD7uJu",
+      "title": "16 — Gobierno — Decision Registry y Fuentes Canónicas — RPT.md",
+      "url": "https://drive.google.com/file/d/1gG25EfdsIPguWPHl5pYmiJbffWnD7uJu/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "15056"
+    },
+    {
+      "id": "11bMGVVoxzLSpffcvQoxfipb1KtiOPUq8",
+      "title": "15 — Gobierno — Auditoría de Consistencia y Cierre de Planificación — RPT.md",
+      "url": "https://drive.google.com/file/d/11bMGVVoxzLSpffcvQoxfipb1KtiOPUq8/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "20513"
+    },
+    {
+      "id": "14CswhaEzs6GnyZUZl42vmVAiOxwBH7mm",
+      "title": "14 — Estrategia — Expansión, Motores de Plataforma y Roadmap — RPT.md",
+      "url": "https://drive.google.com/file/d/14CswhaEzs6GnyZUZl42vmVAiOxwBH7mm/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "32677"
+    },
+    {
+      "id": "1UPTgnBJhxjoAJloIhWEiJaXsN4PWmx6I",
+      "title": "13 — UX — Widgets, Notificaciones, Filtros y Responsive — RPT.md",
+      "url": "https://drive.google.com/file/d/1UPTgnBJhxjoAJloIhWEiJaXsN4PWmx6I/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "12709"
+    },
+    {
+      "id": "1jVTsKqC5Aw9VrVIWh60vMD5EgMYT8RET",
+      "title": "12 — IA Gobierno — Conocimiento, Evidencia y Mejora Continua — RPT.md",
+      "url": "https://drive.google.com/file/d/1jVTsKqC5Aw9VrVIWh60vMD5EgMYT8RET/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "8073"
+    },
+    {
+      "id": "1LQR8mhFIsKUgNFWZV8uAylhGZPogVkwv",
+      "title": "11 — IA Memoria — Arquitectura Multiusuario y Contexto desde ChatGPT — RPT.md",
+      "url": "https://drive.google.com/file/d/1LQR8mhFIsKUgNFWZV8uAylhGZPogVkwv/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "10441"
+    },
+    {
+      "id": "1PWITBnu9AePEhxhkdy8wQWO_MtaBiU6x",
+      "title": "10 — IA Formación — Entrenamiento Adaptativo y Roleplay — RPT.md",
+      "url": "https://drive.google.com/file/d/1PWITBnu9AePEhxhkdy8wQWO_MtaBiU6x/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "14976"
+    },
+    {
+      "id": "1Cu1fLtUaXSTDXn-Mk0rKFPC9D5G5eFp0",
+      "title": "HISTÓRICO — 09 — IA Comercial — Sales Coach Anterior — NO IMPLEMENTAR — RPT.md",
+      "url": "https://drive.google.com/file/d/1Cu1fLtUaXSTDXn-Mk0rKFPC9D5G5eFp0/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "17756"
+    },
+    {
+      "id": "1imv7zLxJCCUvUFMRt8f0t9VCDaVmvqZM",
+      "title": "09 — IA Comercial — Sales Coach y Conversation Performance Coach — CANÓNICO — RPT.md",
+      "url": "https://drive.google.com/file/d/1imv7zLxJCCUvUFMRt8f0t9VCDaVmvqZM/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "19435"
+    },
+    {
+      "id": "1Mv9Ic7mRrmCHNK3UniB--iT_0Jnwiw-S",
+      "title": "08 — Productividad — Metas y Estándares Inteligentes de Disciplina — RPT.md",
+      "url": "https://drive.google.com/file/d/1Mv9Ic7mRrmCHNK3UniB--iT_0Jnwiw-S/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "3501"
+    },
+    {
+      "id": "1FJ0pnhjzlZyn1CJNyrbhc2AwnkhEkZ1j",
+      "title": "07 — Productividad — Planificador Inteligente de Jornada y Disciplina — RPT.md",
+      "url": "https://drive.google.com/file/d/1FJ0pnhjzlZyn1CJNyrbhc2AwnkhEkZ1j/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "size": "8494"
+    },
+    {
+      "id": "1EhhE2VyFnkXDH6RD7H1Pt46yqrf0Gl_DS1FrPC6CkDw",
+      "title": "06 — UX Histórico — Design System Multiplataforma por Rol — RPT",
+      "url": "https://docs.google.com/document/d/1EhhE2VyFnkXDH6RD7H1Pt46yqrf0Gl_DS1FrPC6CkDw/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "10911"
+    },
+    {
+      "id": "15tKfH9nRsKBy9ohuaCKfbF-WGnv5Y2lN-Ikv57lAH54",
+      "title": "05 — Operación — Roles, Oficinas, Logística, Pipelines y Reclutamiento — RPT",
+      "url": "https://docs.google.com/document/d/15tKfH9nRsKBy9ohuaCKfbF-WGnv5Y2lN-Ikv57lAH54/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "20449"
+    },
+    {
+      "id": "1QVAVfDlBdjcORE93dM1AW-fkt8b59t6mmGnv-c_nnA4",
+      "title": "04 — Negocio — Plan Royal Prestige, Network y Bonos por País — RPT",
+      "url": "https://docs.google.com/document/d/1QVAVfDlBdjcORE93dM1AW-fkt8b59t6mmGnv-c_nnA4/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "18617"
+    },
+    {
+      "id": "1dqHsKhc-iV3V9t_dia0yLQZDV3t3VfGixHkYgjWCrQw",
+      "title": "03 — IA — Base de Conocimiento y Conversaciones — RPT",
+      "url": "https://docs.google.com/document/d/1dqHsKhc-iV3V9t_dia0yLQZDV3t3VfGixHkYgjWCrQw/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "31374"
+    },
+    {
+      "id": "1jwywAHK0P9A1LtMX_DdUq1GJ1T52OEK7T18M_qjJqM0",
+      "title": "02 — Producto — Discovery y Decisiones de Producto — RPT",
+      "url": "https://docs.google.com/document/d/1jwywAHK0P9A1LtMX_DdUq1GJ1T52OEK7T18M_qjJqM0/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "32585"
+    },
+    {
+      "id": "17hnTZfVt5H1jR-T3_9lsD2NCJLew3lirijyE_7oBuAQ",
+      "title": "01 — Auditoría Legacy — Estado, Fortalezas y Brechas — RPT",
+      "url": "https://docs.google.com/document/d/17hnTZfVt5H1jR-T3_9lsD2NCJLew3lirijyE_7oBuAQ/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "5884"
+    },
+    {
+      "id": "16kTHuJQ2HrLvamCQs4aeOPilva3-oF2ZGJmmtHkWOjw",
+      "title": "00 — Estrategia — Plan Maestro del Producto — RPT",
+      "url": "https://docs.google.com/document/d/16kTHuJQ2HrLvamCQs4aeOPilva3-oF2ZGJmmtHkWOjw/edit?usp=drivesdk",
+      "mime_type": "application/vnd.google-apps.document",
+      "size": "5532"
+    }
+  ],
+  "brand_subfolder_inventory": [
+    {
+      "folder": {
+        "id": "1LV9YPFmeBFzQYSlPwXAMGO8VvRUWC9Cx",
+        "title": "Aplicaciones de Marca",
+        "url": "https://drive.google.com/drive/folders/1LV9YPFmeBFzQYSlPwXAMGO8VvRUWC9Cx"
+      },
+      "children": []
+    },
+    {
+      "folder": {
+        "id": "1rE-blaQ6TdaZ1x8ebg02gF_LULYavazQ",
+        "title": "No tocar — Exportaciones y Material de Handoff",
+        "url": "https://drive.google.com/drive/folders/1rE-blaQ6TdaZ1x8ebg02gF_LULYavazQ"
+      },
+      "children": []
+    },
+    {
+      "folder": {
+        "id": "1gbk-NF1yKLqS81q7QfjMq4HTiUTU-GN4",
+        "title": "Assets y Referencias Visuales",
+        "url": "https://drive.google.com/drive/folders/1gbk-NF1yKLqS81q7QfjMq4HTiUTU-GN4"
+      },
+      "children": [
+        {
+          "id": "1pmS1oiJIARfZiktfwiNBZsy8XQGtdx1g",
+          "title": "Logo Oficial — Opción B",
+          "url": "https://drive.google.com/drive/folders/1pmS1oiJIARfZiktfwiNBZsy8XQGtdx1g",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1FGGqiY-ZGe23f_XihStbcnlB9s9RBe3J",
+          "title": "Logo y Marca",
+          "url": "https://drive.google.com/drive/folders/1FGGqiY-ZGe23f_XihStbcnlB9s9RBe3J",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "17bbYyScO05eXOomcE2IeAHz_q3Q9t5Z5",
+          "title": "Referencias de Pantallas",
+          "url": "https://drive.google.com/drive/folders/17bbYyScO05eXOomcE2IeAHz_q3Q9t5Z5",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1pmS1oiJIARfZiktfwiNBZsy8XQGtdx1g",
+        "title": "Logo Oficial — Opción B",
+        "url": "https://drive.google.com/drive/folders/1pmS1oiJIARfZiktfwiNBZsy8XQGtdx1g"
+      },
+      "children": [
+        {
+          "id": "1YCQHqDZ_wGfkjpyLj0CSPCMWlDYPgin-",
+          "title": "12_HQ_Enhanced",
+          "url": "https://drive.google.com/drive/folders/1YCQHqDZ_wGfkjpyLj0CSPCMWlDYPgin-",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "11YXM1yvKxLAZUEsQgPYBzLabgUnD5Zbf",
+          "title": "11_Export_Checksums_and_Manifests",
+          "url": "https://drive.google.com/drive/folders/11YXM1yvKxLAZUEsQgPYBzLabgUnD5Zbf",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1xvKMWiaRrw5NrNVzNLeStCf_KChaISBO",
+          "title": "10_Licensing_and_Source_Notes",
+          "url": "https://drive.google.com/drive/folders/1xvKMWiaRrw5NrNVzNLeStCf_KChaISBO",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1NWUu1KkOAA4DylBwzfhrKD-Tkjw7g5aZ",
+          "title": "09_Archived_Explorations",
+          "url": "https://drive.google.com/drive/folders/1NWUu1KkOAA4DylBwzfhrKD-Tkjw7g5aZ",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "12k5decl0GfsVTLYWOkwsHO5d2LfhiEDC",
+          "title": "08_Documentacion_Logo",
+          "url": "https://drive.google.com/drive/folders/12k5decl0GfsVTLYWOkwsHO5d2LfhiEDC",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1AB81Udt6_lzN36Qt0K3K1ixHKZWsjA53",
+          "title": "RPT_Logo_Oficial_Opcion_B_Handoff.zip",
+          "url": "https://drive.google.com/file/d/1AB81Udt6_lzN36Qt0K3K1ixHKZWsjA53/view?usp=drivesdk",
+          "mime_type": "application/zip",
+          "size": "6204025"
+        },
+        {
+          "id": "1uHuLilw5SeNMmYmqoK4aTy1KTqoj1Gd0",
+          "title": "07_Print_PDF",
+          "url": "https://drive.google.com/drive/folders/1uHuLilw5SeNMmYmqoK4aTy1KTqoj1Gd0",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1VmztVXCiZXDZfeEjKz85EJnP0Zfo4-bc",
+          "title": "06_Developer_Handoff",
+          "url": "https://drive.google.com/drive/folders/1VmztVXCiZXDZfeEjKz85EJnP0Zfo4-bc",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "18gxzotTJJDKHNEqH-bVmF7WN_PMfGadQ",
+          "title": "05_Design_Tokens",
+          "url": "https://drive.google.com/drive/folders/18gxzotTJJDKHNEqH-bVmF7WN_PMfGadQ",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1YLk19GIuL6bI4WVf9itquwEhBTDlL3qX",
+          "title": "04_App_Icons",
+          "url": "https://drive.google.com/drive/folders/1YLk19GIuL6bI4WVf9itquwEhBTDlL3qX",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1Tj4PhTuWN7D812P4tbcHVqeDHLJNRx43",
+          "title": "03_Raster_PNG_WEBP",
+          "url": "https://drive.google.com/drive/folders/1Tj4PhTuWN7D812P4tbcHVqeDHLJNRx43",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1ktTqqO5NgjUeSZyDLKKQ1ZAojPFEYUyp",
+          "title": "02_Vector_SVG",
+          "url": "https://drive.google.com/drive/folders/1ktTqqO5NgjUeSZyDLKKQ1ZAojPFEYUyp",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        },
+        {
+          "id": "1c__oWeSLoFaWzXi9D7dPiryUiL0tkpVm",
+          "title": "01_Master_Reference",
+          "url": "https://drive.google.com/drive/folders/1c__oWeSLoFaWzXi9D7dPiryUiL0tkpVm",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1YCQHqDZ_wGfkjpyLj0CSPCMWlDYPgin-",
+        "title": "12_HQ_Enhanced",
+        "url": "https://drive.google.com/drive/folders/1YCQHqDZ_wGfkjpyLj0CSPCMWlDYPgin-"
+      },
+      "children": [
+        {
+          "id": "18_YqvtSiYrsfzw3J5qUTHvHa8DOGfO3g",
+          "title": "RPT_HQ_Enhanced_All.zip",
+          "url": "https://drive.google.com/file/d/18_YqvtSiYrsfzw3J5qUTHvHa8DOGfO3g/view?usp=drivesdk",
+          "mime_type": "application/zip",
+          "size": "8775513"
+        },
+        {
+          "id": "1TFkciIS1TW5WyyP-ZqDLedRujr4B5THD",
+          "title": "HQ_MANIFEST.json",
+          "url": "https://drive.google.com/file/d/1TFkciIS1TW5WyyP-ZqDLedRujr4B5THD/view?usp=drivesdk",
+          "mime_type": "application/json",
+          "size": "2483"
+        },
+        {
+          "id": "1Oq2mPQfpmZ108OEFSaLSJ-b9oWiBtNvY",
+          "title": "rpt-symbol-color-transparent__HQ_4x.png",
+          "url": "https://drive.google.com/file/d/1Oq2mPQfpmZ108OEFSaLSJ-b9oWiBtNvY/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "338165"
+        },
+        {
+          "id": "14tAaiMPFUZWJUxFpKBniaE42ikYrnEX6",
+          "title": "rpt-symbol-color-512px__HQ_3x.png",
+          "url": "https://drive.google.com/file/d/14tAaiMPFUZWJUxFpKBniaE42ikYrnEX6/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "790683"
+        },
+        {
+          "id": "1WmEA7Zqq37hj5DMHjtjiNsjeSfhNjOfb",
+          "title": "rpt-symbol-color-256px__HQ_4x.png",
+          "url": "https://drive.google.com/file/d/1WmEA7Zqq37hj5DMHjtjiNsjeSfhNjOfb/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "479433"
+        },
+        {
+          "id": "1nfdd5U5Fy_JUgzTfr1oEuKseYm6Z_OT1",
+          "title": "rpt-symbol-color-2048px__HQ_1x.png",
+          "url": "https://drive.google.com/file/d/1nfdd5U5Fy_JUgzTfr1oEuKseYm6Z_OT1/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1191982"
+        },
+        {
+          "id": "1I9g-D0CVUUE2lYoqcOCoeDEhYPK9ZQfQ",
+          "title": "rpt-symbol-color-128px__HQ_4x.png",
+          "url": "https://drive.google.com/file/d/1I9g-D0CVUUE2lYoqcOCoeDEhYPK9ZQfQ/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "169743"
+        },
+        {
+          "id": "15HIGOFi2V_7NL9j1jURtrlYpU_5hWSwl",
+          "title": "rpt-symbol-color-1024px__HQ_2x.png",
+          "url": "https://drive.google.com/file/d/15HIGOFi2V_7NL9j1jURtrlYpU_5hWSwl/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1018384"
+        },
+        {
+          "id": "1Uja87c1q8oLFmgV9vHitn46QO9UmwzE8",
+          "title": "rpt-logo-primary-stacked-color-transparent__HQ_4x.png",
+          "url": "https://drive.google.com/file/d/1Uja87c1q8oLFmgV9vHitn46QO9UmwzE8/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "693193"
+        },
+        {
+          "id": "14QBm8188zsPhNcvuOOywEf2JwXOzzBNf",
+          "title": "rpt-logo-compact-reference-transparent__HQ_4x.png",
+          "url": "https://drive.google.com/file/d/14QBm8188zsPhNcvuOOywEf2JwXOzzBNf/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "301969"
+        },
+        {
+          "id": "1EeqBD3T-rU5WIf1I_xJxYwxPtG_FCrhx",
+          "title": "RPT_Opcion_B_Brand_Board_MASTER__HQ_2x.png",
+          "url": "https://drive.google.com/file/d/1EeqBD3T-rU5WIf1I_xJxYwxPtG_FCrhx/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "3787964"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "11YXM1yvKxLAZUEsQgPYBzLabgUnD5Zbf",
+        "title": "11_Export_Checksums_and_Manifests",
+        "url": "https://drive.google.com/drive/folders/11YXM1yvKxLAZUEsQgPYBzLabgUnD5Zbf"
+      },
+      "children": [
+        {
+          "id": "1aA7o25G2igtoReHNV4MUumLjTQhplLKO",
+          "title": "RPT_logo_export_manifest_SHA256.json",
+          "url": "https://drive.google.com/file/d/1aA7o25G2igtoReHNV4MUumLjTQhplLKO/view?usp=drivesdk",
+          "mime_type": "application/json",
+          "size": "5745"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1xvKMWiaRrw5NrNVzNLeStCf_KChaISBO",
+        "title": "10_Licensing_and_Source_Notes",
+        "url": "https://drive.google.com/drive/folders/1xvKMWiaRrw5NrNVzNLeStCf_KChaISBO"
+      },
+      "children": [
+        {
+          "id": "1pQwmVyU8lCEgjOTNWA7OBOcwoONYiR5a",
+          "title": "RPT_logo_source_and_licensing_notes.txt",
+          "url": "https://drive.google.com/file/d/1pQwmVyU8lCEgjOTNWA7OBOcwoONYiR5a/view?usp=drivesdk",
+          "mime_type": "text/plain",
+          "size": "1171"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1NWUu1KkOAA4DylBwzfhrKD-Tkjw7g5aZ",
+        "title": "09_Archived_Explorations",
+        "url": "https://drive.google.com/drive/folders/1NWUu1KkOAA4DylBwzfhrKD-Tkjw7g5aZ"
+      },
+      "children": [
+        {
+          "id": "1Zz02qdG_ztmbgxnGSro8rhYhr5VDX3Ld",
+          "title": "STATUS_SUPERSEDED_DO_NOT_IMPLEMENT.txt",
+          "url": "https://drive.google.com/file/d/1Zz02qdG_ztmbgxnGSro8rhYhr5VDX3Ld/view?usp=drivesdk",
+          "mime_type": "text/plain",
+          "size": "436"
+        },
+        {
+          "id": "1jLR5dPHz99K84mbwh9wFDEz_0FORPjJx",
+          "title": "SUPERSEDED_three_pillars_app_icon.png",
+          "url": "https://drive.google.com/file/d/1jLR5dPHz99K84mbwh9wFDEz_0FORPjJx/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "75878"
+        },
+        {
+          "id": "1VR-8B9lztpK4gXRn186w_YukPa4jcsAk",
+          "title": "SUPERSEDED_three_pillars_brand_board.png",
+          "url": "https://drive.google.com/file/d/1VR-8B9lztpK4gXRn186w_YukPa4jcsAk/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "95616"
+        },
+        {
+          "id": "1IJH0u6YAoBlJHTpnmHyNcQ1KuqgBqnm4",
+          "title": "PROPOSAL_BOARD_A_B_C_D__B_SELECTED.png",
+          "url": "https://drive.google.com/file/d/1IJH0u6YAoBlJHTpnmHyNcQ1KuqgBqnm4/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1804911"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "12k5decl0GfsVTLYWOkwsHO5d2LfhiEDC",
+        "title": "08_Documentacion_Logo",
+        "url": "https://drive.google.com/drive/folders/12k5decl0GfsVTLYWOkwsHO5d2LfhiEDC"
+      },
+      "children": [
+        {
+          "id": "1c62SOlcJiz4CuTAly_fCx0JeKCpmQ6nsfb01cCospeg",
+          "title": "08 - Logo Oficial RPT — Opción B, Especificación, Variables y Handoff",
+          "url": "https://docs.google.com/document/d/1c62SOlcJiz4CuTAly_fCx0JeKCpmQ6nsfb01cCospeg/edit?usp=drivesdk",
+          "mime_type": "application/vnd.google-apps.document",
+          "size": "1655066"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1uHuLilw5SeNMmYmqoK4aTy1KTqoj1Gd0",
+        "title": "07_Print_PDF",
+        "url": "https://drive.google.com/drive/folders/1uHuLilw5SeNMmYmqoK4aTy1KTqoj1Gd0"
+      },
+      "children": [
+        {
+          "id": "1mKVR0nfQyxHpsuZXgNfBM3yzHZI9NkiS",
+          "title": "RPT_Opcion_B_Brand_Board_MASTER.pdf",
+          "url": "https://drive.google.com/file/d/1mKVR0nfQyxHpsuZXgNfBM3yzHZI9NkiS/view?usp=drivesdk",
+          "mime_type": "application/pdf",
+          "size": "197099"
+        },
+        {
+          "id": "1ohd6kOS4k2tcFlLHLqMwIioOWzsrYU1f",
+          "title": "RPT_Opcion_B_Brand_Board_MASTER.eps",
+          "url": "https://drive.google.com/file/d/1ohd6kOS4k2tcFlLHLqMwIioOWzsrYU1f/view?usp=drivesdk",
+          "mime_type": "application/postscript",
+          "size": "9558528"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1VmztVXCiZXDZfeEjKz85EJnP0Zfo4-bc",
+        "title": "06_Developer_Handoff",
+        "url": "https://drive.google.com/drive/folders/1VmztVXCiZXDZfeEjKz85EJnP0Zfo4-bc"
+      },
+      "children": [
+        {
+          "id": "1K54inXlSG79QHh5260B-8FskLjmiX9tT",
+          "title": "rpt-brand-handoff.html",
+          "url": "https://drive.google.com/file/d/1K54inXlSG79QHh5260B-8FskLjmiX9tT/view?usp=drivesdk",
+          "mime_type": "text/html",
+          "size": "752"
+        },
+        {
+          "id": "1wk4C67aQTwlArDZ8hSAmjx9y4SXM6Z1c",
+          "title": "SHA256SUMS.json",
+          "url": "https://drive.google.com/file/d/1wk4C67aQTwlArDZ8hSAmjx9y4SXM6Z1c/view?usp=drivesdk",
+          "mime_type": "application/json",
+          "size": "5745"
+        },
+        {
+          "id": "19E_ZBNukVka9BflU6_2D-Vk5e9PVjo2O",
+          "title": "README.txt",
+          "url": "https://drive.google.com/file/d/19E_ZBNukVka9BflU6_2D-Vk5e9PVjo2O/view?usp=drivesdk",
+          "mime_type": "text/plain",
+          "size": "1641"
+        },
+        {
+          "id": "1WO4SjepO2Qd9-qjrJ7TZKtwBrTB-4ThZ",
+          "title": "README.md",
+          "url": "https://drive.google.com/file/d/1WO4SjepO2Qd9-qjrJ7TZKtwBrTB-4ThZ/view?usp=drivesdk",
+          "mime_type": "text/markdown",
+          "size": "1641"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "18gxzotTJJDKHNEqH-bVmF7WN_PMfGadQ",
+        "title": "05_Design_Tokens",
+        "url": "https://drive.google.com/drive/folders/18gxzotTJJDKHNEqH-bVmF7WN_PMfGadQ"
+      },
+      "children": [
+        {
+          "id": "138DPKXsn3AKF2wV3BtURfhUu1m9q1o05",
+          "title": "tailwind.rpt-theme.ts",
+          "url": "https://drive.google.com/file/d/138DPKXsn3AKF2wV3BtURfhUu1m9q1o05/view?usp=drivesdk",
+          "mime_type": "text/texmacs",
+          "size": "425"
+        },
+        {
+          "id": "1HsLmwyehFIEJrku5qXePYg9It-iWvJVY",
+          "title": "rpt_brand_tokens.dart",
+          "url": "https://drive.google.com/file/d/1HsLmwyehFIEJrku5qXePYg9It-iWvJVY/view?usp=drivesdk",
+          "mime_type": "application/octet-stream",
+          "size": "545"
+        },
+        {
+          "id": "1eYPFX1dDGCbZc6F1NFsjGELtOSWPHwwd",
+          "title": "rpt-variables.scss",
+          "url": "https://drive.google.com/file/d/1eYPFX1dDGCbZc6F1NFsjGELtOSWPHwwd/view?usp=drivesdk",
+          "mime_type": "application/octet-stream",
+          "size": "882"
+        },
+        {
+          "id": "1vbEZof2oLhsvNnjkSL1rjtllvbPqW0_4",
+          "title": "rpt-variables.css",
+          "url": "https://drive.google.com/file/d/1vbEZof2oLhsvNnjkSL1rjtllvbPqW0_4/view?usp=drivesdk",
+          "mime_type": "text/css",
+          "size": "882"
+        },
+        {
+          "id": "12DomuHKDq0BdjiL3PS5O_LhrHyD6SuZv",
+          "title": "rpt-figma-tokens.json",
+          "url": "https://drive.google.com/file/d/12DomuHKDq0BdjiL3PS5O_LhrHyD6SuZv/view?usp=drivesdk",
+          "mime_type": "application/json",
+          "size": "705"
+        },
+        {
+          "id": "1Xa8Tq9XIuWKVGMsW_5xG86QA8l29MvAj",
+          "title": "rpt-design-tokens.json",
+          "url": "https://drive.google.com/file/d/1Xa8Tq9XIuWKVGMsW_5xG86QA8l29MvAj/view?usp=drivesdk",
+          "mime_type": "application/json",
+          "size": "3032"
+        },
+        {
+          "id": "1GhiSmOqzzq5H9A_q05JwEY0dpQJwFEQs",
+          "title": "rpt-brand.yml",
+          "url": "https://drive.google.com/file/d/1GhiSmOqzzq5H9A_q05JwEY0dpQJwFEQs/view?usp=drivesdk",
+          "mime_type": "application/octet-stream",
+          "size": "436"
+        },
+        {
+          "id": "10lzmQ62Z8gTCp652vzFoT3gYgKXzWy8o",
+          "title": "rpt-brand.ts",
+          "url": "https://drive.google.com/file/d/10lzmQ62Z8gTCp652vzFoT3gYgKXzWy8o/view?usp=drivesdk",
+          "mime_type": "text/texmacs",
+          "size": "460"
+        },
+        {
+          "id": "1DD1eiFWvLAbcRbIeZ_UcW9z1a_CMZoul",
+          "title": "android-colors.xml",
+          "url": "https://drive.google.com/file/d/1DD1eiFWvLAbcRbIeZ_UcW9z1a_CMZoul/view?usp=drivesdk",
+          "mime_type": "text/xml",
+          "size": "361"
+        },
+        {
+          "id": "1zqRi3dQ-2cdFdu58fsI4UfITGn8_KwqI",
+          "title": "RPTBrandColors.swift",
+          "url": "https://drive.google.com/file/d/1zqRi3dQ-2cdFdu58fsI4UfITGn8_KwqI/view?usp=drivesdk",
+          "mime_type": "application/octet-stream",
+          "size": "360"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1YLk19GIuL6bI4WVf9itquwEhBTDlL3qX",
+        "title": "04_App_Icons",
+        "url": "https://drive.google.com/drive/folders/1YLk19GIuL6bI4WVf9itquwEhBTDlL3qX"
+      },
+      "children": [
+        {
+          "id": "1pMLbAYpSrJ63pGZCEv0jpxJmkNi5DD9v",
+          "title": "rpt-app-icon.ico",
+          "url": "https://drive.google.com/file/d/1pMLbAYpSrJ63pGZCEv0jpxJmkNi5DD9v/view?usp=drivesdk",
+          "mime_type": "image/x-icon",
+          "size": "40882"
+        },
+        {
+          "id": "1q70d6HGFImfrIl-P-jltZDPahNc2e6-b",
+          "title": "rpt-app-icon-64.png",
+          "url": "https://drive.google.com/file/d/1q70d6HGFImfrIl-P-jltZDPahNc2e6-b/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "2523"
+        },
+        {
+          "id": "18s06WKOazz9nsKwXKrBPVz0WC00RkqjJ",
+          "title": "rpt-app-icon-512.png",
+          "url": "https://drive.google.com/file/d/18s06WKOazz9nsKwXKrBPVz0WC00RkqjJ/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "63730"
+        },
+        {
+          "id": "1lMx_I5jn40HwOvkgWOFOWcSM-pUF05LO",
+          "title": "rpt-app-icon-48.png",
+          "url": "https://drive.google.com/file/d/1lMx_I5jn40HwOvkgWOFOWcSM-pUF05LO/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1612"
+        },
+        {
+          "id": "1MQ5_THT9pEyS4D2JU_WgtvE0-Zj0mG6A",
+          "title": "rpt-app-icon-32.png",
+          "url": "https://drive.google.com/file/d/1MQ5_THT9pEyS4D2JU_WgtvE0-Zj0mG6A/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "947"
+        },
+        {
+          "id": "18pgr3bfbpNeDiNkUOZvo2ijklkbxUu2k",
+          "title": "rpt-app-icon-256.png",
+          "url": "https://drive.google.com/file/d/18pgr3bfbpNeDiNkUOZvo2ijklkbxUu2k/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "22425"
+        },
+        {
+          "id": "1l8xzdFbi41Oeq_J-bnkNJQ0SLRT6uwPr",
+          "title": "rpt-app-icon-192.png",
+          "url": "https://drive.google.com/file/d/1l8xzdFbi41Oeq_J-bnkNJQ0SLRT6uwPr/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "14094"
+        },
+        {
+          "id": "1lUkigidh0UpGcX0hUwM3fQi4dZTy1QZh",
+          "title": "rpt-app-icon-16.png",
+          "url": "https://drive.google.com/file/d/1lUkigidh0UpGcX0hUwM3fQi4dZTy1QZh/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "395"
+        },
+        {
+          "id": "14nR5ePLakREE6tj0jZNx5a9uOH1VfcnC",
+          "title": "rpt-app-icon-128.png",
+          "url": "https://drive.google.com/file/d/14nR5ePLakREE6tj0jZNx5a9uOH1VfcnC/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "7326"
+        },
+        {
+          "id": "1AenkCtqf3XbCxaJy4JXWMji-50OjaoIw",
+          "title": "rpt-app-icon-1024.png",
+          "url": "https://drive.google.com/file/d/1AenkCtqf3XbCxaJy4JXWMji-50OjaoIw/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "163622"
+        },
+        {
+          "id": "1_cNc1bCadDYjZr4qbvYMKXEUTccH5rNl",
+          "title": "android-adaptive-foreground-432.png",
+          "url": "https://drive.google.com/file/d/1_cNc1bCadDYjZr4qbvYMKXEUTccH5rNl/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "72896"
+        },
+        {
+          "id": "1RpJzw3vzeCdDtZ4HI1LqeXwKk-xGOhgf",
+          "title": "android-adaptive-background-432.png",
+          "url": "https://drive.google.com/file/d/1RpJzw3vzeCdDtZ4HI1LqeXwKk-xGOhgf/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1174"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1Tj4PhTuWN7D812P4tbcHVqeDHLJNRx43",
+        "title": "03_Raster_PNG_WEBP",
+        "url": "https://drive.google.com/drive/folders/1Tj4PhTuWN7D812P4tbcHVqeDHLJNRx43"
+      },
+      "children": [
+        {
+          "id": "1nLnArVGfGOIYTdT0VNs0kptMA8NtZJ5Y",
+          "title": "rpt-symbol-color-transparent.webp",
+          "url": "https://drive.google.com/file/d/1nLnArVGfGOIYTdT0VNs0kptMA8NtZJ5Y/view?usp=drivesdk",
+          "mime_type": "image/webp",
+          "size": "22708"
+        },
+        {
+          "id": "1nLZ7qKRO-vqesPc27EFA6YScS8ugzO6T",
+          "title": "rpt-symbol-color-transparent.png",
+          "url": "https://drive.google.com/file/d/1nLZ7qKRO-vqesPc27EFA6YScS8ugzO6T/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "34432"
+        },
+        {
+          "id": "1UdYDjKnHAwrkFr8Br9hkBy23tdUW_CsM",
+          "title": "rpt-symbol-color-512px.png",
+          "url": "https://drive.google.com/file/d/1UdYDjKnHAwrkFr8Br9hkBy23tdUW_CsM/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "176780"
+        },
+        {
+          "id": "1r-atb4Zf1KxXWOuo0dMHuzzXKCkEtuUM",
+          "title": "rpt-symbol-color-256px.png",
+          "url": "https://drive.google.com/file/d/1r-atb4Zf1KxXWOuo0dMHuzzXKCkEtuUM/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "66204"
+        },
+        {
+          "id": "1Bx6EgQcBB2Zali-jBUDNkGAw93Rzzhje",
+          "title": "rpt-symbol-color-2048px.png",
+          "url": "https://drive.google.com/file/d/1Bx6EgQcBB2Zali-jBUDNkGAw93Rzzhje/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1151057"
+        },
+        {
+          "id": "1BWdJB5hsVhf40e1BHuSg9wwiF8pUTqZr",
+          "title": "rpt-symbol-color-128px.png",
+          "url": "https://drive.google.com/file/d/1BWdJB5hsVhf40e1BHuSg9wwiF8pUTqZr/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "21477"
+        },
+        {
+          "id": "1AAOqxtmnell6D6kQ2F6jUF0oGkbkOrW6",
+          "title": "rpt-symbol-color-1024px.png",
+          "url": "https://drive.google.com/file/d/1AAOqxtmnell6D6kQ2F6jUF0oGkbkOrW6/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "451528"
+        },
+        {
+          "id": "1-a2mjsZ6JKLqs7Snpxl3IfAx8sY3VecA",
+          "title": "rpt-logo-primary-stacked-color-transparent.webp",
+          "url": "https://drive.google.com/file/d/1-a2mjsZ6JKLqs7Snpxl3IfAx8sY3VecA/view?usp=drivesdk",
+          "mime_type": "image/webp",
+          "size": "45432"
+        },
+        {
+          "id": "1_uPHU_vS0SB5rzd0M2CVRnUF_huhwiyC",
+          "title": "rpt-logo-primary-stacked-color-transparent.png",
+          "url": "https://drive.google.com/file/d/1_uPHU_vS0SB5rzd0M2CVRnUF_huhwiyC/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "68703"
+        },
+        {
+          "id": "14atIjQnADCQsOeTi7IRaApgpGxcPdULW",
+          "title": "rpt-logo-compact-reference-transparent.png",
+          "url": "https://drive.google.com/file/d/14atIjQnADCQsOeTi7IRaApgpGxcPdULW/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "29379"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1ktTqqO5NgjUeSZyDLKKQ1ZAojPFEYUyp",
+        "title": "02_Vector_SVG",
+        "url": "https://drive.google.com/drive/folders/1ktTqqO5NgjUeSZyDLKKQ1ZAojPFEYUyp"
+      },
+      "children": [
+        {
+          "id": "106pd-rkrKUWLfaUUlI7M5v1TsF8PWVgZ",
+          "title": "rpt-symbol-monochrome-white.svgz",
+          "url": "https://drive.google.com/file/d/106pd-rkrKUWLfaUUlI7M5v1TsF8PWVgZ/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "449"
+        },
+        {
+          "id": "1QJ9YKdbUUxNLWAR4_c6SnnzgQ_nNeiEB",
+          "title": "rpt-symbol-monochrome-white.svg",
+          "url": "https://drive.google.com/file/d/1QJ9YKdbUUxNLWAR4_c6SnnzgQ_nNeiEB/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "834"
+        },
+        {
+          "id": "14BoR8Hb-EdQEWX7vefWAL1eoYFbTZGnM",
+          "title": "rpt-symbol-monochrome-dark.svgz",
+          "url": "https://drive.google.com/file/d/14BoR8Hb-EdQEWX7vefWAL1eoYFbTZGnM/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "451"
+        },
+        {
+          "id": "1LofTITSnQBGACxy7t4EmxRW_8Ksa4B-l",
+          "title": "rpt-symbol-monochrome-dark.svg",
+          "url": "https://drive.google.com/file/d/1LofTITSnQBGACxy7t4EmxRW_8Ksa4B-l/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "834"
+        },
+        {
+          "id": "1EwzkmfeBNpjCfYciGCimnflk3lI6SRuA",
+          "title": "rpt-symbol-color.svgz",
+          "url": "https://drive.google.com/file/d/1EwzkmfeBNpjCfYciGCimnflk3lI6SRuA/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "458"
+        },
+        {
+          "id": "1fN0lZllk1I7z4eExWzPClTdiXW0-6CgM",
+          "title": "rpt-symbol-color.svg",
+          "url": "https://drive.google.com/file/d/1fN0lZllk1I7z4eExWzPClTdiXW0-6CgM/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "891"
+        },
+        {
+          "id": "1yyi-0BGoAOQbH6pvXe5vOOh1ciPN__Hz",
+          "title": "rpt-logo-primary-stacked-color.svgz",
+          "url": "https://drive.google.com/file/d/1yyi-0BGoAOQbH6pvXe5vOOh1ciPN__Hz/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "677"
+        },
+        {
+          "id": "1C-boKsV2kC7bVju30jTQ-QRR5CNt5YrN",
+          "title": "rpt-logo-primary-stacked-color.svg",
+          "url": "https://drive.google.com/file/d/1C-boKsV2kC7bVju30jTQ-QRR5CNt5YrN/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "1308"
+        },
+        {
+          "id": "1tKPqsNfWu3IgW-KaUvrca0dIRTvMXiwA",
+          "title": "rpt-logo-horizontal-color.svgz",
+          "url": "https://drive.google.com/file/d/1tKPqsNfWu3IgW-KaUvrca0dIRTvMXiwA/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "666"
+        },
+        {
+          "id": "1ThTqrr45xnjtrTckfiUM0dgGXplGeziH",
+          "title": "rpt-logo-horizontal-color.svg",
+          "url": "https://drive.google.com/file/d/1ThTqrr45xnjtrTckfiUM0dgGXplGeziH/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "1265"
+        },
+        {
+          "id": "1odVPwklgsQnDv-pYonR9hx6TxBuD_sV-",
+          "title": "rpt-app-icon.svgz",
+          "url": "https://drive.google.com/file/d/1odVPwklgsQnDv-pYonR9hx6TxBuD_sV-/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "371"
+        },
+        {
+          "id": "1unOFF-XXNVIkL-Uh97M_lhl2e8cqTbuA",
+          "title": "rpt-app-icon.svg",
+          "url": "https://drive.google.com/file/d/1unOFF-XXNVIkL-Uh97M_lhl2e8cqTbuA/view?usp=drivesdk",
+          "mime_type": "image/svg+xml",
+          "size": "625"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1c__oWeSLoFaWzXi9D7dPiryUiL0tkpVm",
+        "title": "01_Master_Reference",
+        "url": "https://drive.google.com/drive/folders/1c__oWeSLoFaWzXi9D7dPiryUiL0tkpVm"
+      },
+      "children": [
+        {
+          "id": "1Jsd-0QrBNsZRq778NQm4QeuCSxLkQmmv",
+          "title": "RPT_Opcion_B_Brand_Board_MASTER.png",
+          "url": "https://drive.google.com/file/d/1Jsd-0QrBNsZRq778NQm4QeuCSxLkQmmv/view?usp=drivesdk",
+          "mime_type": "image/png",
+          "size": "1402756"
+        }
+      ]
+    },
+    {
+      "folder": {
+        "id": "1FGGqiY-ZGe23f_XihStbcnlB9s9RBe3J",
+        "title": "Logo y Marca",
+        "url": "https://drive.google.com/drive/folders/1FGGqiY-ZGe23f_XihStbcnlB9s9RBe3J"
+      },
+      "children": []
+    },
+    {
+      "folder": {
+        "id": "17bbYyScO05eXOomcE2IeAHz_q3Q9t5Z5",
+        "title": "Referencias de Pantallas",
+        "url": "https://drive.google.com/drive/folders/17bbYyScO05eXOomcE2IeAHz_q3Q9t5Z5"
+      },
+      "children": []
+    }
+  ],
+  "limitations": [
+    "Text reads do not validate embedded images or binary asset checksums.",
+    "No official provider access, legal approval or production readiness is inferred.",
+    "Refresh sources by Drive id and modification date before Prompt 01.",
+    "Historical repository is not selected as official without confirmation."
+  ]
+}

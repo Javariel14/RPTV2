@@ -1,0 +1,153 @@
+{
+  "$schema": "https://design-tokens.org/community-group/format/",
+  "brand": {
+    "name": "Royal Performance Tracker",
+    "shortName": "RPT",
+    "owner": "JAVARIEL Corp",
+    "logoConcept": "Opción B — Monograma R Ascendente",
+    "status": "APPROVED_BY_PRODUCT_OWNER",
+    "approvedDate": "2026-09-03"
+  },
+  "color": {
+    "brand": {
+      "blue600": {
+        "$value": "#2563EB",
+        "$type": "color"
+      },
+      "blue700": {
+        "$value": "#1D4ED8",
+        "$type": "color"
+      },
+      "graphite900": {
+        "$value": "#172033",
+        "$type": "color"
+      },
+      "graphite950": {
+        "$value": "#0B1220",
+        "$type": "color"
+      },
+      "premiumGold500": {
+        "$value": "#C7A75A",
+        "$type": "color"
+      }
+    },
+    "surface": {
+      "canvas": {
+        "$value": "#F6F8FB",
+        "$type": "color"
+      },
+      "primary": {
+        "$value": "#FFFFFF",
+        "$type": "color"
+      },
+      "secondary": {
+        "$value": "#F8FAFC",
+        "$type": "color"
+      }
+    },
+    "border": {
+      "default": {
+        "$value": "#DCE3EC",
+        "$type": "color"
+      }
+    },
+    "text": {
+      "primary": {
+        "$value": "#111827",
+        "$type": "color"
+      },
+      "secondary": {
+        "$value": "#64748B",
+        "$type": "color"
+      },
+      "muted": {
+        "$value": "#94A3B8",
+        "$type": "color"
+      }
+    },
+    "state": {
+      "success": {
+        "$value": "#15803D",
+        "$type": "color"
+      },
+      "warning": {
+        "$value": "#B45309",
+        "$type": "color"
+      },
+      "danger": {
+        "$value": "#B91C1C",
+        "$type": "color"
+      },
+      "info": {
+        "$value": "#0369A1",
+        "$type": "color"
+      },
+      "aiReview": {
+        "$value": "#7C3AED",
+        "$type": "color"
+      }
+    }
+  },
+  "typography": {
+    "ui": {
+      "family": {
+        "$value": "Plus Jakarta Sans",
+        "$type": "fontFamily"
+      }
+    },
+    "data": {
+      "family": {
+        "$value": "Manrope",
+        "$type": "fontFamily"
+      }
+    }
+  },
+  "spacing": {
+    "base": {
+      "$value": "4px",
+      "$type": "dimension"
+    },
+    "scale": {
+      "$value": [
+        "4px",
+        "8px",
+        "12px",
+        "16px",
+        "20px",
+        "24px",
+        "32px",
+        "40px",
+        "48px",
+        "64px",
+        "80px"
+      ],
+      "$type": "dimension"
+    }
+  },
+  "radius": {
+    "sm": {
+      "$value": "8px",
+      "$type": "dimension"
+    },
+    "md": {
+      "$value": "12px",
+      "$type": "dimension"
+    },
+    "lg": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "xl": {
+      "$value": "20px",
+      "$type": "dimension"
+    }
+  },
+  "logo": {
+    "primary": "rpt-logo-primary-stacked-color.svg",
+    "horizontal": "rpt-logo-horizontal-color.svg",
+    "symbol": "rpt-symbol-color.svg",
+    "monochromeDark": "rpt-symbol-monochrome-dark.svg",
+    "monochromeWhite": "rpt-symbol-monochrome-white.svg",
+    "appIcon": "rpt-app-icon.svg"
+  }
+}
