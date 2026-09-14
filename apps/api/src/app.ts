@@ -124,6 +124,42 @@ export function createApi(
       ),
     }),
   );
+  api.get('/v1/crm/context', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.crmContext(c.get('identity'), c.get('requestId')),
+    }),
+  );
+  api.get('/v1/crm/opportunities', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.listCrm(
+        c.get('identity'),
+        c.get('requestId'),
+        JSON.parse(c.req.query('config') ?? '{"filters":{}}') as unknown,
+      ),
+    }),
+  );
+  api.get('/v1/crm/views', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.listCrmViews(c.get('identity'), c.get('requestId')),
+    }),
+  );
+  api.post('/v1/crm/views', async (c) =>
+    c.json(
+      {
+        schemaVersion: 1,
+        data: await service.saveCrmView(
+          c.get('identity'),
+          c.get('requestId'),
+          await c.req.json<unknown>(),
+          idempotencyKey.parse(c.req.header('Idempotency-Key')),
+        ),
+      },
+      201,
+    ),
+  );
   api.notFound((c) =>
     c.json(
       {

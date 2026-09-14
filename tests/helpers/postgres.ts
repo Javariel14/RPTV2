@@ -177,16 +177,26 @@ export async function startPostgres() {
       running = false;
       const restored = await encryptedColdRestore(currentData, directory);
       currentData = restored.target;
-      await runFile(binaries.pg_ctl, [
-        '-D',
-        currentData,
-        '-l',
-        join(directory, 'restored.log'),
-        '-o',
-        `-h 127.0.0.1 -p ${port}`,
-        '-w',
-        'start',
-      ]);
+      try {
+        await runFile(binaries.pg_ctl, [
+          '-D',
+          currentData,
+          '-l',
+          join(directory, 'restored.log'),
+          '-o',
+          `-h 127.0.0.1 -p ${port}`,
+          '-w',
+          'start',
+        ]);
+      } catch (error) {
+        // pg_ctl redirects the actual startup failure to this test-only log.
+        const log = await readFile(join(directory, 'restored.log'), 'utf8').catch(
+          () => 'Restored PostgreSQL log unavailable',
+        );
+        throw new Error(`Restored PostgreSQL startup failed:\n${log.slice(-6000)}`, {
+          cause: error,
+        });
+      }
       running = true;
       admin = new Client({ ...base, database: 'postgres' });
       await admin.connect();

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -20,6 +20,16 @@ import {
 import { Button, Panel, State } from '@rpt/ui';
 import { referenceContacts, type ReferenceContact, type Stage } from '@rpt/test-fixtures';
 import { catalogs, type Locale } from './catalog';
+import { crmCatalogs } from './crm-catalog';
+import { crmRequest, useCrmData } from './use-crm-data';
+import type { CrmRow, CrmSavedView } from '@rpt/contracts';
+type DisplayRow = Omit<ReferenceContact, 'stage' | 'source'> & {
+  stage: ReferenceContact['stage'] | CrmRow['stage'];
+  source: ReferenceContact['source'] | CrmRow['source'];
+  nextAction?: string;
+  updatedAt?: string;
+  priority?: string;
+};
 type View = 'all' | 'mine' | 'due';
 type Mode = 'table' | 'kanban';
 type StateName =
@@ -48,13 +58,21 @@ interface SavedView {
   ascending: boolean;
 }
 const stages: Stage[] = ['new', 'appointment', 'demo', 'followup'];
-export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?: string }) {
+export function ReferenceWorkspace({
+  initialTheme = 'system',
+  persistent = false,
+}: {
+  initialTheme?: string;
+  persistent?: boolean;
+}) {
   const [locale, setLocale] = useState<Locale>('es');
-  const t = catalogs[locale];
+  const ct = crmCatalogs[locale];
+  const t = { ...catalogs[locale], ...(persistent ? ct : {}) };
+  const label = (value: string) => (t as Record<string, string>)[value] ?? value;
   const [theme, setTheme] = useState(initialTheme);
   const [collapsed, setCollapsed] = useState(false);
   const [lab, setLab] = useState(false);
-  const [rows, setRows] = useState(referenceContacts);
+  const [localRows, setRows] = useState(() => (persistent ? [] : referenceContacts()));
   const [query, setQuery] = useState('');
   const [stage, setStage] = useState('all');
   const [source, setSource] = useState('all');
@@ -70,8 +88,91 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
   const [viewName, setViewName] = useState('');
   const [saved, setSaved] = useState<SavedView[]>([]);
   const [feedback, setFeedback] = useState('');
-  const [state, setState] = useState<StateName>('ready');
+  const [localState, setState] = useState<StateName>('ready');
   const [page, setPage] = useState(0);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priority, setPriority] = useState('all');
+  const [activityFilter, setActivityFilter] = useState('all');
+  const [visibility, setVisibility] = useState('private');
+  const [recipients, setRecipients] = useState('');
+  const [sessionCode, setSessionCode] = useState('');
+  const [saving, setSaving] = useState(false);
+  const saveAttempt = useRef<{ body: string; key: string } | null>(null);
+  const [sort, setSort] = useState<'name' | 'updated' | 'due'>('name');
+  const [extraColumns, setExtraColumns] = useState<string[]>(['owner', 'due']);
+  const [saveError, setSaveError] = useState('');
+  const config = {
+    filters: {
+      query,
+      stage,
+      source,
+      owner: view === 'mine' ? 'mine' : 'all',
+      activity: view === 'due' ? 'due' : activityFilter,
+      status: statusFilter,
+      priority,
+    },
+    sort,
+    direction: ascending ? 'asc' : 'desc',
+    columns: [...extraColumns, ...(showSource ? ['source'] : [])],
+    density: compact ? 'compact' : 'comfortable',
+    surface: mode,
+  };
+  const remote = useCrmData(persistent, JSON.stringify({ ...config, page }));
+  const rows: DisplayRow[] = persistent
+    ? (remote.snapshot?.data.rows ?? []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        stage: r.stage,
+        source: r.source,
+        owner: r.ownerLabel === 'self' ? 'self' : 'delegated',
+        due: r.nextAt ?? '',
+        activity: 0,
+        nextAction: r.nextAction,
+        updatedAt: r.updatedAt,
+        priority: r.priority,
+      }))
+    : localRows;
+  const state: StateName = persistent
+    ? remote.error
+      ? remote.error.status === 403
+        ? 'permission'
+        : remote.error.status === 401
+          ? '401'
+          : '503'
+      : remote.snapshot
+        ? 'ready'
+        : 'loading'
+    : localState;
+  const activeStages = persistent
+    ? [
+        'new',
+        'contacted',
+        'appointment',
+        'demo',
+        'proposal',
+        'pending_approval',
+        'won_simulated',
+        'won',
+        'lost',
+      ]
+    : stages;
+  function applyRemoteView(saved: CrmSavedView) {
+    const c = saved.config;
+    setQuery(c.filters.query);
+    setStage(c.filters.stage);
+    setSource(c.filters.source);
+    setView(c.filters.owner === 'mine' ? 'mine' : 'all');
+    setActivityFilter(c.filters.activity);
+    setStatusFilter(c.filters.status);
+    setPriority(c.filters.priority);
+    setMode(c.surface);
+    setSort(c.sort);
+    setExtraColumns(c.columns.filter((v) => v !== 'source'));
+    setAscending(c.direction === 'asc');
+    setCompact(c.density === 'compact');
+    setShowSource(c.columns.includes('source'));
+    setPage(0);
+  }
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
@@ -104,38 +205,54 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
   }
   const filtered = useMemo(
     () =>
-      rows
-        .filter(
-          (r) =>
-            r.name.toLocaleLowerCase(locale).includes(query.toLocaleLowerCase(locale)) &&
-            (stage === 'all' || r.stage === stage) &&
-            (source === 'all' || r.source === source) &&
-            (view !== 'mine' || r.owner === 'self') &&
-            (view !== 'due' || r.stage === 'followup'),
-        )
-        .sort((a, b) => (ascending ? 1 : -1) * a.name.localeCompare(b.name, locale)),
-    [rows, query, stage, source, view, ascending, locale],
+      persistent
+        ? rows
+        : rows
+            .filter(
+              (r) =>
+                r.name.toLocaleLowerCase(locale).includes(query.toLocaleLowerCase(locale)) &&
+                (stage === 'all' || r.stage === stage) &&
+                (source === 'all' || r.source === source) &&
+                (view !== 'mine' || r.owner === 'self') &&
+                (view !== 'due' || r.stage === 'followup'),
+            )
+            .sort((a, b) => (ascending ? 1 : -1) * a.name.localeCompare(b.name, locale)),
+    [rows, query, stage, source, view, ascending, locale, persistent],
   );
-  const maxPage = Math.max(0, Math.ceil(filtered.length / 20) - 1);
-  const currentPage = Math.min(page, maxPage);
-  const pageRows = filtered.slice(currentPage * 20, currentPage * 20 + 20);
+  const total = persistent ? (remote.snapshot?.data.total ?? 0) : filtered.length;
+  const maxPage = Math.max(0, Math.ceil(total / 20) - 1);
+  const currentPage = persistent ? page : Math.min(page, maxPage);
+  const pageRows = persistent ? rows : filtered.slice(currentPage * 20, currentPage * 20 + 20);
   const detail = rows.find((r) => r.id === detailId);
   const visible = ['ready', 'offline', 'degraded'].includes(state);
   const date = (value: string) =>
-    new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'short',
-      timeZone: 'America/Guayaquil',
-    }).format(new Date(value));
-  const nextAction = (r: ReferenceContact) =>
-    r.stage === 'appointment' ? t.confirm : r.stage === 'new' ? t.contact : t.follow;
+    value
+      ? new Intl.DateTimeFormat(locale, {
+          day: 'numeric',
+          month: 'short',
+          timeZone: 'America/Guayaquil',
+        }).format(new Date(value))
+      : '—';
+  const nextAction = (r: DisplayRow) =>
+    persistent
+      ? label(r.nextAction ?? '—')
+      : r.stage === 'appointment'
+        ? t.confirm
+        : r.stage === 'new'
+          ? t.contact
+          : t.follow;
   function clear() {
     setQuery('');
     setSource('all');
     setStage('all');
+    setStatusFilter('all');
+    setPriority('all');
+    setActivityFilter('all');
+    if (persistent) setView('all');
     setPage(0);
   }
   function activity(ids: string[]) {
+    if (persistent) return;
     setRows((prev) =>
       prev.map((r) => (ids.includes(r.id) ? { ...r, activity: r.activity + 1 } : r)),
     );
@@ -150,10 +267,11 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
     setSelected([]);
   }
   function addExample() {
+    if (persistent) return;
     const generated = referenceContacts(rows.length + 1);
     const row = generated.at(-1);
     if (row) {
-      setRows([...rows, row]);
+      setRows([...localRows, row]);
       changeState('ready');
       clear();
       setView('all');
@@ -172,9 +290,9 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
           }}
         >
           <option value="all">{t.all}</option>
-          {stages.map((s) => (
+          {activeStages.map((s) => (
             <option key={s} value={s}>
-              {t[s]}
+              {label(s)}
             </option>
           ))}
         </select>
@@ -191,6 +309,12 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
           <option value="all">{t.all}</option>
           <option value="referral">{t.referral}</option>
           <option value="event">{t.event}</option>
+          {persistent && (
+            <>
+              <option value="manual">{ct.manual}</option>
+              <option value="import">{ct.import}</option>
+            </>
+          )}
         </select>
       </label>
       <Button variant="ghost" onClick={clear}>
@@ -213,7 +337,7 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
           </span>
         </div>
         <div className="sidebar-rule" />
-        <span className="section-label">FOUNDATION</span>
+        <span className="section-label">{persistent ? 'CRM' : 'FOUNDATION'}</span>
         <nav aria-label={t.workspace}>
           <button
             className={!lab ? 'active' : ''}
@@ -223,14 +347,16 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
             <Users size={20} />
             <span>{t.reference}</span>
           </button>
-          <button className={lab ? 'active' : ''} onClick={() => setLab(true)} title={t.lab}>
-            <FlaskConical size={20} />
-            <span>{t.lab}</span>
-          </button>
+          {!persistent && (
+            <button className={lab ? 'active' : ''} onClick={() => setLab(true)} title={t.lab}>
+              <FlaskConical size={20} />
+              <span>{t.lab}</span>
+            </button>
+          )}
         </nav>
         <div className="sidebar-bottom">
           <p>
-            JAVARIEL Corp<small>Foundation / 0.1.0</small>
+            JAVARIEL Corp<small>{persistent ? 'CRM / U3' : 'Foundation / 0.1.0'}</small>
           </p>
           <Button
             onClick={() => preference(theme, !collapsed)}
@@ -245,7 +371,7 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
           <div className="scope">
             <span className="scope-dot" />
             {t.workspace}
-            <span className="top-label"> / Foundation</span>
+            <span className="top-label"> / {persistent ? 'CRM' : 'Foundation'}</span>
           </div>
           <div className="preferences">
             <label>
@@ -288,7 +414,7 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
               <h1>{lab ? t.labTitle : t.title}</h1>
               <p>{lab ? t.labDetail : t.subtitle}</p>
             </div>
-            {!lab && (
+            {!lab && !persistent && (
               <Button variant="primary" onClick={addExample}>
                 <Plus size={18} />
                 {t.create}
@@ -372,9 +498,17 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                       }}
                     >
                       {t[v]}
-                      {v === 'all' && <span className="count">{rows.length}</span>}
+                      {v === 'all' && (
+                        <span className="count">{persistent ? total : rows.length}</span>
+                      )}
                     </button>
                   ))}
+                  {persistent &&
+                    remote.snapshot?.views.map((s) => (
+                      <button key={s.id} onClick={() => applyRemoteView(s)}>
+                        {s.name}
+                      </button>
+                    ))}
                   {saved.map((s, i) => (
                     <button
                       key={`${s.label}-${i}`}
@@ -399,7 +533,12 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                     <LayoutList size={16} />
                     {t.table}
                   </Button>
-                  <Button aria-pressed={mode === 'kanban'} onClick={() => setMode('kanban')}>
+                  <Button
+                    disabled={persistent}
+                    title={persistent ? ct.detailPending : undefined}
+                    aria-pressed={mode === 'kanban'}
+                    onClick={() => setMode('kanban')}
+                  >
                     <Columns3 size={16} />
                     {t.kanban}
                   </Button>
@@ -411,6 +550,7 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                   <Search size={18} />
                   <input
                     aria-label={t.search}
+                    maxLength={100}
                     value={query}
                     placeholder={t.searchHint}
                     onChange={(e) => {
@@ -423,14 +563,39 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                 <Button className="mobile-filters" onClick={() => setFilterOpen(true)}>
                   <SlidersHorizontal size={18} />
                   {t.filters}
+                  {persistent &&
+                    ` · ${[query, stage !== 'all', source !== 'all', statusFilter !== 'all', priority !== 'all', activityFilter !== 'all', view !== 'all'].filter(Boolean).length}`}
                 </Button>
-                <Button className="save-view" onClick={() => setSaveOpen(true)}>
+                {persistent && (
+                  <Button className="crm-more-filters" onClick={() => setFilterOpen(true)}>
+                    {t.filters} ·{' '}
+                    {
+                      [
+                        query,
+                        stage !== 'all',
+                        source !== 'all',
+                        statusFilter !== 'all',
+                        priority !== 'all',
+                        activityFilter !== 'all',
+                        view !== 'all',
+                      ].filter(Boolean).length
+                    }
+                  </Button>
+                )}
+                <Button
+                  className="save-view"
+                  disabled={persistent && !remote.snapshot?.session.workspaceId}
+                  onClick={() => {
+                    setSaveError('');
+                    setSaveOpen(true);
+                  }}
+                >
                   {t.saveView}
                 </Button>
               </div>
               <div className="list-meta">
                 <span>
-                  <strong>{visible ? filtered.length : '—'}</strong> {t.records}
+                  <strong>{visible ? total : '—'}</strong> {t.records}
                 </span>
                 <div>
                   <label className="column-control">
@@ -487,16 +652,55 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                           : t.errorDetail
                     }
                   >
-                    <Button onClick={() => changeState('ready')}>{t.retry}</Button>
+                    {persistent && state === '401' ? (
+                      <form
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          try {
+                            await crmRequest('session', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ code: sessionCode }),
+                            });
+                            setSessionCode('');
+                            setFeedback('');
+                            remote.refresh();
+                          } catch {
+                            setFeedback(t.errorDetail);
+                          }
+                        }}
+                      >
+                        <label>
+                          {ct.sessionCode}
+                          <input
+                            type="password"
+                            autoComplete="off"
+                            required
+                            value={sessionCode}
+                            onChange={(e) => setSessionCode(e.target.value)}
+                          />
+                        </label>
+                        <Button type="submit">{ct.signIn}</Button>
+                      </form>
+                    ) : (
+                      <Button
+                        onClick={() => (persistent ? remote.refresh() : changeState('ready'))}
+                      >
+                        {t.retry}
+                      </Button>
+                    )}
+                    {persistent && remote.error?.requestId && (
+                      <small>{remote.error.requestId}</small>
+                    )}
                   </State>
                 )
               ) : !filtered.length ? (
                 <State
-                  title={rows.length ? t.noResults : t.empty}
-                  detail={rows.length ? t.noResultsDetail : t.emptyDetail}
+                  title={persistent || rows.length ? t.noResults : t.empty}
+                  detail={persistent || rows.length ? t.noResultsDetail : t.emptyDetail}
                 >
-                  <Button onClick={rows.length ? clear : addExample}>
-                    {rows.length ? t.clear : t.create}
+                  <Button onClick={persistent || rows.length ? clear : addExample}>
+                    {persistent || rows.length ? t.clear : t.create}
                   </Button>
                 </State>
               ) : (
@@ -520,17 +724,63 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                                   }
                                 />
                               </th>
-                              <th>
-                                <button className="sort" onClick={() => setAscending(!ascending)}>
+                              <th
+                                aria-sort={
+                                  sort === 'name'
+                                    ? ascending
+                                      ? 'ascending'
+                                      : 'descending'
+                                    : 'none'
+                                }
+                              >
+                                <button
+                                  className="sort"
+                                  onClick={() => {
+                                    setSort('name');
+                                    setAscending(!ascending);
+                                    setPage(0);
+                                  }}
+                                >
                                   {t.name}
-                                  {ascending ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
+                                  {sort === 'name' &&
+                                    (ascending ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
                                 </button>
                               </th>
                               <th>{t.stage}</th>
                               <th>{t.next}</th>
-                              <th>{t.when}</th>
+                              {(!persistent || extraColumns.includes('due')) && (
+                                <th
+                                  aria-sort={
+                                    sort === 'due'
+                                      ? ascending
+                                        ? 'ascending'
+                                        : 'descending'
+                                      : 'none'
+                                  }
+                                >
+                                  {t.when}
+                                </th>
+                              )}
                               {showSource && <th className="source-cell">{t.source}</th>}
-                              <th className="owner-cell">{t.owner}</th>
+                              {(!persistent || extraColumns.includes('owner')) && (
+                                <th className="owner-cell">{t.owner}</th>
+                              )}
+                              {persistent && extraColumns.includes('activity') && (
+                                <th
+                                  aria-sort={
+                                    sort === 'updated'
+                                      ? ascending
+                                        ? 'ascending'
+                                        : 'descending'
+                                      : 'none'
+                                  }
+                                >
+                                  {ct.updated}
+                                </th>
+                              )}
+                              {persistent && extraColumns.includes('priority') && (
+                                <th>{ct.priority}</th>
+                              )}
                             </tr>
                           </thead>
                           <tbody>
@@ -548,7 +798,13 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                                   />
                                 </td>
                                 <td>
-                                  <button className="person" onClick={() => setDetailId(r.id)}>
+                                  <button
+                                    className="person"
+                                    title={persistent ? ct.detailPending : undefined}
+                                    onClick={() =>
+                                      persistent ? setFeedback(ct.detailPending) : setDetailId(r.id)
+                                    }
+                                  >
                                     <span className="initials">
                                       {r.name
                                         .split(' ')
@@ -561,14 +817,24 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                                   </button>
                                 </td>
                                 <td>
-                                  <span className={`badge stage-${r.stage}`}>{t[r.stage]}</span>
+                                  <span className={`badge stage-${r.stage}`}>{label(r.stage)}</span>
                                 </td>
                                 <td>{nextAction(r)}</td>
-                                <td className="data">{date(r.due)}</td>
-                                {showSource && (
-                                  <td className="source-cell secondary">{t[r.source]}</td>
+                                {(!persistent || extraColumns.includes('due')) && (
+                                  <td className="data">{date(r.due)}</td>
                                 )}
-                                <td className="owner-cell secondary">{t[r.owner]}</td>
+                                {showSource && (
+                                  <td className="source-cell secondary">{label(r.source)}</td>
+                                )}
+                                {(!persistent || extraColumns.includes('owner')) && (
+                                  <td className="owner-cell secondary">{t[r.owner]}</td>
+                                )}
+                                {persistent && extraColumns.includes('activity') && (
+                                  <td>{date(r.updatedAt ?? '')}</td>
+                                )}
+                                {persistent && extraColumns.includes('priority') && (
+                                  <td>{label(r.priority ?? '')}</td>
+                                )}
                               </tr>
                             ))}
                           </tbody>
@@ -577,10 +843,14 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                       <div className="mobile-list">
                         {pageRows.map((r) => (
                           <article key={r.id}>
-                            <button onClick={() => setDetailId(r.id)}>
+                            <button
+                              onClick={() =>
+                                persistent ? setFeedback(ct.detailPending) : setDetailId(r.id)
+                              }
+                            >
                               <span>
                                 <strong>{r.name}</strong>
-                                <span className="mobile-status">{t[r.stage]}</span>
+                                <span className="mobile-status">{label(r.stage)}</span>
                                 <span>
                                   {nextAction(r)} · {date(r.due)}
                                 </span>
@@ -599,10 +869,16 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                     </>
                   ) : (
                     <div className="kanban">
-                      {stages.map((s) => (
+                      {activeStages.map((s) => (
                         <section key={s}>
                           <h2>
-                            {t[s]} <span>{pageRows.filter((r) => r.stage === s).length}</span>
+                            {label(s)}{' '}
+                            <span>
+                              {persistent
+                                ? (remote.snapshot?.data.stages.find((v) => v.stage === s)?.count ??
+                                  0)
+                                : pageRows.filter((r) => r.stage === s).length}
+                            </span>
                           </h2>
                           {pageRows
                             .filter((r) => r.stage === s)
@@ -610,7 +886,9 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                               <button
                                 className="kanban-item"
                                 key={r.id}
-                                onClick={() => setDetailId(r.id)}
+                                onClick={() =>
+                                  persistent ? setFeedback(ct.detailPending) : setDetailId(r.id)
+                                }
                               >
                                 <strong>{r.name}</strong>
                                 <span>{nextAction(r)}</span>
@@ -626,8 +904,8 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                   )}
                   <footer className="pagination">
                     <span>
-                      {t.shown} {currentPage * 20 + 1}–
-                      {Math.min((currentPage + 1) * 20, filtered.length)} {t.of} {filtered.length}
+                      {t.shown} {currentPage * 20 + 1}–{Math.min((currentPage + 1) * 20, total)}{' '}
+                      {t.of} {total}
                     </span>
                     <div>
                       <Button
@@ -656,10 +934,12 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                   <strong>
                     {selected.length} {t.selected}
                   </strong>
-                  <Button onClick={() => activity(selected)}>
-                    <Check size={16} />
-                    {t.selectionAction}
-                  </Button>
+                  {!persistent && (
+                    <Button onClick={() => activity(selected)}>
+                      <Check size={16} />
+                      {t.selectionAction}
+                    </Button>
+                  )}
                   <Button onClick={() => setSelected([])}>{t.selectionClear}</Button>
                 </div>
               )}
@@ -676,14 +956,16 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
           <Users size={20} />
           {t.reference}
         </button>
-        <button onClick={() => setLab(true)} aria-current={lab ? 'page' : undefined}>
-          <FlaskConical size={20} />
-          {t.lab}
-        </button>
+        {!persistent && (
+          <button onClick={() => setLab(true)} aria-current={lab ? 'page' : undefined}>
+            <FlaskConical size={20} />
+            {t.lab}
+          </button>
+        )}
       </nav>
-      {detail && visible && (
+      {detail && visible && !persistent && (
         <Panel title={detail.name} closeLabel={t.close} onClose={() => setDetailId(undefined)}>
-          <span className={`badge stage-${detail.stage}`}>{t[detail.stage]}</span>
+          <span className={`badge stage-${detail.stage}`}>{label(detail.stage)}</span>
           <p className="secondary">{t.examplesOnly}</p>
           <section className="next-action">
             <span>{t.next}</span>
@@ -699,7 +981,7 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
             <dt>{t.owner}</dt>
             <dd>{t[detail.owner]}</dd>
             <dt>{t.source}</dt>
-            <dd>{t[detail.source]}</dd>
+            <dd>{label(detail.source)}</dd>
             <dt>{t.activity}</dt>
             <dd>{detail.activity}</dd>
           </dl>
@@ -720,6 +1002,103 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
         >
           <div className="filter-fields">
             {filters}
+            {persistent && (
+              <>
+                <label>
+                  {ct.status}
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(e.target.value);
+                      setPage(0);
+                    }}
+                  >
+                    {['all', 'open', 'closed'].map((v) => (
+                      <option key={v} value={v}>
+                        {label(v)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {ct.priority}
+                  <select
+                    value={priority}
+                    onChange={(e) => {
+                      setPriority(e.target.value);
+                      setPage(0);
+                    }}
+                  >
+                    {['all', 'normal', 'high'].map((v) => (
+                      <option key={v} value={v}>
+                        {label(v)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {t.activity}
+                  <select
+                    value={view === 'due' ? 'due' : activityFilter}
+                    onChange={(e) => {
+                      setActivityFilter(e.target.value);
+                      if (view === 'due') setView('all');
+                      setPage(0);
+                    }}
+                  >
+                    {['all', 'due', 'inactive'].map((v) => (
+                      <option key={v} value={v}>
+                        {label(v)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {ct.sort}
+                  <select
+                    value={sort}
+                    onChange={(e) => {
+                      setSort(e.target.value as typeof sort);
+                      setPage(0);
+                    }}
+                  >
+                    <option value="name">{t.name}</option>
+                    <option value="updated">{ct.updated}</option>
+                    <option value="due">{t.when}</option>
+                  </select>
+                </label>
+                <label>
+                  {ct.direction}
+                  <select
+                    value={ascending ? 'asc' : 'desc'}
+                    onChange={(e) => {
+                      setAscending(e.target.value === 'asc');
+                      setPage(0);
+                    }}
+                  >
+                    <option value="asc">{ct.asc}</option>
+                    <option value="desc">{ct.desc}</option>
+                  </select>
+                </label>
+                <fieldset>
+                  <legend>{ct.visibleColumns}</legend>
+                  {['owner', 'due', 'activity', 'priority'].map((v) => (
+                    <label key={v} className="column-control">
+                      <input
+                        type="checkbox"
+                        checked={extraColumns.includes(v)}
+                        onChange={(e) =>
+                          setExtraColumns((prev) =>
+                            e.target.checked ? [...prev, v] : prev.filter((c) => c !== v),
+                          )
+                        }
+                      />
+                      {v === 'due' ? t.when : v === 'activity' ? ct.updated : label(v)}
+                    </label>
+                  ))}
+                </fieldset>
+              </>
+            )}
             <Button variant="primary" onClick={() => setFilterOpen(false)}>
               {t.close}
             </Button>
@@ -734,9 +1113,52 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
           onClose={() => setSaveOpen(false)}
         >
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (!viewName.trim()) return;
+              if (persistent) {
+                if (saving) return;
+                setSaving(true);
+                setSaveError('');
+                try {
+                  const workspaceId = remote.snapshot?.session.workspaceId;
+                  if (!workspaceId) throw new Error('Session refresh required');
+                  const body = JSON.stringify({
+                    schemaVersion: 1,
+                    workspaceId,
+                    name: viewName.trim(),
+                    visibility,
+                    recipients:
+                      visibility === 'shared'
+                        ? recipients
+                            .split(',')
+                            .map((v) => v.trim())
+                            .filter(Boolean)
+                        : [],
+                    config,
+                  });
+                  if (saveAttempt.current?.body !== body)
+                    saveAttempt.current = { body, key: crypto.randomUUID() };
+                  await crmRequest('views', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Idempotency-Key': saveAttempt.current.key,
+                    },
+                    body,
+                  });
+                  saveAttempt.current = null;
+                  setSaveOpen(false);
+                  setViewName('');
+                  setFeedback(t.saved);
+                  remote.refresh();
+                } catch {
+                  setSaveError(t.errorDetail);
+                } finally {
+                  setSaving(false);
+                }
+                return;
+              }
               setSaved([
                 ...saved,
                 {
@@ -765,9 +1187,34 @@ export function ReferenceWorkspace({ initialTheme = 'system' }: { initialTheme?:
                 maxLength={40}
               />
             </label>
-            <p>{t.privateView}</p>
-            <Button type="submit" variant="primary">
-              {t.save}
+            <p>{persistent ? ct.noPermissions : t.privateView}</p>
+            {persistent && remote.snapshot?.session.canShareView && (
+              <>
+                <label>
+                  {ct.visibility}
+                  <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
+                    {['private', 'team', 'shared'].map((v) => (
+                      <option key={v} value={v}>
+                        {label(v)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {visibility === 'shared' && (
+                  <label>
+                    {ct.recipients}
+                    <input
+                      required
+                      value={recipients}
+                      onChange={(e) => setRecipients(e.target.value)}
+                    />
+                  </label>
+                )}
+              </>
+            )}
+            {saveError && <p role="alert">{saveError}</p>}
+            <Button type="submit" variant="primary" disabled={saving}>
+              {saving ? t.loading : t.save}
             </Button>
           </form>
         </Panel>

@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "workPackage": "U3",
+  "workspace": "C:\\Proyectos JAVARIEL\\RoyalPerformanceTracker",
+  "branch": "feature/u3-crm-persistence",
+  "repository": "https://github.com/Javariel14/RPTV2",
+  "pullRequest": "https://github.com/Javariel14/RPTV2/pull/6",
+  "baseline": {
+    "commit": "ba4a6e5167b15ecba001ff7c74db116bbaafd8ec",
+    "meaning": "Immutable entry checkpoint before U3 CI closure, not current HEAD",
+    "foundationRun": "https://github.com/Javariel14/RPTV2/actions/runs/34847434070"
+  },
+  "review": "Review closure diff against baseline and current PR checks; no self-referential HEAD or mutable document hashes",
+  "files": [
+    {
+      "path": "packages/application/src/index.ts",
+      "change": "modified"
+    },
+    {
+      "path": "packages/contracts/src/crm.ts",
+      "change": "modified"
+    },
+    {
+      "path": "apps/api/src/app.ts",
+      "change": "modified"
+    },
+    {
+      "path": "apps/web/app/reference-workspace.tsx",
+      "change": "modified"
+    },
+    {
+      "path": "apps/web/app/styles.css",
+      "change": "modified"
+    },
+    {
+      "path": "package.json",
+      "change": "modified"
+    },
+    {
+      "path": "playwright.config.ts",
+      "change": "modified"
+    },
+    {
+      "path": "tests/integration/foundation.test.ts",
+      "change": "modified"
+    },
+    {
+      "path": "packages/application/src/crm.ts",
+      "change": "added"
+    },
+    {
+      "path": "apps/web/app/use-crm-data.ts",
+      "change": "added"
+    },
+    {
+      "path": "apps/web/app/crm-catalog.ts",
+      "change": "added"
+    },
+    {
+      "path": "apps/web/app/api/crm/[...path]/route.ts",
+      "change": "added"
+    },
+    {
+      "path": "apps/web/app/crm/commercial/page.tsx",
+      "change": "added"
+    },
+    {
+      "path": "scripts/crm-dev.ts",
+      "change": "added"
+    },
+    {
+      "path": "tests/helpers/crm-fixtures.ts",
+      "change": "added"
+    },
+    {
+      "path": "tests/integration/crm.test.ts",
+      "change": "added"
+    },
+    {
+      "path": "tests/e2e/crm.config.ts",
+      "change": "added"
+    },
+    {
+      "path": "tests/e2e/crm.spec.ts",
+      "change": "added"
+    },
+    {
+      "path": "supabase/migrations/20260913021731_crm_permission_query_plan.sql",
+      "change": "added"
+    },
+    {
+      "path": "docs/governance/prompt-02/u3-continuity.md",
+      "change": "added"
+    }
+  ],
+  "closureFiles": [
+    ".github/workflows/foundation.yml",
+    "tests/helpers/postgres.ts",
+    "tests/helpers/recovery.ts",
+    "package.json",
+    "package-lock.json",
+    "docs/governance/prompt-02/u3-continuity.md",
+    "docs/governance/prompt-02/u3-file-manifest.json"
+  ],
+  "evidence": {
+    "validatedCodeCheckpoint": "bdcef8428039b3c657008d66196132f5bc3ad8c8",
+    "validatedRun": "https://github.com/Javariel14/RPTV2/actions/runs/34849917345",
+    "conclusion": "SUCCESS",
+    "currentChecks": "https://github.com/Javariel14/RPTV2/pull/6/checks",
+    "verifiedArtifacts": [
+      {
+        "id": 10349532920,
+        "name": "foundation-evidence",
+        "sha256": "16315e901c90c8f3466fb40e5fccf35b4b634b70a19b1d1b56f1e5791c5231e5"
+      },
+      {
+        "id": 10349637062,
+        "name": "u3-crm-evidence",
+        "sha256": "4a3c0c650086ea6b4d1291279e2c38674d55db17c17d6c38931c3591ce65085c"
+      }
+    ],
+    "generatedFilesCommitted": false,
+    "retentionDays": 14,
+    "foundationArtifact": "foundation-evidence",
+    "crmArtifact": "u3-crm-evidence",
+    "paths": [
+      "work/u3-verify.log",
+      "work/restore-evidence.json",
+      "work/database-test-summary.json",
+      "work/npm-audit.json",
+      "work/license-report.json",
+      "work/sbom.cdx.json",
+      "work/e2e-results.json",
+      "playwright-report/",
+      "work/u3-e2e-results.json",
+      "work/u3-playwright-report/",
+      "work/u3-visual/",
+      "work/u3-browser-results/",
+      "work/pg-*/restored.log"
+    ],
+    "exclude": "PostgreSQL data directories, backup archives, keys and credentials"
+  },
+  "generatedFiles": ["apps/web/next-env.d.ts (Next build/dev type references)"]
+}

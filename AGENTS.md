@@ -1,6 +1,7 @@
 # AGENTS.md — Royal Performance Tracker (RPT)
 
 ## Scope
+
 Aplica a todo el repositorio salvo un `AGENTS.md` más profundo.
 Un `AGENTS.md` más específico manda dentro de su subárbol.
 
@@ -11,6 +12,7 @@ Owner: JAVARIEL Corp.
 Quality: `CRITICAL`.
 
 ## Sources of truth
+
 Producto/planificación:
 `/Google Drive/04 - JAVARIEL Corp/06 - Planificación Proyectos/01 - Royal Performance Tracker/`
 
@@ -26,6 +28,7 @@ Contexto derivado:
 El contexto derivado nunca supera a la fuente canónica.
 
 Prioridad:
+
 1. fuente oficial vigente Hy Cite/Royal Prestige para facts oficiales;
 2. `16 — Gobierno — Decision Registry y Fuentes Canónicas — RPT`;
 3. documento canónico especializado;
@@ -38,7 +41,9 @@ No uses `HISTÓRICO`, `DEPRECATED`, `DUPLICADO`, `SUPERSEDED` o `NO IMPLEMENTAR`
 Si una fuente no es accesible, no afirmes que fue leída.
 
 ## Context discipline
+
 Antes de una tarea:
+
 1. identifica dominio;
 2. consulta `CONTEXT_ROUTER.md`;
 3. abre solo fuentes del dominio;
@@ -46,6 +51,7 @@ Antes de una tarea:
 5. amplía contexto solo por dependencia descubierta.
 
 Default discovery:
+
 - <= 6 fuentes;
 - <= 12 archivos de código/tests.
 
@@ -55,6 +61,7 @@ No resumas nuevamente todo RPT.
 No pegues archivos completos si una sección basta.
 
 ## Core invariants
+
 No modificar sin fuente canónica/ADR cuando corresponda:
 
 - strict multi-tenancy;
@@ -75,6 +82,7 @@ No modificar sin fuente canónica/ADR cuando corresponda:
 - high-risk autonomous AI action tolerance = 0.
 
 ## Architecture baseline
+
 No cambiar por preferencia:
 
 - modular monolith first;
@@ -93,6 +101,7 @@ No cambiar por preferencia:
 No microservices/Redis por prestigio.
 
 ## Visual baseline
+
 Fuente: `43 — Marca y Sistema Visual — CANÓNICO — RPT`.
 
 - Essence: `PROGRESO CON CLARIDAD`
@@ -105,6 +114,7 @@ Evitar card soup, KPI wall, admin-template genérico, mobile comprimido y tokens
 No expandir UI si la reference route no pasa Visual QA.
 
 ## Decision protocol
+
 D1 reversible/local:
 decide, documenta breve, sigue.
 
@@ -115,6 +125,7 @@ D3 estratégica/irreversible:
 no improvisar.
 
 Bloquea solo si afecta:
+
 - tenant isolation;
 - pérdida de datos;
 - legal/contrato;
@@ -124,31 +135,37 @@ Bloquea solo si afecta:
 - decisión explícita del Product Owner.
 
 ## Execution loop
+
 `DISCOVER -> PLAN -> IMPLEMENT -> VERIFY -> REVIEW -> REPORT`
 
 DISCOVER:
+
 - `git status`;
 - instrucciones aplicables;
 - patrón existente;
 - código/tests afectados.
 
 PLAN:
+
 - máximo 5–10 bullets;
 - objetivo/scope/non-goals;
 - aceptación;
 - pruebas.
 
 IMPLEMENT:
+
 - cambios mínimos;
 - no reescribir archivos enteros sin necesidad;
 - no refactor ajeno al scope;
 - reutilizar patrones que ya pasan QA.
 
 VERIFY:
+
 - prueba focalizada primero;
 - ampliar según riesgo/boundary.
 
 REVIEW:
+
 - inspeccionar diff;
 - buscar regresiones, permisos, tenant leakage, secretos y código muerto;
 - corregir antes de reportar.
@@ -157,9 +174,11 @@ REPORT:
 `RESULT / FILES / TESTS / EVIDENCE / BLOCKERS / STATUS / NEXT`
 
 ## Dependencies / external code
+
 No copiar repositorios enteros.
 
 Antes de introducir una dependencia relevante:
+
 - versión concreta;
 - licencia;
 - mantenimiento/seguridad razonable;
@@ -169,6 +188,7 @@ Antes de introducir una dependencia relevante:
 - upgrade path.
 
 ## Git safety
+
 - no borrar cambios del usuario;
 - no reset destructivo;
 - no reescribir historia;
@@ -177,6 +197,7 @@ Antes de introducir una dependencia relevante:
 - respetar checks existentes.
 
 ## Subagents
+
 Default: ninguno.
 
 Delegar solo trabajo independiente.
@@ -184,12 +205,14 @@ Evitar agentes concurrentes sobre los mismos archivos/boundaries.
 El agente principal integra y verifica.
 
 ## Testing proportionality
+
 Cambio local -> test focalizado + lint/typecheck pertinente.
 Cambio de dominio -> unit + integration/contract relevante.
 Security/tenancy/migration -> critical tests obligatorios.
 Gate de fase -> suite definida por la fase.
 
 ## Persistence
+
 No preguntes por dudas rutinarias.
 Haz la mejor inferencia reversible respaldada por fuentes y documenta.
 Pregunta/bloquea solo por D3 o falta indispensable de acceso.
