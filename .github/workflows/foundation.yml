@@ -22,7 +22,11 @@ jobs:
           node-version: 24.14.1
           cache: npm
       - run: npm ci
-      - run: npm run verify
+      - name: Verify Foundation and CRM integration
+        run: |
+          New-Item -ItemType Directory -Force work | Out-Null
+          npm run verify 2>&1 | Tee-Object -FilePath work/u3-verify.log
+          exit $LASTEXITCODE
       - run: npm run supply-chain
       - run: npx playwright install chromium
       - run: npm run test:e2e
@@ -37,6 +41,7 @@ jobs:
             work/license-report.json
             work/sbom.cdx.json
             work/e2e-results.json
+            work/u3-verify.log
             work/pg-*/restored.log
             playwright-report
           retention-days: 14

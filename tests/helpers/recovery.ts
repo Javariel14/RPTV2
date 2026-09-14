@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { createWriteStream } from 'node:fs';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
@@ -6,6 +6,8 @@ import { createGzip, createGunzip } from 'node:zlib';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
+const execFileAsync = promisify(execFile);
 function archiveProcess(args: string[]) {
   const child = spawn('tar', args, { windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   let errorText = '';
@@ -71,6 +73,28 @@ export async function encryptedColdRestore(data: string, workDirectory: string) 
     pipeline(Readable.from([authenticated]), createGunzip(), unpack.child.stdin),
     unpack.finished,
   ]);
+  if (process.platform === 'win32') {
+    // pg_ctl drops the Administrators SID. A tar extraction by an elevated
+    // runner can inherit admin-only ACLs, unlike files created by initdb.
+    // Grant only this test runner's user SID on the newly created target;
+    // never grant Everyone/Users or alter the source cluster/parent directory.
+    const { stdout } = await execFileAsync(
+      'powershell.exe',
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        '[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value',
+      ],
+      { windowsHide: true, timeout: 15000 },
+    );
+    const sid = stdout.trim();
+    if (!/^S-\d+(?:-\d+)+$/.test(sid)) throw new Error('Invalid test runner SID');
+    await execFileAsync('icacls.exe', [target, '/grant:r', `*${sid}:(OI)(CI)M`, '/T', '/Q'], {
+      windowsHide: true,
+      timeout: 120000,
+    });
+  }
   key.fill(0);
   authenticated.fill(0);
   const evidence = {
@@ -80,6 +104,7 @@ export async function encryptedColdRestore(data: string, workDirectory: string) 
     integrityRejected,
     durationMs: Math.round(performance.now() - start),
     keyPersisted: false,
+    windowsRestoreAcl: process.platform === 'win32' ? 'current-user-modify' : 'not-applicable',
   };
   await writeFile(join(workDirectory, 'recovery-manifest.json'), JSON.stringify(evidence, null, 2));
   return { target, evidence };
