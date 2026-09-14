@@ -1,6 +1,6 @@
 # Prompt 02 v4 — Continuidad y entrega U3
 
-Fecha: 2026-09-13. Entorno: desarrollo/test local, datos exclusivamente sintéticos.
+Actualizado: 2026-09-14. Entorno: desarrollo/test local y GitHub Actions, datos exclusivamente sintéticos.
 Workspace: `C:\Proyectos JAVARIEL\RoyalPerformanceTracker`.
 
 ## Auditoría de entrada
@@ -15,11 +15,8 @@ Workspace: `C:\Proyectos JAVARIEL\RoyalPerformanceTracker`.
 | U6 — vertical flow/evidencia/Visual QA | PARTIAL | `implementation-plan.md`, contratos y migración inicial; no existía cierre verificable del flujo CRM completo.                                                                                                |
 
 Se leyeron `AGENTS.md` y `CONTEXT_ROUTER.md`. Prompt 00 y Foundation no se reiniciaron.
-En la auditoría inicial, `git status` y la consulta de rama fallaron porque no había `.git`.
-Durante la ejecución aparecieron un repositorio y checkpoints externos a esta implementación: rama `feature/u3-crm-persistence`, HEAD observado `bfbdca2` (`wip: preserve latest U3 state`) y remoto configurado `origin`.
-No se creó ni modificó el repositorio/remote y no se hizo commit/push en esta ejecución. No se verificó la publicación remota.
-Git exige una excepción de ownership por pertenecer a Administradores: sólo se usó `-c safe.directory` para lecturas puntuales del directorio exacto; no se cambió la configuración global.
-La comparación del turno completo usa preimágenes y `git diff --no-index`, complementada con el diff pendiente contra el HEAD actual.
+Repositorio verificado: [Javariel14/RPTV2](https://github.com/Javariel14/RPTV2), rama `feature/u3-crm-persistence`, [PR #6](https://github.com/Javariel14/RPTV2/pull/6). El checkpoint de entrada al cierre CI es `ba4a6e5167b15ecba001ff7c74db116bbaafd8ec`; no representa un HEAD dinámico.
+Git exige una excepción de ownership por pertenecer a Administradores: se usa `-c safe.directory` únicamente para el directorio exacto, sin modificar la configuración global. Los checkpoints anteriores se conservan; no se hace merge a `main`.
 
 ## Issue ejecutado
 
@@ -59,19 +56,19 @@ Se usó la guía de Supabase para verificar el límite entre grants y RLS; la va
 
 ## Validación y evidencia
 
-| Comprobación                    | Resultado / archivo                                                                                                                         |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unitarios existentes            | 5 PASS, `npm.cmd run test:unit`                                                                                                             |
-| PostgreSQL/API U3               | 6 escenarios + suite PASS; `work/u3-integration.tap`                                                                                        |
-| Regresión PostgreSQL Foundation | 17 escenarios + suite PASS; `work/u3-foundation-regression.tap`                                                                             |
-| E2E U3                          | 3 PASS; `work/u3-e2e-results.json`, `work/u3-playwright-report/`                                                                            |
-| Regresión E2E referencia        | 3 PASS; `work/u3-reference-regression/`                                                                                                     |
-| Typecheck                       | PASS, raíz y web                                                                                                                            |
-| Lint                            | PASS                                                                                                                                        |
-| Build                           | Next/OpenNext y API dry-run PASS; no despliegue                                                                                             |
-| Seguridad                       | Escáner de secretos cliente y límites de dominio PASS; no sustituye SAST/SCA                                                                |
-| Formato focalizado              | PASS para archivos modificados TS/TSX/CSS/JSON/Markdown                                                                                     |
-| Formato global                  | FAIL heredado: `AGENTS.md`, `CONTEXT_ROUTER.md`, `docs/governance/prompt-02/foundation-entry-evidence.json`; conservados sin modificaciones |
+| Comprobación                    | Resultado / archivo                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| Unitarios existentes            | 5 PASS, `npm.cmd run test:unit`                                                    |
+| PostgreSQL/API U3               | 6 escenarios + suite PASS; `work/u3-integration.tap`                               |
+| Regresión PostgreSQL Foundation | 17 escenarios + suite PASS; `work/u3-foundation-regression.tap`                    |
+| E2E U3                          | 3 PASS; `work/u3-e2e-results.json`, `work/u3-playwright-report/`                   |
+| Regresión E2E referencia        | 3 PASS; `work/u3-reference-regression/`                                            |
+| Typecheck                       | PASS, raíz y web                                                                   |
+| Lint                            | PASS                                                                               |
+| Build                           | Next/OpenNext y API dry-run PASS; no despliegue                                    |
+| Seguridad                       | Escáner de secretos cliente y límites de dominio PASS; no sustituye SAST/SCA       |
+| Formato focalizado              | PASS para archivos modificados TS/TSX/CSS/JSON/Markdown                            |
+| Formato global                  | PASS local y GitHub desde el checkpoint `ba4a6e5`; normalización previa conservada |
 
 La integración prueba paginación, todos los filtros, orden, conteos, ausencia de email/teléfono en la proyección, own/sibling/cross-tenant, denegación Network/admin, delegación exacta, revocación, vistas privadas/equipo/compartidas, idempotencia concurrente, auditoría, validación HTTP y sesión revocada.
 
@@ -89,7 +86,7 @@ Nuevos: `packages/application/src/crm.ts`, `apps/web/app/use-crm-data.ts`, `apps
 
 El test Foundation sólo actualizó la cantidad esperada de migraciones de 3 a 5. Sus escenarios existentes no se rehicieron. El runner CRM separado evita ejecutar pruebas de sesión contra la referencia sin integración.
 
-Preimágenes: `work/u3-before-20260912/`. Inventario y hashes: `u3-file-manifest.json`. Revisados todos los cambios de archivos existentes con `git diff --no-index`, además de los nuevos archivos, sus permisos, consultas, entrada HTTP y lifecycle del cliente. También se inspeccionó el diff del HEAD nuevo; sus checkpoints se conservaron. `apps/web/next-env.d.ts` es una salida regenerada por Next al alternar build/dev, no una edición manual.
+El inventario `u3-file-manifest.json` identifica el checkpoint de entrada estable, archivos funcionales, archivos de cierre y ubicaciones de evidencia; no intenta almacenar el hash del propio documento ni un HEAD autorreferencial. La implementación original se revisó con preimágenes; el cierre se revisa mediante diff contra el checkpoint de entrada. `apps/web/next-env.d.ts` es una salida regenerada por Next al alternar build/dev, no una edición manual.
 
 ## Uso local y continuidad
 
@@ -97,6 +94,34 @@ Desde el workspace oficial: `npm.cmd run dev:crm`. Abrir [CRM local](http://127.
 
 Cada arranque crea un laboratorio aislado de PostgreSQL en disco con 45 oportunidades sintéticas. Filas y vistas sobreviven a recargas y nuevas instancias del servicio dentro del laboratorio; no se reutiliza automáticamente la base entre arranques del laboratorio. La sesión dura una hora. Ningún dato real de cliente se importó.
 
-Estado de salida: U1 PASS, U2 PASS, U3 PASS para este entorno de desarrollo/test; U4 PARTIAL, U5 PARTIAL, U6 PARTIAL. Sin bloqueo D3 para U3. Hay Git local y remoto configurado; publicación/remoto no se verificaron y no bloquean esta entrega local.
+Estado funcional: U1 PASS, U2 PASS, U3 PASS local y CI; U4 PARTIAL, U5 PARTIAL, U6 PARTIAL. U3 está listo para revisión, no para un merge automático ni para abrir producción; véase el registro CI siguiente.
 
-Siguiente: U4, conectar el Kanban/Drawer existentes a detalle y comandos CRM con permisos y validación de transiciones. No se ejecutó Prompt 03. Prompt 02 completo y su Visual QA siguen abiertos.
+Esta ejecución cierra exclusivamente U3. No inicia U4, U5, U6 ni Prompt 03. Prompt 02 completo y su Visual QA global siguen abiertos.
+
+## Cierre CI U3
+
+Baseline: [Foundation #12](https://github.com/Javariel14/RPTV2/actions/runs/34847434070) falló en el arranque del cluster restaurado; formato, lint, typecheck, unitarios, CRM integration, CodeQL y Gitleaks pasaron. El error original de `pg_ctl` no incluía `restored.log`, y el artifact sólo contenía un resumen.
+
+Diagnóstico reproducido en [Foundation #13](https://github.com/Javariel14/RPTV2/actions/runs/34849296291), con el error interno conservado: `PANIC: could not open file "global/pg_control": Permission denied`. No fue un timeout, puerto ocupado ni snapshot tomado antes del shutdown: el servidor alcanzó la lectura del control file después del stop/extracción completados. La extracción en el runner elevado crea archivos cuyos ACL no dan acceso suficiente al proceso PostgreSQL restringido. [PostgreSQL 17 elimina Administrators/Power Users del token de ejecución](https://raw.githubusercontent.com/postgres/postgres/REL_17_STABLE/src/common/restricted_token.c), a diferencia del proceso que extrae el tar.
+
+Corrección D1, sólo en el helper de test Windows: tras autenticar y extraer el backup, obtener el SID del usuario actual y conceder Modify heredable únicamente a ese SID sobre el target nuevo (`icacls /grant:r ... /T`). No se concede acceso a Everyone/Users ni se modifican el source cluster, directorios padres o ACL de producción. La salida no cero aborta; no se ocultan errores. Se conservan stop/start con espera, AES-GCM, rechazo de alteración, comparación de todas las tablas, RLS posterior y auditoría append-only. El log de arranque se incorpora a la excepción si el restore falla. [Sintaxis y alcance de icacls](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/icacls).
+
+El job `verify` conserva `npm run verify`, supply-chain y los E2E Foundation. El job independiente `crm-e2e` ejecuta `npm run test:crm:e2e` con PostgreSQL sintético y servidor propios. Staging depende de ambos jobs y de SAST/secrets; no se habilita staging ni se despliega.
+
+Artifacts con retención de 14 días, incluso al fallar: `foundation-evidence` incluye `work/u3-verify.log`, restore/resúmenes y SCA/SBOM; `u3-crm-evidence` incluye `work/u3-e2e-results.json`, `work/u3-playwright-report/`, `work/u3-visual/` y resultados de navegador. Sólo se conserva `restored.log` de PostgreSQL; nunca datos del cluster, backups cifrados, claves o credenciales. `work/` continúa ignorado por Git.
+
+### Checkpoint validado
+
+[Foundation #14 — SUCCESS](https://github.com/Javariel14/RPTV2/actions/runs/34849917345), código `bdcef8428039b3c657008d66196132f5bc3ad8c8`: `npm run verify` PASS (formato, lint, typecheck, 5 unitarios, security, 25 resultados de integración incluyendo las suites CRM/Foundation, build), supply-chain PASS, E2E Foundation 3/3, CRM E2E 3/3, CodeQL PASS y Gitleaks PASS. Cero skips de tests; el job opcional staging permanece deshabilitado por su gate preexistente.
+
+Evidencia descargada y SHA-256 contrastado con Actions: [foundation-evidence](https://github.com/Javariel14/RPTV2/actions/runs/34849917345/artifacts/10349532920) y [u3-crm-evidence](https://github.com/Javariel14/RPTV2/actions/runs/34849917345/artifacts/10349637062). Este último conserva JSON (3 expected, 0 unexpected/skipped/flaky), HTML y 9 PNG. Se inspeccionó la captura Light 1440 del artifact remoto; el gate de imágenes/axe sigue acotado a U3, no certifica Visual QA global de Prompt 02.
+
+El checkpoint anterior es evidencia inmutable del código corregido, no el HEAD actual. Las ediciones documentales posteriores deben conservar los checks verdes del [PR #6](https://github.com/Javariel14/RPTV2/pull/6/checks). La revisión completa del diff de cierre contra `ba4a6e5` incluye ambos helpers, workflow, lock/dependencias y documentos; no hay cambios funcionales U4–U6 ni artifacts generados versionados.
+
+### Supply-chain
+
+Las 3 high del baseline eran una cadena única: Wrangler 4.129.0 → Miniflare 5.20260903.0-alpha → sharp 0.35.2. [GHSA-rgj7-g3m4-5g8c](https://github.com/advisories/GHSA-rgj7-g3m4-5g8c) afecta sharp <0.35.4 por vulnerabilidades de libheif al procesar imágenes no confiables; no se trata de tres fallos independientes del CRM.
+
+Actualización puntual y exacta a Wrangler 4.131.2 (MIT OR Apache-2.0, Node >=22, compatible con Node 24 y el peer existente de OpenNext). Su Miniflare 5.20260911.1-alpha usa sharp 0.35.4, compartido con Next. No se usaron `audit fix --force`, overrides ni actualizaciones generales. El lock conserva integridades y binarios multiplataforma; elimina la copia vulnerable duplicada de sharp.
+
+`npm run supply-chain`: PASS, cero vulnerabilidades conocidas, SBOM generado, 631 entradas de inventario y 31 obligaciones de distribución. Riesgo residual: metadata SPDX no equivale a aprobación legal; siguen pendientes los avisos/licencias LGPL/MPL/fuentes antes de distribución. Miniflare sigue siendo prerelease como en el baseline; el build OpenNext advierte soporte Windows incompleto. No se acredita producción/PITR ni ausencia de vulnerabilidades desconocidas. Las guías Wrangler/Cloudflare limitaron la validación al build/dry-run sin despliegue.
