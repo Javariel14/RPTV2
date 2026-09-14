@@ -34,28 +34,33 @@ export function useCrmData(enabled: boolean, config: string) {
     if (!enabled) return;
     const controller = new AbortController();
     const init = { signal: controller.signal };
-    void Promise.all([
-      crmRequest<CrmSession>('context', init),
-      crmRequest<CrmList>(`opportunities?config=${encodeURIComponent(config)}`, init),
-      crmRequest<CrmSavedView[]>('views', init),
-    ])
-      .then(([session, data, views]) => {
-        if (!controller.signal.aborted) {
-          setSnapshot({ key, data, session, views });
-          setError(null);
-        }
-      })
-      .catch((failure: unknown) => {
-        if (!controller.signal.aborted) {
-          setSnapshot(null);
-          setError({
-            key,
-            status: failure instanceof CrmHttpError ? failure.status : 503,
-            requestId: failure instanceof CrmHttpError ? failure.requestId : '',
-          });
-        }
-      });
-    return () => controller.abort();
+    const timer = setTimeout(() => {
+      void Promise.all([
+        crmRequest<CrmSession>('context', init),
+        crmRequest<CrmList>(`opportunities?config=${encodeURIComponent(config)}`, init),
+        crmRequest<CrmSavedView[]>('views', init),
+      ])
+        .then(([session, data, views]) => {
+          if (!controller.signal.aborted) {
+            setSnapshot({ key, data, session, views });
+            setError(null);
+          }
+        })
+        .catch((failure: unknown) => {
+          if (!controller.signal.aborted) {
+            setSnapshot(null);
+            setError({
+              key,
+              status: failure instanceof CrmHttpError ? failure.status : 503,
+              requestId: failure instanceof CrmHttpError ? failure.requestId : '',
+            });
+          }
+        });
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [enabled, config, key]);
   useEffect(() => {
     if (!enabled) return;

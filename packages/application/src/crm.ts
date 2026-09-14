@@ -11,9 +11,6 @@ import {
 import type { AuthContext } from '@rpt/persistence';
 
 export async function crmContext(client: Client): Promise<CrmSession> {
-  // Bounded interactive queries: avoid JIT compilation of the nested RLS expressions.
-  // Transaction-local only; no authorization or statement timeout is relaxed.
-  await client.query('SET LOCAL jit=off');
   const session = (
     await client.query<{ value: CrmSession | null }>('SELECT authz.crm_context() AS value')
   ).rows[0]?.value;
@@ -58,7 +55,7 @@ export async function listCrm(
         authz.allowed('person',r."personId",'read','RESTRICTED_PII') AS "canContact"
       FROM page_rows r
     )
-    SELECT jsonb_build_object('rows',coalesce((SELECT jsonb_agg(r) FROM projected r),'[]'::jsonb),
+    SELECT jsonb_build_object('rows',coalesce((SELECT jsonb_agg(r ORDER BY ${sort} ${direction} NULLS LAST,id ASC) FROM projected r),'[]'::jsonb),
       'total',(SELECT count(*) FROM permitted),'pageSize',20,
       'stages',coalesce((SELECT jsonb_agg(s) FROM
         (SELECT stage,count(*)::int AS count FROM permitted GROUP BY stage ORDER BY stage) s),'[]'::jsonb)) AS value`,

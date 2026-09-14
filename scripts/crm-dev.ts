@@ -29,7 +29,7 @@ const api = createApi(
 const loginCode = process.env.RPT_CRM_TEST_CODE ?? randomBytes(18).toString('base64url');
 const bridgeSecret = randomBytes(32).toString('hex');
 const equal = (a: string, b: string) =>
-  a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
+  Buffer.byteLength(a) === Buffer.byteLength(b) && timingSafeEqual(Buffer.from(a), Buffer.from(b));
 const server = createServer((req, res) => {
   void (async () => {
     res.setHeader('Cache-Control', 'no-store');

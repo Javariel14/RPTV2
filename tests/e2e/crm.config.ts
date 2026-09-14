@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import { resolve } from 'node:path';
 export default defineConfig({
   testDir: '.',
   testMatch: 'crm.spec.ts',
@@ -9,8 +10,8 @@ export default defineConfig({
   outputDir: '../../work/u3-browser-results',
   reporter: [
     ['list'],
-    ['json', { outputFile: 'work/u3-e2e-results.json' }],
-    ['html', { outputFolder: 'work/u3-playwright-report', open: 'never' }],
+    ['json', { outputFile: resolve('work/u3-e2e-results.json') }],
+    ['html', { outputFolder: resolve('work/u3-playwright-report'), open: 'never' }],
   ],
   use: {
     baseURL: 'http://127.0.0.1:3101',

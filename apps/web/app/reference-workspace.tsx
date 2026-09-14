@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -97,6 +97,7 @@ export function ReferenceWorkspace({
   const [recipients, setRecipients] = useState('');
   const [sessionCode, setSessionCode] = useState('');
   const [saving, setSaving] = useState(false);
+  const saveAttempt = useRef<{ body: string; key: string } | null>(null);
   const [sort, setSort] = useState<'name' | 'updated' | 'due'>('name');
   const [extraColumns, setExtraColumns] = useState<string[]>(['owner', 'due']);
   const [saveError, setSaveError] = useState('');
@@ -549,6 +550,7 @@ export function ReferenceWorkspace({
                   <Search size={18} />
                   <input
                     aria-label={t.search}
+                    maxLength={100}
                     value={query}
                     placeholder={t.searchHint}
                     onChange={(e) => {
@@ -560,7 +562,9 @@ export function ReferenceWorkspace({
                 <div className="desktop-filters">{filters}</div>
                 <Button className="mobile-filters" onClick={() => setFilterOpen(true)}>
                   <SlidersHorizontal size={18} />
-                  {t.filters}{persistent&&` · ${[query,stage!=='all',source!=='all',statusFilter!=='all',priority!=='all',activityFilter!=='all',view!=='all'].filter(Boolean).length}`}
+                  {t.filters}
+                  {persistent &&
+                    ` · ${[query, stage !== 'all', source !== 'all', statusFilter !== 'all', priority !== 'all', activityFilter !== 'all', view !== 'all'].filter(Boolean).length}`}
                 </Button>
                 {persistent && (
                   <Button className="crm-more-filters" onClick={() => setFilterOpen(true)}>
@@ -738,18 +742,41 @@ export function ReferenceWorkspace({
                                   }}
                                 >
                                   {t.name}
-                                  {ascending ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
+                                  {sort === 'name' &&
+                                    (ascending ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
                                 </button>
                               </th>
                               <th>{t.stage}</th>
                               <th>{t.next}</th>
-                              {(!persistent || extraColumns.includes('due')) && <th>{t.when}</th>}
+                              {(!persistent || extraColumns.includes('due')) && (
+                                <th
+                                  aria-sort={
+                                    sort === 'due'
+                                      ? ascending
+                                        ? 'ascending'
+                                        : 'descending'
+                                      : 'none'
+                                  }
+                                >
+                                  {t.when}
+                                </th>
+                              )}
                               {showSource && <th className="source-cell">{t.source}</th>}
                               {(!persistent || extraColumns.includes('owner')) && (
                                 <th className="owner-cell">{t.owner}</th>
                               )}
                               {persistent && extraColumns.includes('activity') && (
-                                <th>{ct.updated}</th>
+                                <th
+                                  aria-sort={
+                                    sort === 'updated'
+                                      ? ascending
+                                        ? 'ascending'
+                                        : 'descending'
+                                      : 'none'
+                                  }
+                                >
+                                  {ct.updated}
+                                </th>
                               )}
                               {persistent && extraColumns.includes('priority') && (
                                 <th>{ct.priority}</th>
@@ -1056,7 +1083,7 @@ export function ReferenceWorkspace({
                 <fieldset>
                   <legend>{ct.visibleColumns}</legend>
                   {['owner', 'due', 'activity', 'priority'].map((v) => (
-                    <label key={v}>
+                    <label key={v} className="column-control">
                       <input
                         type="checkbox"
                         checked={extraColumns.includes(v)}
@@ -1094,27 +1121,33 @@ export function ReferenceWorkspace({
                 setSaving(true);
                 setSaveError('');
                 try {
+                  const workspaceId = remote.snapshot?.session.workspaceId;
+                  if (!workspaceId) throw new Error('Session refresh required');
+                  const body = JSON.stringify({
+                    schemaVersion: 1,
+                    workspaceId,
+                    name: viewName.trim(),
+                    visibility,
+                    recipients:
+                      visibility === 'shared'
+                        ? recipients
+                            .split(',')
+                            .map((v) => v.trim())
+                            .filter(Boolean)
+                        : [],
+                    config,
+                  });
+                  if (saveAttempt.current?.body !== body)
+                    saveAttempt.current = { body, key: crypto.randomUUID() };
                   await crmRequest('views', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
-                      'Idempotency-Key': crypto.randomUUID(),
+                      'Idempotency-Key': saveAttempt.current.key,
                     },
-                    body: JSON.stringify({
-                      schemaVersion: 1,
-                      workspaceId: remote.snapshot?.session.workspaceId,
-                      name: viewName.trim(),
-                      visibility,
-                      recipients:
-                        visibility === 'shared'
-                          ? recipients
-                              .split(',')
-                              .map((v) => v.trim())
-                              .filter(Boolean)
-                          : [],
-                      config,
-                    }),
+                    body,
                   });
+                  saveAttempt.current = null;
                   setSaveOpen(false);
                   setViewName('');
                   setFeedback(t.saved);

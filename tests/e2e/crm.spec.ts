@@ -22,9 +22,9 @@ test('U3 database → API → grid; filters, paging, columns and saved configura
   await page.getByLabel('Mostrar origen', { exact: true }).uncheck();
   await page.getByRole('button', { name: 'Filtros · 1', exact: true }).click();
   const sheet = page.getByRole('dialog');
-  await sheet.getByLabel('Prioridad', { exact: true }).selectOption('normal');
-  await sheet.getByLabel('Ordenar por', { exact: true }).selectOption('due');
-  await sheet.getByLabel('Dirección', { exact: true }).selectOption('desc');
+  await sheet.getByRole('combobox', { name: 'Prioridad', exact: true }).selectOption('normal');
+  await sheet.getByRole('combobox', { name: 'Ordenar por', exact: true }).selectOption('due');
+  await sheet.getByRole('combobox', { name: 'Dirección', exact: true }).selectOption('desc');
   await sheet.getByRole('checkbox', { name: 'Responsable', exact: true }).uncheck();
   await sheet.getByRole('button', { name: 'Cerrar', exact: true }).last().click();
   await page.getByRole('button', { name: 'Guardar vista', exact: true }).click();
@@ -42,12 +42,14 @@ test('U3 database → API → grid; filters, paging, columns and saved configura
   await expect(page.getByLabel('Mostrar origen', { exact: true })).not.toBeChecked();
   await expect(page.getByRole('columnheader', { name: 'Responsable', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Filtros · 2', exact: true }).click();
-  await expect(page.getByRole('dialog').getByLabel('Ordenar por', { exact: true })).toHaveValue(
-    'due',
-  );
-  await expect(page.getByRole('dialog').getByLabel('Dirección', { exact: true })).toHaveValue(
-    'desc',
-  );
+  await expect(
+    page.getByRole('dialog').getByRole('combobox', { name: 'Ordenar por', exact: true }),
+  ).toHaveValue('due');
+  await expect(
+    page.getByRole('dialog').getByRole('combobox', { name: 'Dirección', exact: true }),
+  ).toHaveValue('desc');
+  await mkdir('work/u3-visual', { recursive: true });
+  await page.screenshot({ path: 'work/u3-visual/restored-view-filters.png', fullPage: true });
 });
 
 test('U3 visual evidence: real data, two themes, desktop/mobile, four locales, axe', async ({

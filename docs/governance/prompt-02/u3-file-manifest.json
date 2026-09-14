@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "workPackage": "U3",
+  "workspace": "C:\\Proyectos JAVARIEL\\RoyalPerformanceTracker",
+  "gitStatus": "WORKTREE_WITH_EXISTING_CHECKPOINTS",
+  "review": "Full-turn preimage diffs, new source files, current HEAD diff and git diff --check",
+  "files": [
+    {
+      "path": "packages/application/src/index.ts",
+      "change": "modified",
+      "beforeSha256": "9B4DDD3AF255069FDDC3C0EC0BBEEB118413DC1CA003581AD6C2AC33FFDA27D4",
+      "afterSha256": "BE567EAB8C2A832BD1872FBEE4A82312AF0653DD3F96D6710686CF17EEA34602"
+    },
+    {
+      "path": "packages/contracts/src/crm.ts",
+      "change": "modified",
+      "beforeSha256": "58201AFF5E0332075F290F1F6C1E6777397C6B6B6A8069263AF3C1667B99BB3B",
+      "afterSha256": "47671573215A3BD81F146AF6C1A86AD30948D4034950F16DB1F14BA6F46F91D0"
+    },
+    {
+      "path": "apps/api/src/app.ts",
+      "change": "modified",
+      "beforeSha256": "174EB318A870DA4D4A6222E3813A1CF989C0EC139C736305EA707FB1FBB3C6F6",
+      "afterSha256": "E2B8A35CBFA853C4A6F585C17D55EFF0AB84F00BBC755EE035652B6E0A9CACD1"
+    },
+    {
+      "path": "apps/web/app/reference-workspace.tsx",
+      "change": "modified",
+      "beforeSha256": "36CE401B5068A58EAD1C17C48C0344C774398AD62DF65A68C5E3F4C160A510AD",
+      "afterSha256": "334F76B9385F3795366E3784111EBB0C5F528E65D843D5BA54CA6CB299542987"
+    },
+    {
+      "path": "apps/web/app/styles.css",
+      "change": "modified",
+      "beforeSha256": "AC4BF9D530FE10B6993AB2251ABE0F3D44DF6DFE1E1BFE69CF87110FAC26B76A",
+      "afterSha256": "F839FE5D561DDB39BA05F80B5F0AD0571A596333139E46C69F072C6697C6A7E3"
+    },
+    {
+      "path": "package.json",
+      "change": "modified",
+      "beforeSha256": "79E93173B660C55456679F0B01E6531BF6FF7755136E59A60A3CE57F3D3EB887",
+      "afterSha256": "934FA579BAFFBE40B9A9674F3E7DC51094902DA725C4DCDEF58EB0B26CF67F59"
+    },
+    {
+      "path": "playwright.config.ts",
+      "change": "modified",
+      "beforeSha256": "009A07EFFEA9B2A7CAE2453904714E7A4E1FBB70728AD4A82394E6A3049A14D0",
+      "afterSha256": "99DA16D2EBBB2CECCF74BAB8DB55F0646FE706676373322A9D17D8FC544DBA1C"
+    },
+    {
+      "path": "tests/integration/foundation.test.ts",
+      "change": "modified",
+      "beforeSha256": "D8F8A787D4DEC945C1C71BAD1DFD9591B274B559329F71BCB713477133C43EC3",
+      "afterSha256": "64DFA763069E37FAC269C890088156C381DE31D449EF8A4175AB0414247651F8"
+    },
+    {
+      "path": "packages/application/src/crm.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "AE231AD0CD46B09740BC086FCF40946330283E75CEDEF32F5147549822ADBF6A"
+    },
+    {
+      "path": "apps/web/app/use-crm-data.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "5C9261370448C284340359B408C92A855C4D28FF50D51E72D2D384992C56B58F"
+    },
+    {
+      "path": "apps/web/app/crm-catalog.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "81F20424EB793833A8F6A2512AFD27996F52EF81E06667524B9FE7D0F988BAA3"
+    },
+    {
+      "path": "apps/web/app/api/crm/[...path]/route.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "C6216E2D3074403BCD56FFDF483698D2A408CA2DB269EF72A622D1A32E847428"
+    },
+    {
+      "path": "apps/web/app/crm/commercial/page.tsx",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "8D3EEC088A2488C56BEA16769868C046087B5E45BE2A5A9B79788614C024488B"
+    },
+    {
+      "path": "scripts/crm-dev.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "57F6D5AF1FCFAE6DEF9C5CD0FD6B14D4D83F448BEF81D8E87F4F29F50034D873"
+    },
+    {
+      "path": "tests/helpers/crm-fixtures.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "D18C9154612F539379ABE673132E2677019BCA86C989184D52887B463BD75512"
+    },
+    {
+      "path": "tests/integration/crm.test.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "70335AEA5A53345248E51BBDD25732B6326329664E1F5E744885C55155EA0E94"
+    },
+    {
+      "path": "tests/e2e/crm.config.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "E7875E7778DFB51836B1ECE79BB7D5517FDFC878A4C339CFCB12A4F4DA691A81"
+    },
+    {
+      "path": "tests/e2e/crm.spec.ts",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "E68669F89F2FA32627542778C7C66321FF59664155E146E640004F91B22E334C"
+    },
+    {
+      "path": "supabase/migrations/20260913021731_crm_permission_query_plan.sql",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "DAFBAA5C9A64159D15DA2655D2A99FA8BE5A2F3C44CC2CA841C2CEFC49FE3831"
+    },
+    {
+      "path": "docs/governance/prompt-02/u3-continuity.md",
+      "change": "added",
+      "beforeSha256": null,
+      "afterSha256": "DB6C86A5C67389A2EB12790013CDBBFC6D40A1DBD6A63C2DD7DB10EAB9A88477"
+    }
+  ],
+  "branch": "feature/u3-crm-persistence",
+  "observedHead": "bfbdca21ecac6f71f2a7f51a58d2e488bcac4562",
+  "remote": "origin configured; not contacted",
+  "generatedFiles": ["apps/web/next-env.d.ts (Next build/dev type references)"]
+}

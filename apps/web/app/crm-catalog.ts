@@ -1,5 +1,6 @@
 import type { Locale } from './catalog';
 const es = {
+  reference: 'CRM Comercial',
   sort: 'Ordenar por',
   updated: 'Última actualización',
   direction: 'Dirección',
@@ -40,6 +41,7 @@ type CrmCatalog = { [K in keyof typeof es]: string };
 export const crmCatalogs: Record<Locale, CrmCatalog> = {
   es,
   en: {
+    reference: 'Commercial CRM',
     sort: 'Sort by',
     updated: 'Last updated',
     direction: 'Direction',
@@ -77,6 +79,7 @@ export const crmCatalogs: Record<Locale, CrmCatalog> = {
     detailPending: 'Persistent details and actions await U4. This table is read-only.',
   },
   fr: {
+    reference: 'CRM Commercial',
     sort: 'Trier par',
     updated: 'Dernière mise à jour',
     direction: 'Direction',
@@ -114,6 +117,7 @@ export const crmCatalogs: Record<Locale, CrmCatalog> = {
     detailPending: 'Détails et actions persistants en attente de U4. Tableau en lecture seule.',
   },
   pt: {
+    reference: 'CRM Comercial',
     sort: 'Ordenar por',
     updated: 'Última atualização',
     direction: 'Direção',

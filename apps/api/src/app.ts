@@ -136,7 +136,7 @@ export function createApi(
       data: await service.listCrm(
         c.get('identity'),
         c.get('requestId'),
-          JSON.parse(c.req.query('config') ?? '{"filters":{}}') as unknown,
+        JSON.parse(c.req.query('config') ?? '{"filters":{}}') as unknown,
       ),
     }),
   );

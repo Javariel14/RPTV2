@@ -281,7 +281,7 @@ await test('U3 real PostgreSQL + API continuity', { timeout: 240000 }, async (t)
         assert.equal(result.data.total, 45);
         assert.equal(
           (await api.request('/v1/crm/opportunities?config=%7B', { headers })).status,
-        422,
+          422,
         );
         assert.equal(
           (
@@ -291,7 +291,7 @@ await test('U3 real PostgreSQL + API continuity', { timeout: 240000 }, async (t)
               { headers },
             )
           ).status,
-        422,
+          422,
         );
         assert.equal(
           (
