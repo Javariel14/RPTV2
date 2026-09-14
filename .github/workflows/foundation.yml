@@ -37,7 +37,33 @@ jobs:
             work/license-report.json
             work/sbom.cdx.json
             work/e2e-results.json
+            work/pg-*/restored.log
             playwright-report
+          retention-days: 14
+  crm-e2e:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.14.1
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: U3 CRM E2E (isolated synthetic PostgreSQL)
+        run: npm run test:crm:e2e
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: u3-crm-evidence
+          path: |
+            work/u3-e2e-results.json
+            work/u3-playwright-report/
+            work/u3-visual/
+            work/u3-browser-results/
           retention-days: 14
   sast:
     runs-on: ubuntu-latest
@@ -69,7 +95,7 @@ jobs:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
   staging-readiness:
     if: vars.RPT_STAGING_CHECKS_ENABLED == 'true'
-    needs: [verify, sast, secrets]
+    needs: [verify, crm-e2e, sast, secrets]
     runs-on: windows-latest
     environment: staging
     steps:
