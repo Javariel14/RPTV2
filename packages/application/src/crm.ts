@@ -29,17 +29,21 @@ export async function listCrm(
   const sort = { name: 'name', updated: '"updatedAt"', due: '"nextAt"' }[input.sort];
   const direction = input.direction === 'asc' ? 'ASC' : 'DESC';
   // One statement gives the rows, totals and stage counts the same RLS snapshot.
+  // Materialize both RLS inputs before joining, avoiding repeated opportunity
+  // policy evaluation when PostgreSQL chooses a nested-loop join.
   const result = await client.query<{ value: CrmList }>(
     `
     WITH people AS MATERIALIZED (
       SELECT tenant_id,id,display_name,version FROM rpt.person
+    ), opportunities AS MATERIALIZED (
+      SELECT * FROM rpt.opportunity WHERE workspace_id=$1
     ), permitted AS MATERIALIZED (
       SELECT o.id,o.person_id AS "personId",o.title,p.display_name AS name,
         p.version AS "personVersion",o.owner_id AS "ownerId",
         CASE WHEN o.owner_id=authz.actor_id() THEN 'self' ELSE 'delegated' END AS "ownerLabel",
         o.stage,o.source,o.priority,o.next_action AS "nextAction",o.next_at AS "nextAt",
         o.updated_at AS "updatedAt",o.version
-      FROM rpt.opportunity o JOIN people p ON (p.tenant_id,p.id)=(o.tenant_id,o.person_id)
+      FROM opportunities o JOIN people p ON (p.tenant_id,p.id)=(o.tenant_id,o.person_id)
       WHERE o.workspace_id=$1
         AND ($2='' OR position(lower($2) IN lower(p.display_name||' '||o.title))>0)
         AND ($3='all' OR o.owner_id=authz.actor_id())

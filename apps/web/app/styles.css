@@ -622,6 +622,62 @@ input[type='checkbox'] {
   font-size: 13px;
   color: var(--secondary);
 }
+.crm-kanban {
+  grid-template-columns: repeat(9, minmax(230px, 1fr));
+}
+.crm-kanban nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+}
+.crm-detail {
+  overflow-wrap: anywhere;
+}
+.panel.drawer:has(.crm-detail) > header {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.crm-detail section {
+  border-top: 1px solid var(--border);
+  margin-top: var(--s5);
+  padding-top: var(--s4);
+}
+.crm-detail form {
+  display: grid;
+  gap: var(--s4);
+  margin-top: var(--s4);
+}
+.crm-detail label {
+  display: grid;
+  gap: var(--s2);
+  min-width: 0;
+}
+.crm-detail input,
+.crm-detail select,
+.crm-detail textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.crm-detail .check {
+  display: flex;
+  align-items: center;
+}
+.crm-detail .check input {
+  width: auto;
+}
+.crm-detail li {
+  margin-bottom: var(--s3);
+}
+@media (max-width: 767px) {
+  .kanban.crm-kanban {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-x: clip;
+  }
+}
 .kanban-item small {
   display: flex;
   justify-content: space-between;

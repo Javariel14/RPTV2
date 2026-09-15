@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "workPackage": "U4",
+  "branch": "feature/u4-crm-kanban-detail",
+  "baseCheckpoint": "2b10ca19a7d144947dfd7fe1fb8dde00bdffae66",
+  "status": "PASS",
+  "implementationCheckpoint": "9c5f6460b5eae1e02aea85c0dfcb0dd200b2dac8",
+  "pullRequest": "https://github.com/Javariel14/RPTV2/pull/10",
+  "validation": {
+    "workflowRun": "https://github.com/Javariel14/RPTV2/actions/runs/34974801619",
+    "verifiedAt": "2026-09-15",
+    "unitPassed": 7,
+    "integrationPassed": 33,
+    "foundationE2ePassed": 3,
+    "crmE2ePassed": 7,
+    "u4E2ePassed": 4,
+    "u4Screenshots": 16,
+    "auditVulnerabilities": 0,
+    "codeql": "PASS",
+    "gitleaks": "PASS",
+    "artifacts": [
+      {
+        "id": 10398728817,
+        "name": "u3-crm-evidence",
+        "sha256": "1b1450fb43c86fea1cecbf28aa2158995e670a64012931d0419cb4f3e4c7ec67"
+      },
+      {
+        "id": 10399205890,
+        "name": "foundation-evidence",
+        "sha256": "fa2ca35750a6b1e2a033416fee3f065b7e42bbb27dc098ef189376e74414c286"
+      }
+    ]
+  },
+  "modules": {
+    "application": [
+      "packages/application/src/crm-detail.ts",
+      "packages/application/src/crm.ts",
+      "packages/application/src/index.ts"
+    ],
+    "contracts": ["packages/contracts/src/crm.ts", "packages/contracts/package.json"],
+    "api": ["apps/api/src/app.ts", "apps/web/app/api/crm/[...path]/route.ts"],
+    "web": [
+      "apps/web/app/crm-kanban.tsx",
+      "apps/web/app/crm-drawer.tsx",
+      "apps/web/app/u4-catalog.ts",
+      "apps/web/app/reference-workspace.tsx",
+      "apps/web/app/styles.css",
+      "apps/web/next.config.ts"
+    ],
+    "database": ["supabase/migrations/20260914213616_u4_manual_authority_projection.sql"],
+    "tests": [
+      "tests/helpers/crm-fixtures.ts",
+      "tests/unit/crm-u4.test.ts",
+      "tests/integration/crm-u4.test.ts",
+      "tests/integration/crm.test.ts",
+      "tests/integration/foundation.test.ts",
+      "tests/e2e/crm-u4.spec.ts",
+      "tests/e2e/u4-reporter.ts",
+      "tests/e2e/crm.config.ts",
+      "playwright.config.ts"
+    ],
+    "ci": [".github/workflows/foundation.yml"],
+    "governance": [
+      "docs/governance/prompt-02/u4-continuity.md",
+      "docs/governance/prompt-02/u4-file-manifest.json"
+    ]
+  },
+  "generatedEvidence": [
+    "work/u4-e2e-results.json",
+    "work/u4-visual/",
+    "work/u3-e2e-results.json",
+    "work/u3-playwright-report/",
+    "work/u4-verify.log",
+    "work/u4-integration.log",
+    "work/u4-supply-chain.log"
+  ],
+  "exclusions": [
+    "U5",
+    "U6",
+    "Prompt 03",
+    "official approval",
+    "real customer data",
+    "merge to main"
+  ]
+}

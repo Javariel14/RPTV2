@@ -17,7 +17,11 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   if (request.method !== 'GET' && request.headers.get('origin') !== 'http://127.0.0.1:3101')
     return Response.json({ error: { code: 'FORBIDDEN' } }, { status: 403, headers: noStore });
   const path = (await context.params).path.join('/');
-  if (!['session', 'context', 'opportunities', 'views'].includes(path))
+  const entityPath =
+    /^opportunities\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\/commands)?$/i.test(
+      path,
+    );
+  if (!['session', 'context', 'opportunities', 'views'].includes(path) && !entityPath)
     return Response.json({ error: { code: 'NOT_FOUND' } }, { status: 404, headers: noStore });
   const headers = new Headers({ 'X-RPT-Bridge': secret, 'Content-Type': 'application/json' });
   headers.set('Cookie', request.headers.get('cookie') ?? '');

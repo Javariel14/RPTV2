@@ -146,6 +146,28 @@ export function createApi(
       data: await service.listCrmViews(c.get('identity'), c.get('requestId')),
     }),
   );
+  api.get('/v1/crm/opportunities/:id', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.detailCrm(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+      ),
+    }),
+  );
+  api.post('/v1/crm/opportunities/:id/commands', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.commandCrm(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+        await c.req.json<unknown>(),
+        idempotencyKey.parse(c.req.header('Idempotency-Key')),
+      ),
+    }),
+  );
   api.post('/v1/crm/views', async (c) =>
     c.json(
       {

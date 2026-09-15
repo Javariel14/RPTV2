@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ['@rpt/ui', '@rpt/design-tokens', '@rpt/test-fixtures'],
+  transpilePackages: ['@rpt/ui', '@rpt/design-tokens', '@rpt/test-fixtures', '@rpt/contracts'],
   async headers() {
     return [
       {
