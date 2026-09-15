@@ -7,6 +7,25 @@ export async function seedCrm(root: Client, slug: string, count = 45) {
   const fixture = await seedTenant(root, slug);
   const { tenant, workspace, users } = fixture;
   await root.query(
+    "INSERT INTO authz.source_authority(tenant_id,user_id,source_system,domain_key,authority_level) VALUES($1,$2,'MANUAL_RECONCILIATION','order_simulation','manual')",
+    [tenant, users.owner],
+  );
+  for (const [type, verbs] of Object.entries({
+    appointment: ['read', 'create'],
+    demo: ['read', 'create'],
+    quote: ['read', 'create'],
+    order: ['read', 'create', 'update'],
+    entry: ['read', 'create', 'update'],
+    activity: ['read', 'create'],
+    reconciliation: ['read', 'approve'],
+  })) {
+    for (const verb of verbs)
+      await root.query(
+        "INSERT INTO authz.role_capability VALUES($1,'owner',$2,$3,'CONFIDENTIAL',false,1)",
+        [tenant, type, verb],
+      );
+  }
+  await root.query(
     `INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from)
     VALUES($1,$2,'crm_vertical_slice',1,true,100,'2020-01-01')`,
     [tenant, randomUUID()],

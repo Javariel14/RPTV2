@@ -204,6 +204,8 @@ export interface CrmDetail {
     requestId: string;
   }[];
   permissions: {
+    order: boolean;
+    completeTask: boolean;
     schedule: boolean;
     demo: boolean;
     quote: boolean;

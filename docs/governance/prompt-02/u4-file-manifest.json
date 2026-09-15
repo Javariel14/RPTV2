@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "workPackage": "U4",
+  "branch": "feature/u4-crm-kanban-detail",
+  "baseCheckpoint": "2b10ca19a7d144947dfd7fe1fb8dde00bdffae66",
+  "status": "IN_VALIDATION",
+  "modules": {
+    "application": [
+      "packages/application/src/crm-detail.ts",
+      "packages/application/src/crm.ts",
+      "packages/application/src/index.ts"
+    ],
+    "contracts": ["packages/contracts/src/crm.ts", "packages/contracts/package.json"],
+    "api": ["apps/api/src/app.ts", "apps/web/app/api/crm/[...path]/route.ts"],
+    "web": [
+      "apps/web/app/crm-kanban.tsx",
+      "apps/web/app/crm-drawer.tsx",
+      "apps/web/app/u4-catalog.ts",
+      "apps/web/app/reference-workspace.tsx",
+      "apps/web/app/styles.css",
+      "apps/web/next.config.ts"
+    ],
+    "database": ["supabase/migrations/20260914213616_u4_manual_authority_projection.sql"],
+    "tests": [
+      "tests/helpers/crm-fixtures.ts",
+      "tests/unit/crm-u4.test.ts",
+      "tests/integration/crm-u4.test.ts",
+      "tests/integration/crm.test.ts",
+      "tests/integration/foundation.test.ts",
+      "tests/e2e/crm-u4.spec.ts",
+      "tests/e2e/u4-reporter.ts",
+      "tests/e2e/crm.config.ts",
+      "playwright.config.ts"
+    ],
+    "ci": [".github/workflows/foundation.yml"],
+    "governance": [
+      "docs/governance/prompt-02/u4-continuity.md",
+      "docs/governance/prompt-02/u4-file-manifest.json"
+    ]
+  },
+  "generatedEvidence": [
+    "work/u4-e2e-results.json",
+    "work/u4-visual/",
+    "work/u3-e2e-results.json",
+    "work/u3-playwright-report/",
+    "work/u4-verify.log",
+    "work/u4-integration.log",
+    "work/u4-supply-chain.log"
+  ],
+  "exclusions": [
+    "U5",
+    "U6",
+    "Prompt 03",
+    "official approval",
+    "real customer data",
+    "merge to main"
+  ]
+}

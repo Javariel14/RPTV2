@@ -22,6 +22,9 @@ import { referenceContacts, type ReferenceContact, type Stage } from '@rpt/test-
 import { catalogs, type Locale } from './catalog';
 import { crmCatalogs } from './crm-catalog';
 import { crmRequest, useCrmData } from './use-crm-data';
+import { CrmDrawer } from './crm-drawer';
+import { CrmKanban } from './crm-kanban';
+import { u4Labels } from './u4-catalog';
 import type { CrmRow, CrmSavedView } from '@rpt/contracts';
 type DisplayRow = Omit<ReferenceContact, 'stage' | 'source'> & {
   stage: ReferenceContact['stage'] | CrmRow['stage'];
@@ -68,7 +71,10 @@ export function ReferenceWorkspace({
   const [locale, setLocale] = useState<Locale>('es');
   const ct = crmCatalogs[locale];
   const t = { ...catalogs[locale], ...(persistent ? ct : {}) };
-  const label = (value: string) => (t as Record<string, string>)[value] ?? value;
+  const ut = u4Labels(locale) as Record<string, string>;
+  const label = (value: string) => (t as Record<string, string>)[value] ?? ut[value] ?? value;
+  const detailLabel = (value: string) =>
+    value.startsWith('stage:') ? label(value.slice(6)) : (ut[value] ?? label(value));
   const [theme, setTheme] = useState(initialTheme);
   const [collapsed, setCollapsed] = useState(false);
   const [lab, setLab] = useState(false);
@@ -356,7 +362,7 @@ export function ReferenceWorkspace({
         </nav>
         <div className="sidebar-bottom">
           <p>
-            JAVARIEL Corp<small>{persistent ? 'CRM / U3' : 'Foundation / 0.1.0'}</small>
+            JAVARIEL Corp<small>{persistent ? 'CRM / U4' : 'Foundation / 0.1.0'}</small>
           </p>
           <Button
             onClick={() => preference(theme, !collapsed)}
@@ -533,12 +539,7 @@ export function ReferenceWorkspace({
                     <LayoutList size={16} />
                     {t.table}
                   </Button>
-                  <Button
-                    disabled={persistent}
-                    title={persistent ? ct.detailPending : undefined}
-                    aria-pressed={mode === 'kanban'}
-                    onClick={() => setMode('kanban')}
-                  >
+                  <Button aria-pressed={mode === 'kanban'} onClick={() => setMode('kanban')}>
                     <Columns3 size={16} />
                     {t.kanban}
                   </Button>
@@ -798,13 +799,7 @@ export function ReferenceWorkspace({
                                   />
                                 </td>
                                 <td>
-                                  <button
-                                    className="person"
-                                    title={persistent ? ct.detailPending : undefined}
-                                    onClick={() =>
-                                      persistent ? setFeedback(ct.detailPending) : setDetailId(r.id)
-                                    }
-                                  >
+                                  <button className="person" onClick={() => setDetailId(r.id)}>
                                     <span className="initials">
                                       {r.name
                                         .split(' ')
@@ -843,11 +838,7 @@ export function ReferenceWorkspace({
                       <div className="mobile-list">
                         {pageRows.map((r) => (
                           <article key={r.id}>
-                            <button
-                              onClick={() =>
-                                persistent ? setFeedback(ct.detailPending) : setDetailId(r.id)
-                              }
-                            >
+                            <button onClick={() => setDetailId(r.id)}>
                               <span>
                                 <strong>{r.name}</strong>
                                 <span className="mobile-status">{label(r.stage)}</span>
@@ -867,6 +858,14 @@ export function ReferenceWorkspace({
                         ))}
                       </div>
                     </>
+                  ) : persistent ? (
+                    <CrmKanban
+                      locale={locale}
+                      config={JSON.stringify({ ...config, page: 0 })}
+                      stages={remote.snapshot?.data.stages ?? []}
+                      label={label}
+                      onOpen={setDetailId}
+                    />
                   ) : (
                     <div className="kanban">
                       {activeStages.map((s) => (
@@ -902,31 +901,33 @@ export function ReferenceWorkspace({
                       ))}
                     </div>
                   )}
-                  <footer className="pagination">
-                    <span>
-                      {t.shown} {currentPage * 20 + 1}–{Math.min((currentPage + 1) * 20, total)}{' '}
-                      {t.of} {total}
-                    </span>
-                    <div>
-                      <Button
-                        aria-label={t.prev}
-                        disabled={currentPage === 0}
-                        onClick={() => setPage(currentPage - 1)}
-                      >
-                        <ChevronLeft size={18} />
-                      </Button>
+                  {(!persistent || mode === 'table') && (
+                    <footer className="pagination">
                       <span>
-                        {currentPage + 1} / {maxPage + 1}
+                        {t.shown} {currentPage * 20 + 1}–{Math.min((currentPage + 1) * 20, total)}{' '}
+                        {t.of} {total}
                       </span>
-                      <Button
-                        aria-label={t.nextPage}
-                        disabled={currentPage >= maxPage}
-                        onClick={() => setPage(currentPage + 1)}
-                      >
-                        <ChevronRight size={18} />
-                      </Button>
-                    </div>
-                  </footer>
+                      <div>
+                        <Button
+                          aria-label={t.prev}
+                          disabled={currentPage === 0}
+                          onClick={() => setPage(currentPage - 1)}
+                        >
+                          <ChevronLeft size={18} />
+                        </Button>
+                        <span>
+                          {currentPage + 1} / {maxPage + 1}
+                        </span>
+                        <Button
+                          aria-label={t.nextPage}
+                          disabled={currentPage >= maxPage}
+                          onClick={() => setPage(currentPage + 1)}
+                        >
+                          <ChevronRight size={18} />
+                        </Button>
+                      </div>
+                    </footer>
+                  )}
                 </>
               )}
               {selected.length > 0 && visible && (
@@ -963,6 +964,16 @@ export function ReferenceWorkspace({
           </button>
         )}
       </nav>
+      {persistent && detailId && (
+        <CrmDrawer
+          locale={locale}
+          key={detailId}
+          id={detailId}
+          label={detailLabel}
+          onClose={() => setDetailId(undefined)}
+          onChanged={remote.refresh}
+        />
+      )}
       {detail && visible && !persistent && (
         <Panel title={detail.name} closeLabel={t.close} onClose={() => setDetailId(undefined)}>
           <span className={`badge stage-${detail.stage}`}>{label(detail.stage)}</span>
