@@ -40,7 +40,30 @@ La inspección se amplió desde los contratos a sus dependencias directas (trigg
 
 ## Validación y evidencia
 
-Estado de cierre: **EN VALIDACIÓN**. No representa PASS hasta registrar la ejecución completa y el checkpoint remoto.
+Estado de implementación: **PASS** en el checkpoint `9c5f6460b5eae1e02aea85c0dfcb0dd200b2dac8`, verificado localmente y en [Foundation #20](https://github.com/Javariel14/RPTV2/actions/runs/34974801619), 2026-09-15. [PR #10](https://github.com/Javariel14/RPTV2/pull/10), sin merge. Este es un checkpoint estable de implementación/evidencia, no un campo autorreferencial de HEAD; los commits posteriores de documentación conservan esta referencia.
+
+| Gate                             | Resultado                                                                                          |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| format:check, lint, typecheck    | PASS local + Actions                                                                               |
+| test:unit                        | 7/7 PASS local + Actions                                                                           |
+| security                         | PASS; escaneo adicional local del cliente compilado después del build                              |
+| test:integration                 | 33/33 PASS, incluye restore cifrado, tenant/BOLA, permisos/revocación, concurrencia e idempotencia |
+| build                            | PASS Next/OpenNext + API dry-run; sin deploy                                                       |
+| supply-chain                     | PASS; npm audit: 0 vulnerabilidades en todas las severidades; SBOM/licencias generados             |
+| test:e2e Foundation              | 3/3 PASS local + Actions                                                                           |
+| test:crm:e2e U3 + U4             | 7/7 PASS, 0 skip/retry/flaky; dos ejecuciones locales consecutivas y Actions                       |
+| CodeQL / Gitleaks                | PASS Actions                                                                                       |
+| diff completo / git diff --check | Revisado / PASS                                                                                    |
+
+`staging-readiness` permanece desactivado por la configuración previa del repositorio; no es un gate U4 omitido ni una aprobación de release.
+
+Artifacts del run #20, descargados y comparados contra el digest publicado por Actions:
+
+- `u3-crm-evidence`, ID `10398728817`, SHA-256 `1b1450fb43c86fea1cecbf28aa2158995e670a64012931d0419cb4f3e4c7ec67`: resumen de 4 tests U4, resumen conjunto de 7 tests, HTML y 16 capturas U4 (Kanban/Drawer, desktop/mobile, Light/Dark/System y ES/EN/FR/PT). Inspección visual de capturas locales y remotas de Drawer desktop/light y mobile/dark; sin overflow horizontal, Drawer 460 px y axe sin violaciones en la matriz probada.
+- `foundation-evidence`, ID `10399205890`, SHA-256 `fa2ca35750a6b1e2a033416fee3f065b7e42bbb27dc098ef189376e74414c286`: log verify con 33 integraciones, resultados Foundation 3/3, audit/SBOM/licencias y evidencia de restore.
+- Retención configurada: 14 días (expiran 2026-09-29). Los IDs/digests y resultados permanecen documentados; las imágenes no se versionan.
+
+Bloqueos U4: ninguno en este checkpoint. U5/U6 y Prompt 03 no iniciados.
 
 Pruebas U4: `tests/unit/crm-u4.test.ts`, `tests/integration/crm-u4.test.ts`, `tests/e2e/crm-u4.spec.ts`. CRM E2E ejecuta U3 y U4 con el mismo gate, sin retries. Foundation E2E permanece separado.
 
