@@ -186,11 +186,13 @@ Antes de introducir una dependencia relevante:
 - adapter boundary si es vendor/integración;
 - tests;
 - upgrade path.
+
 ## Local implementation mode
 
 Por defecto, los agentes de código trabajan localmente.
 
 Responsabilidades del agente de código:
+
 - implementar el work package asignado;
 - ejecutar tests focalizados durante desarrollo;
 - ejecutar la validación local final indicada;
@@ -198,6 +200,7 @@ Responsabilidades del agente de código:
 - reportar blockers reales.
 
 Salvo instrucción explícita, NO debe:
+
 - crear commits;
 - hacer push;
 - crear o modificar Pull Requests;
@@ -213,6 +216,7 @@ Salvo instrucción explícita, NO debe:
 Git remoto, PR, CI y merge se revisan fuera del agente de código.
 
 Contexto:
+
 - empezar con el mínimo necesario;
 - preferir 1–3 fuentes específicas;
 - discovery inicial de código/tests pequeño;
@@ -220,11 +224,13 @@ Contexto:
 - no releer fases cerradas salvo necesidad real.
 
 Testing:
+
 - durante implementación usar tests focalizados;
 - no ejecutar suites completas después de cada cambio;
 - ejecutar el gate local completo una sola vez al cierre cuando corresponda.
 
 Documentación:
+
 - crear continuidad breve solo cuando ayude a la siguiente fase;
 - no crear `u*-file-manifest.json` ni inventarios equivalentes salvo solicitud explícita.
 
