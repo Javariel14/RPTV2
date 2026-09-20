@@ -28,10 +28,39 @@ export function Panel({
     const dialog = ref.current;
     if (!trigger.current && document.activeElement instanceof HTMLElement)
       trigger.current = document.activeElement;
+    const focusReturnKey = trigger.current?.dataset.focusReturn;
     dialog?.showModal();
     return () => {
       dialog?.close();
-      queueMicrotask(() => trigger.current?.focus());
+      queueMicrotask(() => {
+        const restoreFocus = () => {
+          const original = trigger.current;
+          if (original?.isConnected && original.offsetParent !== null) {
+            original.focus();
+            return true;
+          }
+          if (!focusReturnKey) return false;
+          const replacement = Array.from(
+            document.querySelectorAll<HTMLElement>('[data-focus-return]'),
+          ).find(
+            (element) =>
+              element.dataset.focusReturn === focusReturnKey && element.offsetParent !== null,
+          );
+          replacement?.focus();
+          return Boolean(replacement);
+        };
+        if (restoreFocus() || !focusReturnKey) return;
+        const observer = new MutationObserver(() => {
+          const active = document.activeElement;
+          if (active && active !== document.body && active.isConnected) {
+            observer.disconnect();
+            return;
+          }
+          if (restoreFocus()) observer.disconnect();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        setTimeout(() => observer.disconnect(), 2000);
+      });
     };
   }, []);
   return (

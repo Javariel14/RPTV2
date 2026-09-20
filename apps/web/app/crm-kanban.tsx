@@ -113,7 +113,12 @@ function Column({
         <>
           {current.rows.length === 0 && <p>{label('noData')}</p>}
           {current.rows.map((row) => (
-            <button className="kanban-item" key={row.id} onClick={() => onOpen(row.id)}>
+            <button
+              className="kanban-item"
+              key={row.id}
+              data-focus-return={row.id}
+              onClick={() => onOpen(row.id)}
+            >
               <strong>{row.name}</strong>
               <span>{row.title}</span>
               <span>{label(row.nextAction)}</span>
