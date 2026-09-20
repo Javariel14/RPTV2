@@ -94,7 +94,7 @@ function Column({
   }, [config, stage, page, key, count]);
   const current = data?.key === key ? data.value : null;
   return (
-    <section aria-label={label(stage)}>
+    <section aria-label={label(stage)} aria-live="polite">
       <h2>
         {label(stage)} <span>{current?.total ?? count}</span>
       </h2>
@@ -106,7 +106,9 @@ function Column({
           <Button onClick={() => setRevision((n) => n + 1)}>{label('retry')}</Button>
         </div>
       ) : !current ? (
-        <p role="status">{label('loading')}</p>
+        <p className="kanban-skeleton" role="status">
+          {label('loading')}
+        </p>
       ) : (
         <>
           {current.rows.length === 0 && <p>{label('noData')}</p>}

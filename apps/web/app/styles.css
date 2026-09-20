@@ -9,6 +9,7 @@
 }
 body {
   margin: 0;
+  overflow-x: hidden;
   color: var(--text);
   background: var(--canvas);
   font-family: var(--font-ui);
@@ -17,7 +18,8 @@ body {
 }
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 button {
@@ -182,6 +184,7 @@ select {
   justify-content: space-between;
   align-items: center;
   gap: var(--s4);
+  min-width: 0;
   padding: 0 var(--s8);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -206,6 +209,7 @@ select {
   display: flex;
   align-items: center;
   gap: var(--s3);
+  min-width: 0;
 }
 .preferences select {
   border: 0;
@@ -631,6 +635,13 @@ input[type='checkbox'] {
   justify-content: space-between;
   gap: var(--s2);
 }
+.kanban-skeleton {
+  min-height: var(--row);
+  margin: 0;
+  padding: var(--s4);
+  color: var(--secondary);
+  background: linear-gradient(90deg, var(--subtle), var(--surface));
+}
 .crm-detail {
   overflow-wrap: anywhere;
 }
@@ -690,6 +701,8 @@ input[type='checkbox'] {
   padding: 0;
   box-shadow: var(--shadow);
   max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 .panel::backdrop {
   background: var(--overlay);
@@ -724,6 +737,9 @@ input[type='checkbox'] {
 }
 .panel-body {
   padding: var(--s6);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .panel-body h3 {
   font-size: 16px;
@@ -957,18 +973,20 @@ input[type='checkbox'] {
   .topbar {
     padding: var(--s2) var(--s4);
     gap: var(--s2);
+    flex-wrap: wrap;
   }
   .scope {
     font-size: 12px;
   }
   .preferences {
     gap: var(--s1);
+    margin-left: auto;
   }
   .avatar {
     display: none;
   }
   .preferences select {
-    max-width: 94px;
+    max-width: 90px;
     font-size: 12px;
   }
   .scope-dot {
@@ -1004,6 +1022,10 @@ input[type='checkbox'] {
   }
   .viewbar nav {
     gap: var(--s5);
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: visible;
   }
   .viewbar nav button {
     padding-bottom: var(--s3);

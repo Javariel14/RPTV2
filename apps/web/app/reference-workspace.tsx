@@ -144,7 +144,9 @@ export function ReferenceWorkspace({
         ? 'permission'
         : remote.error.status === 401
           ? '401'
-          : '503'
+          : (([404, 429, 500, 502, 503, 504].includes(remote.error.status)
+              ? String(remote.error.status)
+              : '503') as StateName)
       : remote.snapshot
         ? 'ready'
         : 'loading'
@@ -226,6 +228,16 @@ export function ReferenceWorkspace({
     [rows, query, stage, source, view, ascending, locale, persistent],
   );
   const total = persistent ? (remote.snapshot?.data.total ?? 0) : filtered.length;
+  const activeFilterCount = [
+    query,
+    stage !== 'all',
+    source !== 'all',
+    statusFilter !== 'all',
+    priority !== 'all',
+    activityFilter !== 'all',
+    view !== 'all',
+  ].filter(Boolean).length;
+  const persistentEmpty = persistent && total === 0 && activeFilterCount === 0;
   const maxPage = Math.max(0, Math.ceil(total / 20) - 1);
   const currentPage = persistent ? page : Math.min(page, maxPage);
   const pageRows = persistent ? rows : filtered.slice(currentPage * 20, currentPage * 20 + 20);
@@ -362,7 +374,7 @@ export function ReferenceWorkspace({
         </nav>
         <div className="sidebar-bottom">
           <p>
-            JAVARIEL Corp<small>{persistent ? 'CRM / U4' : 'Foundation / 0.1.0'}</small>
+            JAVARIEL Corp<small>{persistent ? ct.reference : 'Foundation / 0.1.0'}</small>
           </p>
           <Button
             onClick={() => preference(theme, !collapsed)}
@@ -405,7 +417,7 @@ export function ReferenceWorkspace({
                 <option value="dark">{t.dark}</option>
               </select>
             </label>
-            <span className="avatar" role="img" aria-label="Fixture">
+            <span className="avatar" role="img" aria-label={t.fixture}>
               FP
             </span>
           </div>
@@ -534,7 +546,7 @@ export function ReferenceWorkspace({
                     </button>
                   ))}
                 </nav>
-                <div className="mode-toggle">
+                <div className="mode-toggle" role="group" aria-label={t.workspace}>
                   <Button aria-pressed={mode === 'table'} onClick={() => setMode('table')}>
                     <LayoutList size={16} />
                     {t.table}
@@ -564,23 +576,11 @@ export function ReferenceWorkspace({
                 <Button className="mobile-filters" onClick={() => setFilterOpen(true)}>
                   <SlidersHorizontal size={18} />
                   {t.filters}
-                  {persistent &&
-                    ` · ${[query, stage !== 'all', source !== 'all', statusFilter !== 'all', priority !== 'all', activityFilter !== 'all', view !== 'all'].filter(Boolean).length}`}
+                  {persistent && ` · ${activeFilterCount}`}
                 </Button>
                 {persistent && (
                   <Button className="crm-more-filters" onClick={() => setFilterOpen(true)}>
-                    {t.filters} ·{' '}
-                    {
-                      [
-                        query,
-                        stage !== 'all',
-                        source !== 'all',
-                        statusFilter !== 'all',
-                        priority !== 'all',
-                        activityFilter !== 'all',
-                        view !== 'all',
-                      ].filter(Boolean).length
-                    }
+                    {t.filters} · {activeFilterCount}
                   </Button>
                 )}
                 <Button
@@ -627,13 +627,19 @@ export function ReferenceWorkspace({
               )}
               {!visible ? (
                 state === 'loading' ? (
-                  <section aria-busy="true" aria-label={t.loading} className="skeleton">
+                  <section
+                    aria-busy="true"
+                    aria-live="polite"
+                    aria-label={t.loading}
+                    className="skeleton"
+                  >
                     {Array.from({ length: 8 }, (_, i) => (
                       <div key={i} />
                     ))}
                   </section>
                 ) : (
                   <State
+                    role={state === 'empty' ? 'status' : 'alert'}
                     title={
                       state === 'permission'
                         ? t.permission
@@ -641,16 +647,20 @@ export function ReferenceWorkspace({
                           ? t.empty
                           : state === '401'
                             ? t.status401
-                            : state === '429'
-                              ? t.status429
-                              : t.error
+                            : state === '404'
+                              ? label('notFound')
+                              : state === '429'
+                                ? t.status429
+                                : t.error
                     }
                     detail={
                       state === 'permission'
                         ? t.permissionDetail
-                        : state === 'empty'
-                          ? t.emptyDetail
-                          : t.errorDetail
+                        : state === '404'
+                          ? label('notFound')
+                          : state === 'empty'
+                            ? t.emptyDetail
+                            : t.errorDetail
                     }
                   >
                     {persistent && state === '401' ? (
@@ -697,11 +707,27 @@ export function ReferenceWorkspace({
                 )
               ) : !filtered.length ? (
                 <State
-                  title={persistent || rows.length ? t.noResults : t.empty}
-                  detail={persistent || rows.length ? t.noResultsDetail : t.emptyDetail}
+                  title={
+                    persistentEmpty ? t.empty : persistent || rows.length ? t.noResults : t.empty
+                  }
+                  detail={
+                    persistentEmpty
+                      ? t.emptyDetail
+                      : persistent || rows.length
+                        ? t.noResultsDetail
+                        : t.emptyDetail
+                  }
                 >
-                  <Button onClick={persistent || rows.length ? clear : addExample}>
-                    {persistent || rows.length ? t.clear : t.create}
+                  <Button
+                    onClick={
+                      persistentEmpty
+                        ? remote.refresh
+                        : persistent || rows.length
+                          ? clear
+                          : addExample
+                    }
+                  >
+                    {persistentEmpty ? t.retry : persistent || rows.length ? t.clear : t.create}
                   </Button>
                 </State>
               ) : (
@@ -710,9 +736,10 @@ export function ReferenceWorkspace({
                     <>
                       <div className="data-surface">
                         <table>
+                          <caption className="sr-only">{t.reference}</caption>
                           <thead>
                             <tr>
-                              <th className="select-cell">
+                              <th className="select-cell" scope="col">
                                 <input
                                   type="checkbox"
                                   aria-label={t.select + ' ' + t.all}
@@ -726,6 +753,7 @@ export function ReferenceWorkspace({
                                 />
                               </th>
                               <th
+                                scope="col"
                                 aria-sort={
                                   sort === 'name'
                                     ? ascending
@@ -747,10 +775,11 @@ export function ReferenceWorkspace({
                                     (ascending ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
                                 </button>
                               </th>
-                              <th>{t.stage}</th>
-                              <th>{t.next}</th>
+                              <th scope="col">{t.stage}</th>
+                              <th scope="col">{t.next}</th>
                               {(!persistent || extraColumns.includes('due')) && (
                                 <th
+                                  scope="col"
                                   aria-sort={
                                     sort === 'due'
                                       ? ascending
@@ -762,12 +791,19 @@ export function ReferenceWorkspace({
                                   {t.when}
                                 </th>
                               )}
-                              {showSource && <th className="source-cell">{t.source}</th>}
+                              {showSource && (
+                                <th className="source-cell" scope="col">
+                                  {t.source}
+                                </th>
+                              )}
                               {(!persistent || extraColumns.includes('owner')) && (
-                                <th className="owner-cell">{t.owner}</th>
+                                <th className="owner-cell" scope="col">
+                                  {t.owner}
+                                </th>
                               )}
                               {persistent && extraColumns.includes('activity') && (
                                 <th
+                                  scope="col"
                                   aria-sort={
                                     sort === 'updated'
                                       ? ascending
@@ -780,7 +816,7 @@ export function ReferenceWorkspace({
                                 </th>
                               )}
                               {persistent && extraColumns.includes('priority') && (
-                                <th>{ct.priority}</th>
+                                <th scope="col">{ct.priority}</th>
                               )}
                             </tr>
                           </thead>
