@@ -21,3 +21,20 @@
 - Blockers: ninguno.
 - Estado: `PASS_LOCAL_READY_FOR_REVIEW`.
 - Sin commit, push, PR, CI remoto, merge ni Prompt 03.
+
+## Cierre remoto de Prompt 02
+
+- PR #12 de U6 mergeado correctamente a `main`.
+- GitHub Actions Foundation #25: PASS.
+- `verify`: PASS.
+- CRM E2E incluyendo U6: PASS.
+- CodeQL/SAST: PASS.
+- Gitleaks/secrets: PASS.
+- Supply-chain: PASS.
+- `staging-readiness`: no aplica todavía y permanece fuera del gate actual.
+- U1–U6 están integrados en `main`.
+- No existen blockers críticos pendientes para el CRM Vertical Slice.
+
+`CRM_VERTICAL_SLICE_VISUAL_QA = PASS`
+
+`NEXT_PROMPT = 03 — Expansión Funcional, IA, Integraciones y Beta — RPT`
