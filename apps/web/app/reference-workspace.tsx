@@ -835,7 +835,11 @@ export function ReferenceWorkspace({
                                   />
                                 </td>
                                 <td>
-                                  <button className="person" onClick={() => setDetailId(r.id)}>
+                                  <button
+                                    className="person"
+                                    data-focus-return={r.id}
+                                    onClick={() => setDetailId(r.id)}
+                                  >
                                     <span className="initials">
                                       {r.name
                                         .split(' ')
@@ -874,7 +878,7 @@ export function ReferenceWorkspace({
                       <div className="mobile-list">
                         {pageRows.map((r) => (
                           <article key={r.id}>
-                            <button onClick={() => setDetailId(r.id)}>
+                            <button data-focus-return={r.id} onClick={() => setDetailId(r.id)}>
                               <span>
                                 <strong>{r.name}</strong>
                                 <span className="mobile-status">{label(r.stage)}</span>
@@ -921,6 +925,7 @@ export function ReferenceWorkspace({
                               <button
                                 className="kanban-item"
                                 key={r.id}
+                                data-focus-return={r.id}
                                 onClick={() =>
                                   persistent ? setFeedback(ct.detailPending) : setDetailId(r.id)
                                 }
