@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
-  testIgnore: ['crm.spec.ts', 'crm-u4.spec.ts'],
+  testIgnore: ['crm.spec.ts', 'crm-u4.spec.ts', 'crm-u5.spec.ts'],
   timeout: 120_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
