@@ -182,6 +182,52 @@ export function createApi(
       201,
     ),
   );
+  api.get('/v1/recruiting/profiles', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.listRecruitmentProfiles(
+        c.get('identity'),
+        c.get('requestId'),
+        JSON.parse(c.req.query('config') ?? '{}') as unknown,
+      ),
+    }),
+  );
+  api.get('/v1/recruiting/profiles/:id', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.detailRecruitmentProfile(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+      ),
+    }),
+  );
+  api.post('/v1/recruiting/profiles', async (c) =>
+    c.json(
+      {
+        schemaVersion: 1,
+        data: await service.createRecruitmentProfile(
+          c.get('identity'),
+          c.get('requestId'),
+          await c.req.json<unknown>(),
+          idempotencyKey.parse(c.req.header('Idempotency-Key')),
+        ),
+      },
+      201,
+    ),
+  );
+  api.post('/v1/recruiting/profiles/:id/commands', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.commandRecruitmentProfile(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+        await c.req.json<unknown>(),
+        idempotencyKey.parse(c.req.header('Idempotency-Key')),
+      ),
+    }),
+  );
   api.notFound((c) =>
     c.json(
       {
