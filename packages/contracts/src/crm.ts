@@ -68,6 +68,87 @@ export const crmCreate = z
   })
   .strict();
 export type CrmCreate = z.infer<typeof crmCreate>;
+export const crmImportRow = z
+  .object({
+    displayName: name,
+    email: z.union([z.email().max(254), z.literal('')]).default(''),
+    phone: z
+      .string()
+      .max(32)
+      .regex(/^[+0-9 ()-]*$/)
+      .default(''),
+    opportunityTitle: name,
+    source: crmSource.default('import'),
+    priority: z.enum(['normal', 'high']).default('normal'),
+    stage: z.literal('new').default('new'),
+    owner: z.literal('self').default('self'),
+    referrerEmail: z.union([z.email().max(254), z.literal('')]).default(''),
+    referrerPhone: z
+      .string()
+      .max(32)
+      .regex(/^[+0-9 ()-]*$/)
+      .default(''),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (!value.email && !value.phone)
+      context.addIssue({ code: 'custom', path: ['email'], message: 'identity_required' });
+    if (value.source !== 'referral' && (value.referrerEmail || value.referrerPhone))
+      context.addIssue({ code: 'custom', path: ['source'], message: 'referrer_requires_referral' });
+  });
+export type CrmImportRow = z.infer<typeof crmImportRow>;
+
+export const crmImportErrorCode = z.enum([
+  'invalid_file',
+  'invalid_header',
+  'invalid_row',
+  'duplicate_identity',
+  'ambiguous_identity',
+  'forbidden',
+  'cross_tenant',
+  'conflict',
+  'unsupported_value',
+]);
+export type CrmImportErrorCode = z.infer<typeof crmImportErrorCode>;
+export interface CrmImportRowError {
+  row: number;
+  code: CrmImportErrorCode;
+  field?: string;
+  reason: string;
+}
+export interface CrmImportPreviewRow {
+  row: number;
+  displayName: string;
+  opportunityTitle: string;
+  status: 'valid' | 'invalid' | 'conflict';
+  personResolution: 'new' | 'existing' | null;
+  errors: CrmImportRowError[];
+}
+export interface CrmImportPreview {
+  accepted: boolean;
+  format: 'csv' | 'xlsx' | 'unknown';
+  filename: string;
+  previewHash: string;
+  totalRows: number;
+  validRows: number;
+  invalidRows: number;
+  newPersons: number;
+  linkedPersons: number;
+  conflicts: number;
+  opportunitiesToCreate: number;
+  rows: CrmImportPreviewRow[];
+  errors: CrmImportRowError[];
+}
+export interface CrmImportSummary {
+  batchId: string;
+  status: 'completed';
+  totalRows: number;
+  createdPersons: number;
+  linkedPersons: number;
+  createdOpportunities: number;
+  rejectedRows: number;
+  conflictRows: number;
+}
 const strictCommand = <T extends z.ZodRawShape>(shape: T) => z.object(shape).strict();
 export const crmCommand = z.discriminatedUnion('type', [
   strictCommand({ type: z.literal('stage'), stage: crmStage }),

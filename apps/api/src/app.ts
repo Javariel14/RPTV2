@@ -21,6 +21,36 @@ export function createApi(
   telemetry = new FoundationTelemetry(),
 ) {
   const api = new Hono<{ Variables: { identity: Identity; requestId: string } }>();
+  const standardLimit = bodyLimit({
+    maxSize: 16_384,
+    onError: (c) =>
+      c.json(
+        {
+          schemaVersion: 1,
+          error: {
+            code: 'INVALID_REQUEST',
+            requestId: c.get('requestId'),
+            retryable: false,
+          },
+        },
+        413,
+      ),
+  });
+  const importLimit = bodyLimit({
+    maxSize: 640 * 1024,
+    onError: (c) =>
+      c.json(
+        {
+          schemaVersion: 1,
+          error: {
+            code: 'INVALID_REQUEST',
+            requestId: c.get('requestId'),
+            retryable: false,
+          },
+        },
+        413,
+      ),
+  });
   api.use('*', async (c, next) => {
     const requestId = crypto.randomUUID();
     c.set('requestId', requestId);
@@ -32,19 +62,8 @@ export function createApi(
       return c.res;
     });
   });
-  api.use(
-    '*',
-    bodyLimit({
-      maxSize: 16_384,
-      onError: (c) =>
-        c.json(
-          {
-            schemaVersion: 1,
-            error: { code: 'INVALID_REQUEST', requestId: c.get('requestId'), retryable: false },
-          },
-          413,
-        ),
-    }),
+  api.use('*', (c, next) =>
+    c.req.path.startsWith('/v1/crm/imports/') ? importLimit(c, next) : standardLimit(c, next),
   );
   api.get('/health', (c) =>
     c.json({ schemaVersion: 1, status: 'foundation', realDataEnabled: false }),
@@ -146,6 +165,37 @@ export function createApi(
       data: await service.listCrmViews(c.get('identity'), c.get('requestId')),
     }),
   );
+  api.post('/v1/crm/imports/preview', async (c) => {
+    const body = await c.req.parseBody();
+    const upload = body.file;
+    if (!isUploadedFile(upload)) throw new FoundationError('INVALID_REQUEST');
+    return c.json({
+      schemaVersion: 1,
+      data: await service.previewCrmImport(c.get('identity'), c.get('requestId'), {
+        name: upload.name,
+        bytes: new Uint8Array(await upload.arrayBuffer()),
+      }),
+    });
+  });
+  api.post('/v1/crm/imports/confirm', async (c) => {
+    const body = await c.req.parseBody();
+    const upload = body.file;
+    if (!isUploadedFile(upload) || typeof body.previewHash !== 'string')
+      throw new FoundationError('INVALID_REQUEST');
+    return c.json(
+      {
+        schemaVersion: 1,
+        data: await service.confirmCrmImport(
+          c.get('identity'),
+          c.get('requestId'),
+          { name: upload.name, bytes: new Uint8Array(await upload.arrayBuffer()) },
+          body.previewHash,
+          idempotencyKey.parse(c.req.header('Idempotency-Key')),
+        ),
+      },
+      201,
+    );
+  });
   api.get('/v1/crm/opportunities/:id', async (c) =>
     c.json({
       schemaVersion: 1,
@@ -257,4 +307,17 @@ export function createApi(
     return c.json(body, errorStatus[code]);
   });
   return api;
+}
+
+function isUploadedFile(
+  value: unknown,
+): value is { name: string; arrayBuffer(): Promise<ArrayBuffer> } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'name' in value &&
+    typeof value.name === 'string' &&
+    'arrayBuffer' in value &&
+    typeof value.arrayBuffer === 'function'
+  );
 }

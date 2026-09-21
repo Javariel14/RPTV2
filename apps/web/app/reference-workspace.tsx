@@ -15,6 +15,7 @@ import {
   Plus,
   Search,
   SlidersHorizontal,
+  Upload,
   Users,
 } from 'lucide-react';
 import { Button, Panel, State } from '@rpt/ui';
@@ -24,6 +25,7 @@ import { crmCatalogs } from './crm-catalog';
 import { crmRequest, useCrmData } from './use-crm-data';
 import { CrmDrawer } from './crm-drawer';
 import { CrmKanban } from './crm-kanban';
+import { CrmImportPanel } from './crm-import-panel';
 import { u4Labels } from './u4-catalog';
 import type { CrmRow, CrmSavedView } from '@rpt/contracts';
 type DisplayRow = Omit<ReferenceContact, 'stage' | 'source'> & {
@@ -91,6 +93,7 @@ export function ReferenceWorkspace({
   const [detailId, setDetailId] = useState<string>();
   const [filterOpen, setFilterOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [viewName, setViewName] = useState('');
   const [saved, setSaved] = useState<SavedView[]>([]);
   const [feedback, setFeedback] = useState('');
@@ -436,6 +439,12 @@ export function ReferenceWorkspace({
               <Button variant="primary" onClick={addExample}>
                 <Plus size={18} />
                 {t.create}
+              </Button>
+            )}
+            {!lab && persistent && remote.snapshot?.session.canCreate && (
+              <Button variant="primary" onClick={() => setImportOpen(true)}>
+                <Upload size={18} />
+                {label('importAction')}
               </Button>
             )}
           </header>
@@ -1013,6 +1022,16 @@ export function ReferenceWorkspace({
           label={detailLabel}
           onClose={() => setDetailId(undefined)}
           onChanged={remote.refresh}
+        />
+      )}
+      {persistent && importOpen && (
+        <CrmImportPanel
+          label={label}
+          onClose={() => setImportOpen(false)}
+          onImported={() => {
+            setFeedback(label('importCompleted'));
+            remote.refresh();
+          }}
         />
       )}
       {detail && visible && !persistent && (

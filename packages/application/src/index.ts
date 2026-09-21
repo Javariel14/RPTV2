@@ -20,6 +20,8 @@ import {
 } from '@rpt/contracts';
 import { detailCrm, commandCrm } from './crm-detail.js';
 import { crmContext, listCrm, listCrmViews, saveCrmView } from './crm.js';
+import { confirmCrmImport, previewCrmImport } from './crm-import.js';
+import type { ImportFile } from './crm-import-parser.js';
 import {
   commandRecruitmentProfile,
   createRecruitmentProfile,
@@ -30,6 +32,26 @@ import {
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  previewCrmImport(identity: Identity, requestId: string, file: ImportFile) {
+    return this.execute(identity, requestId, requestId, 'crm.import.preview', (client) =>
+      previewCrmImport(client, file),
+    );
+  }
+  confirmCrmImport(
+    identity: Identity,
+    requestId: string,
+    file: ImportFile,
+    previewHash: string,
+    key: string,
+  ) {
+    z.string()
+      .regex(/^[0-9a-f]{64}$/)
+      .parse(previewHash);
+    idempotencyKey.parse(key);
+    return this.execute(identity, requestId, requestId, 'crm.import.confirm', (client, context) =>
+      confirmCrmImport(client, context, file, previewHash, key),
+    );
+  }
   recruitingContext(identity: Identity, requestId: string) {
     return this.execute(identity, requestId, requestId, 'recruiting.context', recruitingContext);
   }
