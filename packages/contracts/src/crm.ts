@@ -124,6 +124,20 @@ export const crmCommand = z.discriminatedUnion('type', [
       .max(32)
       .regex(/^[+0-9 ()-]*$/),
   }),
+  strictCommand({
+    type: z.literal('add_collaborator'),
+    userId: z.uuid(),
+    access: z.enum(['read', 'update']),
+    until: dateTime,
+  }),
+  strictCommand({ type: z.literal('remove_collaborator'), userId: z.uuid() }),
+  strictCommand({
+    type: z.literal('activity'),
+    kind: z.enum(['call', 'message']),
+    occurredAt: dateTime,
+    summary: z.string().trim().min(1).max(1000),
+  }),
+  strictCommand({ type: z.literal('set_referral'), referrerPersonId: z.uuid() }),
 ]);
 export type CrmCommand = z.infer<typeof crmCommand>;
 export const crmMutation = z
@@ -179,6 +193,17 @@ export interface CrmSession {
 export interface CrmDetail {
   row: CrmRow;
   contact: { email: string | null; phone: string | null } | null;
+  referrer: { id: string; name: string } | null;
+  collaborators: { userId: string; access: 'read' | 'update'; until: string }[];
+  activities: {
+    id: string;
+    kind: 'call' | 'message';
+    occurredAt: string;
+    actorId: string;
+    summary: string;
+    source: 'RPT_USER';
+    requestId: string;
+  }[];
   appointments: { id: string; startsAt: string; timezone: string; channel: string }[];
   demos: { id: string; outcome: string; occurredAt: string }[];
   quotes: { id: string; product: string; amount: string; currency: string; revision: number }[];
@@ -202,6 +227,8 @@ export interface CrmDetail {
     source: string;
     authority: string;
     requestId: string;
+    actorId: string;
+    summary: string | null;
   }[];
   permissions: {
     order: boolean;
@@ -214,6 +241,9 @@ export interface CrmDetail {
     notes: boolean;
     editPerson: boolean;
     editContact: boolean;
+    manageCollaborators: boolean;
+    recordActivity: boolean;
+    setReferral: boolean;
   };
 }
 export interface CrmSavedView {

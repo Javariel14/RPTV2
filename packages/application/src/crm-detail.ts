@@ -14,12 +14,22 @@ export async function detailCrm(client: Client, id: string): Promise<CrmDetail> 
       'updatedAt',o.updated_at,'version',o.version,'canUpdate',authz.crm_allowed(o.id,'update'),
       'canContact',authz.allowed('person',p.id,'read','RESTRICTED_PII')),
       'contact',(SELECT jsonb_build_object('email',email,'phone',phone) FROM rpt.person_pii WHERE tenant_id=o.tenant_id AND person_id=p.id),
+      'referrer',(SELECT jsonb_build_object('id',rp.id,'name',rp.display_name) FROM rpt.person rp WHERE rp.id=o.referrer_person_id),
+      'collaborators',authz.crm_collaborators(o.id),
+      'activities',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,kind,occurred_at AS "occurredAt",actor_id AS "actorId",summary,source,request_id AS "requestId" FROM rpt.crm_activity WHERE opportunity_id=o.id ORDER BY occurred_at DESC,id LIMIT 100) x),'[]'),
       'appointments',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,starts_at AS "startsAt",timezone,channel FROM rpt.appointment WHERE opportunity_id=o.id ORDER BY starts_at DESC,id LIMIT 100) x),'[]'),
       'demos',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,outcome,occurred_at AS "occurredAt" FROM rpt.demo_visit WHERE opportunity_id=o.id ORDER BY occurred_at DESC,id LIMIT 100) x),'[]'),
       'quotes',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,product,amount::text,currency,revision FROM rpt.quote_version WHERE opportunity_id=o.id ORDER BY revision DESC LIMIT 100) x),'[]'),
       'order',(SELECT jsonb_build_object('id',id,'status',status,'simulatedStatus',simulated_status,'observationId',observation_id) FROM rpt.commercial_order WHERE opportunity_id=o.id),
       'entries',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,kind,body AS text,due_at AS "dueAt",completed_at AS "completedAt" FROM rpt.crm_entry WHERE opportunity_id=o.id ORDER BY created_at DESC,id LIMIT 100) x),'[]'),
-      'timeline',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,action,occurred_at AS "occurredAt",source,authority,request_id AS "requestId" FROM rpt.crm_event WHERE opportunity_id=o.id ORDER BY occurred_at DESC,id LIMIT 100) x),'[]'),
+      'timeline',coalesce((SELECT jsonb_agg(x) FROM (
+        SELECT id,action,occurred_at AS "occurredAt",source,authority,request_id AS "requestId",actor_id AS "actorId",null::text AS summary
+        FROM rpt.crm_event WHERE opportunity_id=o.id
+        UNION ALL
+        SELECT id,kind AS action,occurred_at,source,'manual' AS authority,request_id,actor_id,summary
+        FROM rpt.crm_activity WHERE opportunity_id=o.id
+        ORDER BY "occurredAt" DESC,id LIMIT 100
+      ) x),'[]'),
       'permissions',jsonb_build_object(
         'schedule',authz.crm_child(o.id,'appointment','create'), 'demo',authz.crm_child(o.id,'demo','create'),
         'quote',authz.crm_child(o.id,'quote','create'),
@@ -28,7 +38,10 @@ export async function detailCrm(client: Client, id: string): Promise<CrmDetail> 
         'postsale',authz.crm_child(o.id,'order','update'), 'notes',authz.crm_child(o.id,'entry','create'),
         'completeTask',authz.crm_child(o.id,'entry','update'),
         'editPerson',authz.crm_allowed(o.id,'update') AND authz.allowed('person',p.id,'update','CONFIDENTIAL'),
-        'editContact',authz.crm_allowed(o.id,'update') AND authz.allowed('person',p.id,'read','RESTRICTED_PII') AND authz.allowed('person',p.id,'update','RESTRICTED_PII'))) AS value
+        'editContact',authz.crm_allowed(o.id,'update') AND authz.allowed('person',p.id,'read','RESTRICTED_PII') AND authz.allowed('person',p.id,'update','RESTRICTED_PII'),
+        'manageCollaborators',authz.crm_allowed(o.id,'share'),
+        'recordActivity',authz.crm_child(o.id,'activity','create'),
+        'setReferral',authz.crm_allowed(o.id,'update'))) AS value
     FROM rpt.opportunity o JOIN rpt.person p ON (p.tenant_id,p.id)=(o.tenant_id,o.person_id)
     WHERE o.id=$1`,
     [id],
@@ -81,14 +94,21 @@ export async function commandCrm(
                       ? p.completeTask
                       : c.type === 'edit_person'
                         ? p.editPerson
-                        : p.editContact;
+                        : c.type === 'edit_contact'
+                          ? p.editContact
+                          : c.type === 'add_collaborator' || c.type === 'remove_collaborator'
+                            ? p.manageCollaborators
+                            : c.type === 'activity'
+                              ? p.recordActivity
+                              : p.setReferral;
   if (!row.canUpdate || !allowed) throw new FoundationError('NOT_FOUND');
   if (previous) return previous;
   if (row.version !== input.expectedVersion) throw new FoundationError('CONFLICT');
   const tenant = context.tenantId;
   let stage = row.stage,
     next = row.nextAction,
-    due = row.nextAt;
+    due = row.nextAt,
+    referrer = detail.referrer?.id ?? null;
   let observation: string | null = null;
   const invalid = () => {
     throw new FoundationError('INVALID_REQUEST');
@@ -265,10 +285,58 @@ export async function commandCrm(
         [tenant, row.personId, c.email || null, c.phone || null],
       );
       break;
+    case 'add_collaborator':
+      await client.query('SELECT authz.crm_add_collaborator($1,$2,$3,$4)', [
+        id,
+        c.userId,
+        c.access,
+        c.until,
+      ]);
+      break;
+    case 'remove_collaborator':
+      await client.query('SELECT authz.crm_remove_collaborator($1,$2)', [id, c.userId]);
+      break;
+    case 'activity':
+      if (
+        !(
+          await client.query(
+            "SELECT 1 WHERE $1::timestamptz<=statement_timestamp()+interval '5 minutes'",
+            [c.occurredAt],
+          )
+        ).rowCount
+      )
+        invalid();
+      await client.query(
+        'INSERT INTO rpt.crm_activity(tenant_id,id,opportunity_id,kind,occurred_at,actor_id,summary,request_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+        [
+          tenant,
+          crypto.randomUUID(),
+          id,
+          c.kind,
+          c.occurredAt,
+          context.actorId,
+          c.summary,
+          context.requestId,
+        ],
+      );
+      break;
+    case 'set_referral':
+      if (
+        row.source !== 'referral' ||
+        c.referrerPersonId === row.personId ||
+        !(
+          await client.query('SELECT 1 FROM rpt.person WHERE id=$1 AND deleted_at IS NULL', [
+            c.referrerPersonId,
+          ])
+        ).rowCount
+      )
+        invalid();
+      referrer = c.referrerPersonId;
+      break;
   }
   const updated = await client.query<{ version: number }>(
-    'UPDATE rpt.opportunity SET stage=$2,next_action=$3,next_at=$4 WHERE id=$1 AND version=$5 RETURNING version',
-    [id, stage, next, due, input.expectedVersion],
+    'UPDATE rpt.opportunity SET stage=$2,next_action=$3,next_at=$4,referrer_person_id=$5 WHERE id=$1 AND version=$6 RETURNING version',
+    [id, stage, next, due, referrer, input.expectedVersion],
   );
   if (!updated.rowCount) throw new FoundationError('CONFLICT');
   await client.query(
@@ -278,7 +346,7 @@ export async function commandCrm(
       crypto.randomUUID(),
       id,
       context.actorId,
-      c.type,
+      c.type === 'activity' ? c.kind : c.type,
       c.type === 'reconcile_mock' ? 'MANUAL_RECONCILIATION' : 'RPT_USER',
       context.requestId,
       observation,

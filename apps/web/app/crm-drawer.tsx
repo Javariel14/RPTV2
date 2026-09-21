@@ -117,6 +117,12 @@ export function CrmDrawer({
             : []),
           ...(p.editPerson ? ['edit_person'] : []),
           ...(p.editContact ? ['edit_contact'] : []),
+          ...(p.manageCollaborators ? ['add_collaborator'] : []),
+          ...(p.manageCollaborators && detail.collaborators.length > 0
+            ? ['remove_collaborator']
+            : []),
+          ...(p.recordActivity ? ['activity'] : []),
+          ...(p.setReferral && detail.row.source === 'referral' ? ['set_referral'] : []),
         ]
       : [];
   const selected = options.includes(action) ? action : (options[0] ?? '');
@@ -234,6 +240,10 @@ export function CrmDrawer({
                     delete fields.confirm;
                     if (selected === 'appointment')
                       fields.startsAt = new Date(String(fields.startsAt)).toISOString();
+                    if (selected === 'activity')
+                      fields.occurredAt = new Date(String(fields.occurredAt)).toISOString();
+                    if (selected === 'add_collaborator')
+                      fields.until = new Date(String(fields.until)).toISOString();
                     if (selected === 'entry') {
                       fields.dueAt =
                         fields.kind === 'task' && fields.dueAt
@@ -324,6 +334,36 @@ export function CrmDrawer({
                       {input('phone', 'tel', detail.contact?.phone ?? '', false)}
                     </>
                   )}
+                  {selected === 'add_collaborator' && (
+                    <>
+                      {input('userId')}
+                      {select('access', ['read', 'update'])}
+                      {input('until', 'datetime-local')}
+                    </>
+                  )}
+                  {selected === 'remove_collaborator' && (
+                    <label>
+                      {label('collaborators')}
+                      <select name="userId">
+                        {detail.collaborators.map((collaborator) => (
+                          <option key={collaborator.userId} value={collaborator.userId}>
+                            {collaborator.userId} · {label(collaborator.access)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                  {selected === 'activity' && (
+                    <>
+                      {select('kind', ['call', 'message'])}
+                      {input('occurredAt', 'datetime-local')}
+                      <label>
+                        {label('summary')}
+                        <textarea name="summary" required maxLength={1000} />
+                      </label>
+                    </>
+                  )}
+                  {selected === 'set_referral' && input('referrerPersonId')}
                   {['submit_order', 'reconcile_mock', 'delivery', 'curation', 'stage'].includes(
                     selected,
                   ) && (
@@ -357,6 +397,27 @@ export function CrmDrawer({
               <section>
                 <h3>{label('submit_order')}</h3>
                 <p>{label(detail.order.simulatedStatus ?? detail.order.status)}</p>
+              </section>
+            )}
+            <section>
+              <h3>{label('collaborators')}</h3>
+              {detail.collaborators.length === 0 ? (
+                <p>{label('noData')}</p>
+              ) : (
+                detail.collaborators.map((collaborator) => (
+                  <p key={collaborator.userId}>
+                    {collaborator.userId} · {label(collaborator.access)} ·{' '}
+                    <time dateTime={collaborator.until}>
+                      {new Date(collaborator.until).toLocaleString(locale)}
+                    </time>
+                  </p>
+                ))
+              )}
+            </section>
+            {detail.row.source === 'referral' && (
+              <section>
+                <h3>{label('referrer')}</h3>
+                <p>{detail.referrer?.name ?? label('noData')}</p>
               </section>
             )}
             <section>
@@ -395,6 +456,7 @@ export function CrmDrawer({
                 {detail.timeline.map((event) => (
                   <li key={event.id}>
                     {label(event.action)} · {label(event.source)} · {label(event.authority)}
+                    {event.summary && <> · {event.summary}</>}
                     <br />
                     <time dateTime={event.occurredAt}>
                       {new Date(event.occurredAt).toLocaleString(locale)}
