@@ -8,12 +8,75 @@ import {
   type ErrorCode,
 } from '@rpt/contracts';
 import { allowed, decision, type Database, type AuthContext } from '@rpt/persistence';
-import { crmListQuery, crmSaveView, crmMutation, uuid, idempotencyKey } from '@rpt/contracts';
+import {
+  crmListQuery,
+  crmSaveView,
+  crmMutation,
+  recruitingCreate,
+  recruitingListQuery,
+  recruitingMutation,
+  uuid,
+  idempotencyKey,
+} from '@rpt/contracts';
 import { detailCrm, commandCrm } from './crm-detail.js';
 import { crmContext, listCrm, listCrmViews, saveCrmView } from './crm.js';
+import {
+  commandRecruitmentProfile,
+  createRecruitmentProfile,
+  detailRecruitmentProfile,
+  listRecruitmentProfiles,
+  recruitingContext,
+} from './recruiting.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  recruitingContext(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'recruiting.context', recruitingContext);
+  }
+  listRecruitmentProfiles(identity: Identity, requestId: string, input: unknown) {
+    const query = recruitingListQuery.parse(input);
+    return this.execute(identity, requestId, query.workspaceId, 'recruiting.list', (client) =>
+      listRecruitmentProfiles(client, query),
+    );
+  }
+  detailRecruitmentProfile(identity: Identity, requestId: string, id: string) {
+    uuid.parse(id);
+    return this.execute(identity, requestId, id, 'recruiting.detail', (client) =>
+      detailRecruitmentProfile(client, id),
+    );
+  }
+  async createRecruitmentProfile(
+    identity: Identity,
+    requestId: string,
+    input: unknown,
+    key: string,
+  ) {
+    const command = recruitingCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(
+      identity,
+      requestId,
+      command.workspaceId,
+      'recruiting.create',
+      (client, context) => createRecruitmentProfile(client, context, command, key, hash),
+    );
+  }
+  async commandRecruitmentProfile(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    idempotencyKey.parse(key);
+    const command = recruitingMutation.parse(input);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'recruiting.command', (client, context) =>
+      commandRecruitmentProfile(client, context, id, command, key, hash),
+    );
+  }
   detailCrm(identity: Identity, requestId: string, id: string) {
     uuid.parse(id);
     return this.execute(identity, requestId, id, 'crm.detail', (client) => detailCrm(client, id));
@@ -57,6 +120,15 @@ export class FoundationService {
     ).join('');
     return this.execute(identity, requestId, command.workspaceId, 'crm.view', (client, context) =>
       saveCrmView(client, context, command, key, hash),
+    );
+  }
+  private async commandHash(value: unknown) {
+    const digest = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(JSON.stringify(value)),
+    );
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join(
+      '',
     );
   }
   private async execute<T>(

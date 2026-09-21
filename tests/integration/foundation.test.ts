@@ -64,7 +64,7 @@ await test('real PostgreSQL Foundation acceptance', { timeout: 240_000 }, async 
         assert.equal(
           (await admin.query('SELECT count(*)::int AS count FROM public.foundation_migration'))
             .rows[0]?.count,
-          6,
+          8,
         );
         const tables = await admin.query(
           "SELECT tablename FROM pg_tables JOIN pg_class c ON c.oid=(quote_ident(schemaname)||'.'||quote_ident(tablename))::regclass WHERE schemaname IN ('rpt','authz') AND NOT c.relrowsecurity",

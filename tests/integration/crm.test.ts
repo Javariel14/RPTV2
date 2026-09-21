@@ -63,7 +63,7 @@ await test('U3 real PostgreSQL + API continuity', { timeout: 240000 }, async (t)
       assert.equal(
         (await admin.query('SELECT count(*)::int AS n FROM public.foundation_migration')).rows[0]
           ?.n,
-        6,
+        8,
       );
       assert.equal(
         (

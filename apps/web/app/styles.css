@@ -119,7 +119,8 @@ select {
   padding-left: var(--s3);
   margin-bottom: var(--s4);
 }
-.sidebar nav button {
+.sidebar nav button,
+.sidebar nav a {
   display: flex;
   width: 100%;
   align-items: center;
@@ -132,12 +133,15 @@ select {
   color: inherit;
   text-align: left;
   margin-bottom: var(--s2);
+  text-decoration: none;
 }
-.sidebar nav button.active {
+.sidebar nav button.active,
+.sidebar nav a.active {
   background: var(--action);
   color: var(--on-action);
 }
-.sidebar nav button:hover:not(.active) {
+.sidebar nav button:hover:not(.active),
+.sidebar nav a:hover:not(.active) {
   background: color-mix(in srgb, var(--on-sidebar) 7%, transparent);
 }
 .sidebar-bottom {
@@ -170,7 +174,8 @@ select {
 .collapsed .sidebar-bottom p {
   display: none;
 }
-.collapsed .sidebar nav button {
+.collapsed .sidebar nav button,
+.collapsed .sidebar nav a {
   justify-content: center;
   padding-inline: 0;
 }
@@ -626,6 +631,73 @@ input[type='checkbox'] {
   font-size: 13px;
   color: var(--secondary);
 }
+.kanban-item .kanban-open {
+  display: grid;
+  gap: var(--s2);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+.kanban-item .kanban-open span,
+.kanban-item .kanban-open small {
+  color: var(--secondary);
+}
+.kanban-advance {
+  width: 100%;
+  min-height: 36px;
+}
+.recruiting-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(128px, 1fr));
+  flex: 1;
+}
+.recruiting-filters label {
+  display: grid;
+  min-width: 128px;
+  align-items: stretch;
+}
+.recruiting-filters select {
+  max-width: none;
+}
+.recruiting-shell .filterbar {
+  align-items: flex-start;
+}
+.recruiting-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s3);
+}
+.recruiting-summary > span:last-child {
+  color: var(--secondary);
+}
+.success-message {
+  color: var(--success);
+}
+.session-form {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: var(--s3);
+  margin-top: var(--s4);
+}
+.recruiting-detail textarea {
+  min-height: 96px;
+  resize: vertical;
+  padding: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+@media (max-width: 1279px) {
+  .recruiting-filters {
+    grid-template-columns: repeat(2, minmax(128px, 1fr));
+  }
+}
 .crm-kanban {
   grid-template-columns: repeat(9, minmax(230px, 1fr));
 }
@@ -881,7 +953,8 @@ input[type='checkbox'] {
   .sidebar-bottom .button {
     display: none;
   }
-  .sidebar nav button {
+  .sidebar nav button,
+  .sidebar nav a {
     padding-inline: 0;
     justify-content: center;
   }
