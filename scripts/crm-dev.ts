@@ -9,11 +9,13 @@ import { JwtIdentityVerifier } from '@rpt/policy';
 import { createApi } from '../apps/api/src/app.js';
 import { startPostgres } from '../tests/helpers/postgres.js';
 import { seedCrm } from '../tests/helpers/crm-fixtures.js';
+import { seedRecruiting } from '../tests/helpers/recruiting-fixtures.js';
 
 // An isolated synthetic, on-disk PostgreSQL lab. Never launches a remote release.
 const cluster = await startPostgres();
 const root = await cluster.migrate();
 const fixture = await seedCrm(root, 'crm-local');
+await seedRecruiting(root, fixture);
 await root.end();
 const key = await generateKeyPair('ES256');
 const jwk = await exportJWK(key.publicKey);
@@ -116,6 +118,7 @@ const next = spawn(
   },
 );
 console.log('CRM: http://127.0.0.1:3101/crm/commercial');
+console.log('Recruiting: http://127.0.0.1:3101/crm/recruiting');
 console.log(`Código de sesión local (1 hora): ${loginCode}`);
 console.log(
   'Datos sintéticos en PostgreSQL; conservados al recargar. Cada arranque crea un laboratorio aislado.',

@@ -25,10 +25,14 @@ import {
   createRecruitmentProfile,
   detailRecruitmentProfile,
   listRecruitmentProfiles,
+  recruitingContext,
 } from './recruiting.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  recruitingContext(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'recruiting.context', recruitingContext);
+  }
   listRecruitmentProfiles(identity: Identity, requestId: string, input: unknown) {
     const query = recruitingListQuery.parse(input);
     return this.execute(identity, requestId, query.workspaceId, 'recruiting.list', (client) =>

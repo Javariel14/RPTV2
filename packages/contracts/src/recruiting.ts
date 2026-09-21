@@ -78,9 +78,13 @@ export type RecruitingCreate = z.infer<typeof recruitingCreate>;
 export const recruitingListQuery = z
   .object({
     workspaceId: z.uuid(),
+    query: z.string().trim().max(100).default(''),
     owner: z.enum(['all', 'mine']).default('mine'),
     stage: z.union([recruitingStage, z.literal('all')]).default('all'),
+    source: z.union([recruitingSource, z.literal('all')]).default('all'),
+    substatus: z.union([recruitingSubstatus, z.literal('all')]).default('all'),
     priority: z.union([recruitingPriority, z.literal('all')]).default('all'),
+    activity: z.enum(['all', 'due', 'upcoming', 'none']).default('all'),
     page: z.number().int().min(0).max(10000).default(0),
   })
   .strict();
@@ -134,6 +138,9 @@ export interface RecruitmentProfileRow {
   substatus: RecruitingSubstatus | null;
   priority: z.infer<typeof recruitingPriority> | null;
   source: z.infer<typeof recruitingSource>;
+  ownerLabel: 'self' | 'authorized';
+  nextAction: string | null;
+  nextAt: string | null;
   version: number;
   createdAt: string;
   updatedAt: string;
@@ -145,6 +152,13 @@ export interface RecruitmentProfileRow {
 export interface RecruitmentProfileDetail {
   row: RecruitmentProfileRow;
   contact: { email: string | null; phone: string | null } | null;
+  permissions: {
+    appointment: boolean;
+    interview: boolean;
+    followup: boolean;
+    completeFollowup: boolean;
+    hook: boolean;
+  };
   appointments: Array<{ id: string; startsAt: string; timezone: string; channel: string }>;
   interviews: Array<{ id: string; occurredAt: string; outcome: string; notes: string }>;
   followups: Array<{ id: string; dueAt: string; text: string; completedAt: string | null }>;
@@ -163,4 +177,11 @@ export interface RecruitmentProfileList {
   rows: RecruitmentProfileRow[];
   total: number;
   pageSize: number;
+  stages: Array<{ stage: RecruitingStage; count: number }>;
+}
+
+export interface RecruitingContext {
+  actorId: string;
+  workspace: { id: string; name: string };
+  owners: Array<{ id: string; label: 'self' | 'authorized' }>;
 }

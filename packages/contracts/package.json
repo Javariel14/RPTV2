@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./crm": "./src/crm.ts"
+    "./crm": "./src/crm.ts",
+    "./recruiting": "./src/recruiting.ts"
   }
 }

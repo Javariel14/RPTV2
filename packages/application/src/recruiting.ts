@@ -4,6 +4,7 @@ import {
   FoundationError,
   type RecruitmentProfileDetail,
   type RecruitmentProfileList,
+  type RecruitingContext,
   type RecruitingCreate,
   type recruitingListQuery,
   type recruitingMutation,
@@ -21,6 +22,15 @@ async function receipt(client: Client, key: string, hash: string) {
 
 async function finish(client: Client, key: string, value: { id: string; version: number }) {
   await client.query('SELECT authz.recruiting_finish($1,$2)', [key, value]);
+  return value;
+}
+
+export async function recruitingContext(client: Client): Promise<RecruitingContext> {
+  const result = await client.query<{ value: RecruitingContext }>(
+    'SELECT authz.recruiting_ui_context() AS value',
+  );
+  const value = result.rows[0]?.value;
+  if (!value?.workspace) throw new FoundationError('FORBIDDEN');
   return value;
 }
 
@@ -106,12 +116,22 @@ export async function listRecruitmentProfiles(
     `WITH permitted AS MATERIALIZED (
        SELECT r.id,r.person_id AS "personId",r.workspace_id AS "workspaceId",r.owner_id AS "ownerId",
          p.display_name AS "displayName",r.stage,r.substatus,r.priority,r.source,r.version,
+         CASE WHEN r.owner_id=authz.actor_id() THEN 'self' ELSE 'authorized' END AS "ownerLabel",
+         f.body AS "nextAction",f.due_at AS "nextAt",
          r.created_at AS "createdAt",r.updated_at AS "updatedAt"
        FROM rpt.recruitment_profile r JOIN rpt.person p ON (p.tenant_id,p.id)=(r.tenant_id,r.person_id)
-       WHERE r.workspace_id=$1 AND ($2='all' OR r.owner_id=authz.actor_id())
-         AND ($3='all' OR r.stage=$3) AND ($4='all' OR r.priority=$4)
+       LEFT JOIN LATERAL (
+         SELECT body,due_at FROM rpt.recruitment_followup
+         WHERE profile_id=r.id AND completed_at IS NULL ORDER BY due_at,id LIMIT 1
+       ) f ON true
+       WHERE r.workspace_id=$1 AND ($2='' OR p.display_name ILIKE '%'||$2||'%')
+         AND ($3='all' OR r.owner_id=authz.actor_id())
+         AND ($4='all' OR r.stage::text=$4) AND ($5='all' OR r.source::text=$5)
+         AND ($6='all' OR r.substatus::text=$6) AND ($7='all' OR r.priority::text=$7)
+         AND ($8='all' OR ($8='due' AND f.due_at<=now()) OR ($8='upcoming' AND f.due_at>now())
+           OR ($8='none' AND f.due_at IS NULL))
      ), page_rows AS MATERIALIZED (
-       SELECT * FROM permitted ORDER BY "updatedAt" DESC,id LIMIT 20 OFFSET $5
+       SELECT * FROM permitted ORDER BY "updatedAt" DESC,id LIMIT 20 OFFSET $9
      ), projected AS (
        SELECT r.*,authz.recruiting_allowed(r.id,'update') AS "canUpdate",
          authz.recruiting_workspace_right(r."workspaceId",'reassign') AS "canReassign",
@@ -119,8 +139,20 @@ export async function listRecruitmentProfiles(
        FROM page_rows r
      )
      SELECT jsonb_build_object('rows',coalesce((SELECT jsonb_agg(r ORDER BY "updatedAt" DESC,id) FROM projected r),'[]'::jsonb),
-       'total',(SELECT count(*) FROM permitted),'pageSize',20) AS value`,
-    [input.workspaceId, input.owner, input.stage, input.priority, input.page * 20],
+       'total',(SELECT count(*) FROM permitted),'pageSize',20,
+       'stages',coalesce((SELECT jsonb_agg(jsonb_build_object('stage',stage,'count',count) ORDER BY stage)
+         FROM (SELECT stage,count(*) count FROM permitted GROUP BY stage) counts),'[]'::jsonb)) AS value`,
+    [
+      input.workspaceId,
+      input.query,
+      input.owner,
+      input.stage,
+      input.source,
+      input.substatus,
+      input.priority,
+      input.activity,
+      input.page * 20,
+    ],
   );
   return result.rows[0]!.value;
 }
@@ -136,8 +168,17 @@ export async function detailRecruitmentProfile(
         'priority',r.priority,'source',r.source,'version',r.version,'createdAt',r.created_at,'updatedAt',r.updated_at,
         'canUpdate',authz.recruiting_allowed(r.id,'update'),
         'canReassign',authz.recruiting_workspace_right(r.workspace_id,'reassign'),
-        'canContact',authz.allowed('person',p.id,'read','RESTRICTED_PII')),
+        'canContact',authz.allowed('person',p.id,'read','RESTRICTED_PII'),
+        'ownerLabel',CASE WHEN r.owner_id=authz.actor_id() THEN 'self' ELSE 'authorized' END,
+        'nextAction',(SELECT body FROM rpt.recruitment_followup WHERE profile_id=r.id AND completed_at IS NULL ORDER BY due_at,id LIMIT 1),
+        'nextAt',(SELECT due_at FROM rpt.recruitment_followup WHERE profile_id=r.id AND completed_at IS NULL ORDER BY due_at,id LIMIT 1)),
       'contact',(SELECT jsonb_build_object('email',email,'phone',phone) FROM rpt.person_pii WHERE person_id=p.id),
+      'permissions',jsonb_build_object(
+        'appointment',authz.recruiting_child(r.id,'recruitment_appointment','create'),
+        'interview',authz.recruiting_child(r.id,'recruitment_interview','create'),
+        'followup',authz.recruiting_child(r.id,'recruitment_followup','create'),
+        'completeFollowup',authz.recruiting_child(r.id,'recruitment_followup','update'),
+        'hook',authz.recruiting_child(r.id,'recruitment_hook','create')),
       'appointments',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,starts_at AS "startsAt",timezone,channel FROM rpt.recruitment_appointment WHERE profile_id=r.id ORDER BY starts_at DESC,id) x),'[]'::jsonb),
       'interviews',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,occurred_at AS "occurredAt",outcome,notes FROM rpt.recruitment_interview WHERE profile_id=r.id ORDER BY occurred_at DESC,id) x),'[]'::jsonb),
       'followups',coalesce((SELECT jsonb_agg(x) FROM (SELECT id,due_at AS "dueAt",body AS text,completed_at AS "completedAt" FROM rpt.recruitment_followup WHERE profile_id=r.id ORDER BY due_at,id) x),'[]'::jsonb),

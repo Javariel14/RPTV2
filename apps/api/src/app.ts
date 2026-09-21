@@ -182,6 +182,12 @@ export function createApi(
       201,
     ),
   );
+  api.get('/v1/recruiting/context', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.recruitingContext(c.get('identity'), c.get('requestId')),
+    }),
+  );
   api.get('/v1/recruiting/profiles', async (c) =>
     c.json({
       schemaVersion: 1,
