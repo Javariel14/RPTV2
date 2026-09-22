@@ -74,6 +74,10 @@ for (const item of agendaItems) {
     `agenda-local-${item.type}-${item.day}`,
   );
 }
+// The local bridge is not ready until PostgreSQL has statistics for the complete
+// synthetic CRM/Recruiting/Agenda dataset. This prevents first-run query-plan
+// drift after state-changing E2E scenarios without weakening runtime timeouts.
+await root.query('ANALYZE');
 await root.end();
 const key = await generateKeyPair('ES256');
 const jwk = await exportJWK(key.publicKey);
@@ -95,6 +99,11 @@ const server = createServer((req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!equal(String(req.headers['x-rpt-bridge'] ?? ''), bridgeSecret)) {
       res.writeHead(403).end();
+      return;
+    }
+    if (req.url === '/ready' && req.method === 'GET') {
+      res.setHeader('Content-Type', 'application/json');
+      res.writeHead(200).end('{"ready":true}');
       return;
     }
     const importPath = ['/v1/crm/imports/preview', '/v1/crm/imports/confirm'].includes(

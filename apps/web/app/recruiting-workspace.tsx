@@ -457,6 +457,7 @@ export function RecruitingWorkspace({ initialTheme = 'system' }: { initialTheme?
                   <label>
                     {label('sessionCode')}
                     <input
+                      data-testid="recruiting-session-code"
                       type="password"
                       autoComplete="off"
                       required
@@ -464,12 +465,14 @@ export function RecruitingWorkspace({ initialTheme = 'system' }: { initialTheme?
                       onChange={(event) => setSessionCode(event.target.value)}
                     />
                   </label>
-                  <Button type="submit" variant="primary">
+                  <Button data-testid="recruiting-session-submit" type="submit" variant="primary">
                     {label('signIn')}
                   </Button>
                 </form>
               ) : (
-                <Button onClick={remote.refresh}>{label('retry')}</Button>
+                <Button data-testid="recruiting-retry" onClick={remote.refresh}>
+                  {label('retry')}
+                </Button>
               )}
             </State>
           ) : total === 0 ? (
