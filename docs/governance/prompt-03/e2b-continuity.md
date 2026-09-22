@@ -1,50 +1,38 @@
 # E2B continuity — Calendar UX
 
-## UX construida
+## Resultado final
 
-- Ruta `/agenda` dentro del App Shell existente.
-- Vistas Today, Day, Week y agenda/list con rango acotado y filtros mine/type/status.
-- Appointments, tasks y proyecciones Commercial/Recruiting se distinguen sin mezclar lifecycle.
-- Drawer contextual autorizado; proyecciones CRM permanecen read-only.
-- Estados loading, empty/no-results, forbidden, not-found, conflict, unavailable y success.
+- `/agenda` ofrece Today, Day, Week y List sobre datos persistentes E2A.
+- Appointments/tasks, confirmations, rescheduling, reminders internos, recurrence y travel context
+  reutilizan contratos autorizados con `expectedVersion` e idempotencia.
+- Desktop/mobile, ES/EN/FR/PT, Light/Dark/System y estados representativos están cubiertos.
 
-## Confirmations / rescheduling / reminders
+## CI hygiene aplicada
 
-- Confirm, decline, cancel y task complete usan comandos E2A con `expectedVersion` e idempotency key.
-- Reschedule edita el aggregate existente; E2A conserva historial e invalida/recrea reminders.
-- Reminders configurables son internos RPT; no se envían notificaciones externas.
-- Conflict recarga el aggregate más reciente sin sobrescritura silenciosa.
-
-## Recurrence / time / travel
-
-- Creación daily/weekly reutiliza el límite E2A de 50 instancias.
-- No se expone edición masiva de series; solo operaciones seguras por ocurrencia.
-- Edición usa timezone IANA y conversión wall-time con validación de huecos DST.
-- Origin, destination, travel minutes y preparation minutes se muestran y crean sin mapas/GPS.
-
-## Responsive / a11y / i18n
-
-- Desktop usa calendario/lista dominante y Drawer; mobile prioriza Today/List y Drawer full-screen.
-- ES/EN/FR/PT y Light/Dark/System usan catálogo y tokens existentes.
-- Dialog nativo conserva trap, Escape y retorno de foco; focus visible y reduced motion heredados.
-- Axe critical/serious PASS en matriz representativa; sin overflow crítico a 390 px.
+- La clave sintética detectada por Gitleaks ahora es `test-test-test-01`; no se añadió allowlist ni
+  se desactivó ningún gate.
+- El bridge expone `/ready` solo después del seed persistente y `ANALYZE`; Playwright espera ese
+  estado mediante el BFF antes de iniciar Recruiting E2E.
+- Login/retry usan `data-testid` estables y el helper distingue UI autenticable, respuesta
+  transitoria y fila persistida sin sleeps arbitrarios.
+- La reasignación de owner es el escenario terminal porque puede revocar al actor original.
 
 ## Tests locales
 
-- Unit E2A+E2B: rangos, timezone/DST y catálogos.
-- Integration E2A: 10/10 PASS (RLS, tenant, permisos, idempotencia, recurrence, reminders).
-- E2E Agenda: Today/Week, detail, confirmation, reschedule, reminders, recurrence, task completion,
-  themes/locales/mobile/forbidden y evidencia visual.
+- Unit: 24/24 PASS; security local: PASS; integración E2A: 10/10 PASS.
+- Regresiones E1C1–E1C3: PASS; Agenda E2E/Visual QA: 5/5 PASS.
+- Reproducción secuencial Recruiting focalizada: 3/3 PASS; Recruiting E2E final: 8/8 PASS.
+- `npm run verify`: PASS (format, lint, typecheck, 24 unit, security, 78 integration y build).
 
 ## Deuda no bloqueante
 
-- Edición/cancelación masiva de series queda fuera hasta existir semántica core explícita.
+- Edición/cancelación masiva de series requiere semántica core explícita.
 - Google Calendar y canales externos permanecen fuera de alcance.
 
 ## Blockers
 
 - Ninguno local conocido.
 
-## Siguiente paquete
+## Next
 
 - E2C — Field Visits Core.
