@@ -15,6 +15,9 @@ import {
   recruitingCreate,
   recruitingListQuery,
   recruitingMutation,
+  agendaCreate,
+  agendaListQuery,
+  agendaMutation,
   uuid,
   idempotencyKey,
 } from '@rpt/contracts';
@@ -29,9 +32,54 @@ import {
   listRecruitmentProfiles,
   recruitingContext,
 } from './recruiting.js';
+import {
+  commandAgendaItem,
+  createAgendaItem,
+  detailAgendaItem,
+  listAgendaItems,
+} from './agenda.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  listAgendaItems(identity: Identity, requestId: string, input: unknown) {
+    const query = agendaListQuery.parse(input);
+    return this.execute(identity, requestId, requestId, 'agenda.list', (client) =>
+      listAgendaItems(client, query),
+    );
+  }
+  detailAgendaItem(identity: Identity, requestId: string, id: string) {
+    uuid.parse(id);
+    return this.execute(identity, requestId, id, 'agenda.detail', (client) =>
+      detailAgendaItem(client, id),
+    );
+  }
+  async createAgendaItem(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = agendaCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(
+      identity,
+      requestId,
+      command.workspaceId,
+      'agenda.create',
+      (client, context) => createAgendaItem(client, context, command, key, hash),
+    );
+  }
+  async commandAgendaItem(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    idempotencyKey.parse(key);
+    const command = agendaMutation.parse(input);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'agenda.command', (client, context) =>
+      commandAgendaItem(client, context, id, command, key, hash),
+    );
+  }
   previewCrmImport(identity: Identity, requestId: string, file: ImportFile) {
     return this.execute(identity, requestId, requestId, 'crm.import.preview', (client) =>
       previewCrmImport(client, file),

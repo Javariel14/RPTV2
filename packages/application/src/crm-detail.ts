@@ -1,11 +1,24 @@
 import type { Client } from 'pg';
 import type { z } from 'zod';
-import { FoundationError, type CrmDetail, type crmMutation } from '@rpt/contracts';
+import {
+  FoundationError,
+  type CrmDetail,
+  type CrmIntelligence,
+  type CrmRow,
+  type crmMutation,
+} from '@rpt/contracts';
 import type { AuthContext } from '@rpt/persistence';
+import { deriveCrmIntelligence, type CrmIntelligenceSignals } from './crm-intelligence.js';
+
+type BaseCrmRow = Omit<CrmRow, keyof CrmIntelligence>;
+type SignalDetail = Omit<CrmDetail, 'row'> & {
+  row: BaseCrmRow;
+  intelligenceSignals: CrmIntelligenceSignals;
+};
 
 // Every projection is read as rpt_runtime through existing RLS. No owner/service role.
 export async function detailCrm(client: Client, id: string): Promise<CrmDetail> {
-  const result = await client.query<{ value: CrmDetail }>(
+  const result = await client.query<{ value: SignalDetail }>(
     `
     SELECT jsonb_build_object('row',jsonb_build_object(
       'id',o.id,'personId',p.id,'title',o.title,'name',p.display_name,'personVersion',p.version,
@@ -30,6 +43,20 @@ export async function detailCrm(client: Client, id: string): Promise<CrmDetail> 
         FROM rpt.crm_activity WHERE opportunity_id=o.id
         ORDER BY "occurredAt" DESC,id LIMIT 100
       ) x),'[]'),
+      'intelligenceSignals',jsonb_build_object(
+        'opportunityId',o.id,'stage',o.stage,'nextAction',o.next_action,'nextAt',o.next_at,
+        'updatedAt',o.updated_at,'asOf',statement_timestamp(),
+        'lastActivityAt',greatest(
+          (SELECT max(occurred_at) FROM rpt.crm_activity WHERE opportunity_id=o.id),
+          (SELECT max(occurred_at) FROM rpt.crm_event WHERE opportunity_id=o.id),
+          (SELECT max(occurred_at) FROM rpt.demo_visit WHERE opportunity_id=o.id)),
+        'overdueTaskCount',(SELECT count(*)::int FROM rpt.crm_entry WHERE opportunity_id=o.id AND kind='task' AND completed_at IS NULL AND due_at<statement_timestamp()),
+        'overdueTaskId',(SELECT id FROM rpt.crm_entry WHERE opportunity_id=o.id AND kind='task' AND completed_at IS NULL AND due_at<statement_timestamp() ORDER BY due_at,id LIMIT 1),
+        'pendingObjectionCount',(SELECT count(*)::int FROM rpt.crm_entry WHERE opportunity_id=o.id AND kind='objection'),
+        'pendingCommitmentCount',(SELECT count(*)::int FROM rpt.crm_entry WHERE opportunity_id=o.id AND kind='commitment'),
+        'futureAppointmentAt',(SELECT starts_at FROM rpt.appointment WHERE opportunity_id=o.id AND starts_at>=statement_timestamp() ORDER BY starts_at,id LIMIT 1),
+        'futureAppointmentId',(SELECT id FROM rpt.appointment WHERE opportunity_id=o.id AND starts_at>=statement_timestamp() ORDER BY starts_at,id LIMIT 1),
+        'orderSimulatedStatus',(SELECT simulated_status FROM rpt.commercial_order WHERE opportunity_id=o.id)),
       'permissions',jsonb_build_object(
         'schedule',authz.crm_child(o.id,'appointment','create'), 'demo',authz.crm_child(o.id,'demo','create'),
         'quote',authz.crm_child(o.id,'quote','create'),
@@ -46,9 +73,13 @@ export async function detailCrm(client: Client, id: string): Promise<CrmDetail> 
     WHERE o.id=$1`,
     [id],
   );
-  const detail = result.rows[0]?.value;
-  if (!detail) throw new FoundationError('NOT_FOUND');
-  return detail;
+  const raw = result.rows[0]?.value;
+  if (!raw) throw new FoundationError('NOT_FOUND');
+  const { intelligenceSignals, ...detail } = raw;
+  return {
+    ...detail,
+    row: { ...detail.row, ...deriveCrmIntelligence(intelligenceSignals) },
+  };
 }
 
 export async function commandCrm(

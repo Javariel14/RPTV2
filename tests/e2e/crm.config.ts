@@ -2,7 +2,14 @@ import { defineConfig } from '@playwright/test';
 import { resolve } from 'node:path';
 export default defineConfig({
   testDir: '.',
-  testMatch: ['crm.spec.ts', 'crm-u4.spec.ts', 'crm-u5.spec.ts', 'crm-u6.spec.ts'],
+  testMatch: [
+    'crm.spec.ts',
+    'crm-u4.spec.ts',
+    'crm-u5.spec.ts',
+    'crm-u6.spec.ts',
+    'crm-e1c3.spec.ts',
+    'e1-closure.spec.ts',
+  ],
   timeout: 120000,
   expect: { timeout: 15000 },
   workers: 1,

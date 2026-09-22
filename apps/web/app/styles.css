@@ -755,6 +755,46 @@ input[type='checkbox'] {
 .crm-detail li {
   margin-bottom: var(--s3);
 }
+.intelligence-compact {
+  display: block;
+  margin-top: var(--s1);
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+.crm-intelligence {
+  border-block: 1px solid var(--border);
+  padding-block: var(--s4);
+}
+.crm-intelligence .secondary {
+  font-size: 12px;
+}
+.crm-intelligence ul {
+  margin: 0;
+  padding-left: var(--s5);
+}
+.health {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-weight: 600;
+}
+.health::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--secondary);
+  content: '';
+}
+.health-healthy::before {
+  background: var(--success);
+}
+.health-attention::before {
+  background: var(--warning);
+}
+.health-at_risk::before {
+  background: var(--danger);
+}
 @media (max-width: 767px) {
   .kanban.crm-kanban {
     grid-template-columns: minmax(0, 1fr);

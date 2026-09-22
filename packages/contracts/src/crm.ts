@@ -239,7 +239,56 @@ export const crmSaveView = z
   })
   .strict();
 
-export interface CrmRow {
+export type CrmRelationshipHealth = 'healthy' | 'attention' | 'at_risk';
+export type CrmIntelligenceReason =
+  | 'recent_activity'
+  | 'recent_update'
+  | 'inactive_7d'
+  | 'inactive_14d'
+  | 'overdue_task'
+  | 'overdue_next_action'
+  | 'missing_next_action'
+  | 'pending_objection'
+  | 'pending_commitment'
+  | 'scheduled_appointment'
+  | 'closed_stage';
+export interface CrmScoreReason {
+  code: CrmIntelligenceReason;
+  impact: number;
+}
+export interface CrmNextBestAction {
+  type:
+    | 'appointment'
+    | 'prepare_appointment'
+    | 'demo'
+    | 'quote'
+    | 'submit_order'
+    | 'reconcile_mock'
+    | 'delivery'
+    | 'curation'
+    | 'complete_task'
+    | 'entry'
+    | 'none';
+  reason: CrmIntelligenceReason | 'stage_next_step';
+  priority: 'low' | 'normal' | 'high';
+  reference: { type: 'task' | 'appointment' | 'opportunity'; id: string };
+  explanation: string;
+  generatedAt: string;
+  ruleVersion: 'commercial-beta-v1';
+  advisory: true;
+}
+export interface CrmIntelligence {
+  relationshipHealth: CrmRelationshipHealth;
+  relationshipHealthReasons: CrmIntelligenceReason[];
+  operationalScore: number;
+  scoreReasons: CrmScoreReason[];
+  nextBestAction: CrmNextBestAction;
+  nextBestActionReason: CrmNextBestAction['reason'];
+  intelligenceCalculatedAt: string;
+  intelligenceRuleVersion: 'commercial-beta-v1';
+}
+
+export interface CrmRow extends CrmIntelligence {
   id: string;
   personId: string;
   title: string;

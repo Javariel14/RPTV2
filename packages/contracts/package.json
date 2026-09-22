@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./crm": "./src/crm.ts",
-    "./recruiting": "./src/recruiting.ts"
+    "./recruiting": "./src/recruiting.ts",
+    "./agenda": "./src/agenda.ts"
   }
 }
