@@ -195,6 +195,52 @@ export function createApi(
       ),
     }),
   );
+  api.get('/v1/visits', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.listFieldVisits(
+        c.get('identity'),
+        c.get('requestId'),
+        JSON.parse(c.req.query('config') ?? '{}') as unknown,
+      ),
+    }),
+  );
+  api.get('/v1/visits/:id', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.detailFieldVisit(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+      ),
+    }),
+  );
+  api.post('/v1/visits', async (c) =>
+    c.json(
+      {
+        schemaVersion: 1,
+        data: await service.createFieldVisit(
+          c.get('identity'),
+          c.get('requestId'),
+          await c.req.json<unknown>(),
+          idempotencyKey.parse(c.req.header('Idempotency-Key')),
+        ),
+      },
+      201,
+    ),
+  );
+  api.post('/v1/visits/:id/commands', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.commandFieldVisit(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+        await c.req.json<unknown>(),
+        idempotencyKey.parse(c.req.header('Idempotency-Key')),
+      ),
+    }),
+  );
   api.get('/v1/crm/opportunities', async (c) =>
     c.json({
       schemaVersion: 1,
