@@ -19,6 +19,7 @@
     "test:crm": "tsx --test --test-concurrency=1 tests/integration/crm.test.ts",
     "test:crm:e2e": "playwright test --config tests/e2e/crm.config.ts",
     "test:recruiting:e2e": "playwright test --config tests/e2e/recruiting.config.ts",
+    "test:agenda:e2e": "playwright test --config tests/e2e/agenda.config.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
