@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { resolve } from 'node:path';
 import { generateKeyPair, exportJWK, createLocalJWKSet, SignJWT } from 'jose';
 import { FoundationService } from '@rpt/application';
@@ -16,12 +16,70 @@ const cluster = await startPostgres();
 const root = await cluster.migrate();
 const fixture = await seedCrm(root, 'crm-local');
 await seedRecruiting(root, fixture);
+await root.query(
+  "INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from) VALUES($1,$2,'agenda_tasks_core',1,true,100,'2020-01-01')",
+  [fixture.tenant, randomUUID()],
+);
+for (const verb of ['read', 'create', 'update', 'share']) {
+  await root.query(
+    "INSERT INTO authz.role_capability VALUES($1,'owner','agenda_item',$2,'CONFIDENTIAL',false,1)",
+    [fixture.tenant, verb],
+  );
+  await root.query(
+    `INSERT INTO authz.workspace_permission(tenant_id,id,workspace_id,user_id,object_type,verb,field_class,policy_version)
+     VALUES($1,$2,$3,$4,'agenda_item',$5,'CONFIDENTIAL',1)`,
+    [fixture.tenant, randomUUID(), fixture.workspace, fixture.users.owner, verb],
+  );
+}
+const agendaItems = [
+  { type: 'appointment', title: 'Revisión comercial sintética', day: 0, hour: 15 },
+  { type: 'task', title: 'Preparar seguimiento sintético', day: 0, hour: 18 },
+  { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 16 },
+] as const;
+const service = new FoundationService(new PostgresDatabase(cluster.runtimeConfig()));
+for (const item of agendaItems) {
+  const start = new Date();
+  start.setUTCHours(item.hour, 0, 0, 0);
+  start.setUTCDate(start.getUTCDate() + item.day);
+  const common = {
+    schemaVersion: 1 as const,
+    workspaceId: fixture.workspace,
+    title: item.title,
+    summary: 'Dato sintético para QA local',
+    timezone: 'America/Guayaquil',
+    source: 'manual' as const,
+    personId: null,
+    opportunityId: null,
+    recruitmentProfileId: null,
+    recurrence: null,
+    reminderMinutesBefore: [15],
+    travel: {
+      originLabel: 'Oficina sintética',
+      destinationLabel: 'Destino sintético',
+      estimatedTravelMinutes: 20,
+      preparationMinutes: 10,
+    },
+  };
+  await service.createAgendaItem(
+    fixture.identities.owner,
+    randomUUID(),
+    item.type === 'appointment'
+      ? {
+          ...common,
+          type: 'appointment',
+          startsAt: start.toISOString(),
+          endsAt: new Date(start.getTime() + 3_600_000).toISOString(),
+        }
+      : { ...common, type: 'task', dueAt: start.toISOString(), priority: 'normal' },
+    `agenda-local-${item.type}-${item.day}`,
+  );
+}
 await root.end();
 const key = await generateKeyPair('ES256');
 const jwk = await exportJWK(key.publicKey);
 const identity = fixture.identities.owner;
 const api = createApi(
-  new FoundationService(new PostgresDatabase(cluster.runtimeConfig())),
+  service,
   new JwtIdentityVerifier(
     identity.iss,
     'authenticated',
@@ -128,6 +186,7 @@ const next = spawn(
 );
 console.log('CRM: http://127.0.0.1:3101/crm/commercial');
 console.log('Recruiting: http://127.0.0.1:3101/crm/recruiting');
+console.log('Agenda: http://127.0.0.1:3101/agenda');
 console.log(`Código de sesión local (1 hora): ${loginCode}`);
 console.log(
   'Datos sintéticos en PostgreSQL; conservados al recargar. Cada arranque crea un laboratorio aislado.',

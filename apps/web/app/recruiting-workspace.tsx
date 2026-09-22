@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Columns3,
@@ -293,6 +294,10 @@ export function RecruitingWorkspace({ initialTheme = 'system' }: { initialTheme?
           <a className="active" href="/crm/recruiting" aria-current="page">
             <UserSearch size={20} />
             <span>{label('recruiting')}</span>
+          </a>
+          <a href="/agenda">
+            <CalendarDays size={20} />
+            <span>Agenda</span>
           </a>
         </nav>
         <div className="sidebar-bottom">

@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpRight,
+  CalendarDays,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -377,6 +378,12 @@ export function ReferenceWorkspace({
               <FlaskConical size={20} />
               <span>{t.lab}</span>
             </button>
+          )}
+          {persistent && (
+            <a href="/agenda">
+              <CalendarDays size={20} />
+              <span>Agenda</span>
+            </a>
           )}
         </nav>
         <div className="sidebar-bottom">
