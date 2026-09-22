@@ -39,18 +39,26 @@ const server = createServer((req, res) => {
       res.writeHead(403).end();
       return;
     }
-    let body = '';
+    const importPath = ['/v1/crm/imports/preview', '/v1/crm/imports/confirm'].includes(
+      req.url ?? '',
+    );
+    const bodyLimit = importPath ? 640 * 1024 : 16_384;
+    const chunks: Buffer[] = [];
+    let bodySize = 0;
     for await (const chunk of req) {
-      body += String(chunk);
-      if (Buffer.byteLength(body) > 16384) {
+      const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      bodySize += bytes.byteLength;
+      if (bodySize > bodyLimit) {
         res.writeHead(413).end();
         return;
       }
+      chunks.push(bytes);
     }
+    const body = Buffer.concat(chunks, bodySize);
     if (req.url === '/session' && req.method === 'POST') {
       let code: unknown;
       try {
-        code = (JSON.parse(body) as { code?: unknown }).code;
+        code = (JSON.parse(body.toString('utf8')) as { code?: unknown }).code;
       } catch {
         /* Invalid login */
       }
@@ -77,7 +85,8 @@ const server = createServer((req, res) => {
       .split('; ')
       .find((v) => v.startsWith('rpt.crm-session='))
       ?.slice(16);
-    const headers = new Headers({ 'Content-Type': 'application/json' });
+    const headers = new Headers();
+    headers.set('Content-Type', String(req.headers['content-type'] ?? 'application/json'));
     if (token) headers.set('Authorization', `Bearer ${token}`);
     if (req.headers['idempotency-key'])
       headers.set('Idempotency-Key', String(req.headers['idempotency-key']));
@@ -85,7 +94,7 @@ const server = createServer((req, res) => {
       new Request(`http://127.0.0.1${req.url}`, {
         method: req.method ?? 'GET',
         headers,
-        ...(body ? { body } : {}),
+        ...(body.byteLength ? { body: new Uint8Array(body) } : {}),
       }),
     );
     const responseHeaders: Record<string, string> = {};

@@ -34,6 +34,8 @@ type DisplayRow = Omit<ReferenceContact, 'stage' | 'source'> & {
   nextAction?: string;
   updatedAt?: string;
   priority?: string;
+  relationshipHealth?: CrmRow['relationshipHealth'];
+  operationalScore?: number;
 };
 type View = 'all' | 'mine' | 'due';
 type Mode = 'table' | 'kanban';
@@ -139,6 +141,8 @@ export function ReferenceWorkspace({
         nextAction: r.nextAction,
         updatedAt: r.updatedAt,
         priority: r.priority,
+        relationshipHealth: r.relationshipHealth,
+        operationalScore: r.operationalScore,
       }))
     : localRows;
   const state: StateName = persistent
@@ -863,7 +867,14 @@ export function ReferenceWorkspace({
                                 <td>
                                   <span className={`badge stage-${r.stage}`}>{label(r.stage)}</span>
                                 </td>
-                                <td>{nextAction(r)}</td>
+                                <td>
+                                  {nextAction(r)}
+                                  {persistent && r.relationshipHealth && (
+                                    <small className="intelligence-compact">
+                                      {label(r.relationshipHealth)} · {r.operationalScore}/100
+                                    </small>
+                                  )}
+                                </td>
                                 {(!persistent || extraColumns.includes('due')) && (
                                   <td className="data">{date(r.due)}</td>
                                 )}
@@ -894,6 +905,11 @@ export function ReferenceWorkspace({
                                 <span>
                                   {nextAction(r)} · {date(r.due)}
                                 </span>
+                                {persistent && r.relationshipHealth && (
+                                  <span className="intelligence-compact">
+                                    {label(r.relationshipHealth)} · {r.operationalScore}/100
+                                  </span>
+                                )}
                               </span>
                               <ChevronRight size={20} />
                             </button>

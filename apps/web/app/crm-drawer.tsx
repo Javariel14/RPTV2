@@ -206,6 +206,28 @@ export function CrmDrawer({
               {label(detail.row.nextAction)}{' '}
               {detail.row.nextAt && new Date(detail.row.nextAt).toLocaleString(locale)}
             </p>
+            <section className="crm-intelligence" aria-label={label('relationshipHealth')}>
+              <p className="secondary">{label('rptRecommendation')}</p>
+              <dl>
+                <dt>{label('relationshipHealth')}</dt>
+                <dd>
+                  <span className={`health health-${detail.row.relationshipHealth}`}>
+                    {label(detail.row.relationshipHealth)}
+                  </span>
+                </dd>
+                <dt>{label('operationalScore')}</dt>
+                <dd>{detail.row.operationalScore}/100</dd>
+                <dt>{label('nextBestAction')}</dt>
+                <dd>{label(detail.row.nextBestAction.type)}</dd>
+              </dl>
+              <h3>{label('mainReasons')}</h3>
+              <ul>
+                {detail.row.relationshipHealthReasons.slice(0, 3).map((reason) => (
+                  <li key={reason}>{label(reason)}</li>
+                ))}
+                <li>{label(detail.row.nextBestActionReason)}</li>
+              </ul>
+            </section>
             {options.length > 0 && (
               <section>
                 <h3>{label('actions')}</h3>
