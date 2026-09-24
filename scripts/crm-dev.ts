@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { resolve } from 'node:path';
 import { generateKeyPair, exportJWK, createLocalJWKSet, SignJWT } from 'jose';
 import { FoundationService } from '@rpt/application';
@@ -16,12 +16,126 @@ const cluster = await startPostgres();
 const root = await cluster.migrate();
 const fixture = await seedCrm(root, 'crm-local');
 await seedRecruiting(root, fixture);
+await root.query(
+  "INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from) VALUES($1,$2,'field_visits_core',1,true,100,'2020-01-01')",
+  [fixture.tenant, randomUUID()],
+);
+for (const verb of ['read', 'create', 'update']) {
+  for (const field of ['CONFIDENTIAL', 'RESTRICTED_LOCATION']) {
+    await root.query(
+      "INSERT INTO authz.role_capability VALUES($1,'owner','field_visit',$2,$3,false,1)",
+      [fixture.tenant, verb, field],
+    );
+    await root.query(
+      `INSERT INTO authz.workspace_permission(tenant_id,id,workspace_id,user_id,object_type,verb,field_class,policy_version)
+       VALUES($1,$2,$3,$4,'field_visit',$5,$6,1)`,
+      [fixture.tenant, randomUUID(), fixture.workspace, fixture.users.owner, verb, field],
+    );
+  }
+}
+await root.query(
+  "INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from) VALUES($1,$2,'agenda_tasks_core',1,true,100,'2020-01-01')",
+  [fixture.tenant, randomUUID()],
+);
+for (const verb of ['read', 'create', 'update', 'share']) {
+  await root.query(
+    "INSERT INTO authz.role_capability VALUES($1,'owner','agenda_item',$2,'CONFIDENTIAL',false,1)",
+    [fixture.tenant, verb],
+  );
+  await root.query(
+    `INSERT INTO authz.workspace_permission(tenant_id,id,workspace_id,user_id,object_type,verb,field_class,policy_version)
+     VALUES($1,$2,$3,$4,'agenda_item',$5,'CONFIDENTIAL',1)`,
+    [fixture.tenant, randomUUID(), fixture.workspace, fixture.users.owner, verb],
+  );
+}
+const agendaItems = [
+  { type: 'appointment', title: 'Revisión comercial sintética', day: 0, hour: 15 },
+  { type: 'task', title: 'Preparar seguimiento sintético', day: 0, hour: 18 },
+  { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 16 },
+] as const;
+const service = new FoundationService(new PostgresDatabase(cluster.runtimeConfig()));
+let linkedFieldAppointment: string | undefined;
+for (const item of agendaItems) {
+  const start = new Date();
+  start.setUTCHours(item.hour, 0, 0, 0);
+  start.setUTCDate(start.getUTCDate() + item.day);
+  const common = {
+    schemaVersion: 1 as const,
+    workspaceId: fixture.workspace,
+    title: item.title,
+    summary: 'Dato sintético para QA local',
+    timezone: 'America/Guayaquil',
+    source: 'manual' as const,
+    personId: null,
+    opportunityId: null,
+    recruitmentProfileId: null,
+    recurrence: null,
+    reminderMinutesBefore: [15],
+    travel: {
+      originLabel: 'Oficina sintética',
+      destinationLabel: 'Destino sintético',
+      estimatedTravelMinutes: 20,
+      preparationMinutes: 10,
+    },
+  };
+  const created = await service.createAgendaItem(
+    fixture.identities.owner,
+    randomUUID(),
+    item.type === 'appointment'
+      ? {
+          ...common,
+          type: 'appointment',
+          startsAt: start.toISOString(),
+          endsAt: new Date(start.getTime() + 3_600_000).toISOString(),
+        }
+      : { ...common, type: 'task', dueAt: start.toISOString(), priority: 'normal' },
+    `agenda-local-${item.type}-${item.day}`,
+  );
+  if (item.type === 'appointment' && item.day === 0) linkedFieldAppointment = created.id;
+}
+if (linkedFieldAppointment) {
+  await service.createFieldVisit(
+    fixture.identities.owner,
+    randomUUID(),
+    {
+      schemaVersion: 1,
+      workspaceId: fixture.workspace,
+      agendaItemId: linkedFieldAppointment,
+      personId: null,
+      opportunityId: null,
+      scheduledAt: null,
+      purpose: 'Visita comercial sintética',
+    },
+    'field-local-linked-01',
+  );
+}
+const upcomingVisit = new Date();
+upcomingVisit.setUTCHours(16, 0, 0, 0);
+upcomingVisit.setUTCDate(upcomingVisit.getUTCDate() + 1);
+await service.createFieldVisit(
+  fixture.identities.owner,
+  randomUUID(),
+  {
+    schemaVersion: 1,
+    workspaceId: fixture.workspace,
+    agendaItemId: null,
+    personId: null,
+    opportunityId: null,
+    scheduledAt: upcomingVisit.toISOString(),
+    purpose: 'Seguimiento en campo sintético',
+  },
+  'field-local-upcoming-01',
+);
+// The local bridge is not ready until PostgreSQL has statistics for the complete
+// synthetic CRM/Recruiting/Agenda dataset. This prevents first-run query-plan
+// drift after state-changing E2E scenarios without weakening runtime timeouts.
+await root.query('ANALYZE');
 await root.end();
 const key = await generateKeyPair('ES256');
 const jwk = await exportJWK(key.publicKey);
 const identity = fixture.identities.owner;
 const api = createApi(
-  new FoundationService(new PostgresDatabase(cluster.runtimeConfig())),
+  service,
   new JwtIdentityVerifier(
     identity.iss,
     'authenticated',
@@ -39,18 +153,31 @@ const server = createServer((req, res) => {
       res.writeHead(403).end();
       return;
     }
-    let body = '';
+    if (req.url === '/ready' && req.method === 'GET') {
+      res.setHeader('Content-Type', 'application/json');
+      res.writeHead(200).end('{"ready":true}');
+      return;
+    }
+    const importPath = ['/v1/crm/imports/preview', '/v1/crm/imports/confirm'].includes(
+      req.url ?? '',
+    );
+    const bodyLimit = importPath ? 640 * 1024 : 16_384;
+    const chunks: Buffer[] = [];
+    let bodySize = 0;
     for await (const chunk of req) {
-      body += String(chunk);
-      if (Buffer.byteLength(body) > 16384) {
+      const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      bodySize += bytes.byteLength;
+      if (bodySize > bodyLimit) {
         res.writeHead(413).end();
         return;
       }
+      chunks.push(bytes);
     }
+    const body = Buffer.concat(chunks, bodySize);
     if (req.url === '/session' && req.method === 'POST') {
       let code: unknown;
       try {
-        code = (JSON.parse(body) as { code?: unknown }).code;
+        code = (JSON.parse(body.toString('utf8')) as { code?: unknown }).code;
       } catch {
         /* Invalid login */
       }
@@ -77,7 +204,8 @@ const server = createServer((req, res) => {
       .split('; ')
       .find((v) => v.startsWith('rpt.crm-session='))
       ?.slice(16);
-    const headers = new Headers({ 'Content-Type': 'application/json' });
+    const headers = new Headers();
+    headers.set('Content-Type', String(req.headers['content-type'] ?? 'application/json'));
     if (token) headers.set('Authorization', `Bearer ${token}`);
     if (req.headers['idempotency-key'])
       headers.set('Idempotency-Key', String(req.headers['idempotency-key']));
@@ -85,7 +213,7 @@ const server = createServer((req, res) => {
       new Request(`http://127.0.0.1${req.url}`, {
         method: req.method ?? 'GET',
         headers,
-        ...(body ? { body } : {}),
+        ...(body.byteLength ? { body: new Uint8Array(body) } : {}),
       }),
     );
     const responseHeaders: Record<string, string> = {};
@@ -119,6 +247,8 @@ const next = spawn(
 );
 console.log('CRM: http://127.0.0.1:3101/crm/commercial');
 console.log('Recruiting: http://127.0.0.1:3101/crm/recruiting');
+console.log('Agenda: http://127.0.0.1:3101/agenda');
+console.log('Field Sales: http://127.0.0.1:3101/field');
 console.log(`Código de sesión local (1 hora): ${loginCode}`);
 console.log(
   'Datos sintéticos en PostgreSQL; conservados al recargar. Cada arranque crea un laboratorio aislado.',

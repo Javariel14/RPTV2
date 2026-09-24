@@ -368,7 +368,7 @@ void test('E1A Recruiting CRM Core', async (t) => {
           outcome: 'attended',
           notes: 'Objective evidence only',
         });
-        const followupKey = 'followup-idempotent-01';
+        const followupKey = 'test-test-test-01';
         const before = await service.detailRecruitmentProfile(
           a.identities.owner,
           randomUUID(),

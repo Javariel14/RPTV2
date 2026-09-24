@@ -74,6 +74,7 @@ test('U6 complete persistent vertical flow and representative Visual QA', async 
   await actions.selectOption('reconcile_mock');
   await save(dialog);
   await expect(dialog.getByText('Won — simulation', { exact: true })).toBeVisible();
+  await expect(dialog.locator('.crm-intelligence')).toContainText('Record delivery');
   await expect(dialog.getByText('Manual reconciliation', { exact: false })).toBeVisible();
   await expectVisualHealth(page, dialog);
   await page.screenshot({
@@ -83,9 +84,11 @@ test('U6 complete persistent vertical flow and representative Visual QA', async 
 
   await actions.selectOption('delivery');
   await save(dialog);
+  await expect(dialog.locator('.crm-intelligence')).toContainText('Complete curation');
   await actions.selectOption('curation');
   await save(dialog);
   await expect(dialog.getByText('Cured — simulation', { exact: true })).toBeVisible();
+  await expect(dialog.locator('.crm-intelligence')).toContainText('No next action');
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(card).toBeFocused();

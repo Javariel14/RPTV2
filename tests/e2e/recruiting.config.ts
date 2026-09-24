@@ -21,7 +21,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run dev:crm',
-    url: 'http://127.0.0.1:3101/crm/recruiting',
+    url: 'http://127.0.0.1:3101/api/recruiting/ready',
     reuseExistingServer: false,
     timeout: 120_000,
     env: { RPT_CRM_TEST_CODE: 'recruiting-e2e-code' },

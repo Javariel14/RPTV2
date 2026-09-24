@@ -122,6 +122,9 @@ function Column({
               <strong>{row.name}</strong>
               <span>{row.title}</span>
               <span>{label(row.nextAction)}</span>
+              <span className="intelligence-compact">
+                {label(row.relationshipHealth)} · {row.operationalScore}/100
+              </span>
               <small>
                 {row.nextAt ? new Date(row.nextAt).toLocaleDateString(locale) : '—'} ·{' '}
                 {label(row.priority)}

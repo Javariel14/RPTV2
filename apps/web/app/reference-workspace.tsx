@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpRight,
+  CalendarDays,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -15,6 +16,7 @@ import {
   Plus,
   Search,
   SlidersHorizontal,
+  Upload,
   Users,
 } from 'lucide-react';
 import { Button, Panel, State } from '@rpt/ui';
@@ -24,6 +26,7 @@ import { crmCatalogs } from './crm-catalog';
 import { crmRequest, useCrmData } from './use-crm-data';
 import { CrmDrawer } from './crm-drawer';
 import { CrmKanban } from './crm-kanban';
+import { CrmImportPanel } from './crm-import-panel';
 import { u4Labels } from './u4-catalog';
 import type { CrmRow, CrmSavedView } from '@rpt/contracts';
 type DisplayRow = Omit<ReferenceContact, 'stage' | 'source'> & {
@@ -32,6 +35,8 @@ type DisplayRow = Omit<ReferenceContact, 'stage' | 'source'> & {
   nextAction?: string;
   updatedAt?: string;
   priority?: string;
+  relationshipHealth?: CrmRow['relationshipHealth'];
+  operationalScore?: number;
 };
 type View = 'all' | 'mine' | 'due';
 type Mode = 'table' | 'kanban';
@@ -91,6 +96,7 @@ export function ReferenceWorkspace({
   const [detailId, setDetailId] = useState<string>();
   const [filterOpen, setFilterOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [viewName, setViewName] = useState('');
   const [saved, setSaved] = useState<SavedView[]>([]);
   const [feedback, setFeedback] = useState('');
@@ -136,6 +142,8 @@ export function ReferenceWorkspace({
         nextAction: r.nextAction,
         updatedAt: r.updatedAt,
         priority: r.priority,
+        relationshipHealth: r.relationshipHealth,
+        operationalScore: r.operationalScore,
       }))
     : localRows;
   const state: StateName = persistent
@@ -371,6 +379,12 @@ export function ReferenceWorkspace({
               <span>{t.lab}</span>
             </button>
           )}
+          {persistent && (
+            <a href="/agenda">
+              <CalendarDays size={20} />
+              <span>Agenda</span>
+            </a>
+          )}
         </nav>
         <div className="sidebar-bottom">
           <p>
@@ -436,6 +450,12 @@ export function ReferenceWorkspace({
               <Button variant="primary" onClick={addExample}>
                 <Plus size={18} />
                 {t.create}
+              </Button>
+            )}
+            {!lab && persistent && remote.snapshot?.session.canCreate && (
+              <Button variant="primary" onClick={() => setImportOpen(true)}>
+                <Upload size={18} />
+                {label('importAction')}
               </Button>
             )}
           </header>
@@ -854,7 +874,14 @@ export function ReferenceWorkspace({
                                 <td>
                                   <span className={`badge stage-${r.stage}`}>{label(r.stage)}</span>
                                 </td>
-                                <td>{nextAction(r)}</td>
+                                <td>
+                                  {nextAction(r)}
+                                  {persistent && r.relationshipHealth && (
+                                    <small className="intelligence-compact">
+                                      {label(r.relationshipHealth)} · {r.operationalScore}/100
+                                    </small>
+                                  )}
+                                </td>
                                 {(!persistent || extraColumns.includes('due')) && (
                                   <td className="data">{date(r.due)}</td>
                                 )}
@@ -885,6 +912,11 @@ export function ReferenceWorkspace({
                                 <span>
                                   {nextAction(r)} · {date(r.due)}
                                 </span>
+                                {persistent && r.relationshipHealth && (
+                                  <span className="intelligence-compact">
+                                    {label(r.relationshipHealth)} · {r.operationalScore}/100
+                                  </span>
+                                )}
                               </span>
                               <ChevronRight size={20} />
                             </button>
@@ -1013,6 +1045,16 @@ export function ReferenceWorkspace({
           label={detailLabel}
           onClose={() => setDetailId(undefined)}
           onChanged={remote.refresh}
+        />
+      )}
+      {persistent && importOpen && (
+        <CrmImportPanel
+          label={label}
+          onClose={() => setImportOpen(false)}
+          onImported={() => {
+            setFeedback(label('importCompleted'));
+            remote.refresh();
+          }}
         />
       )}
       {detail && visible && !persistent && (

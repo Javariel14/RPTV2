@@ -755,6 +755,46 @@ input[type='checkbox'] {
 .crm-detail li {
   margin-bottom: var(--s3);
 }
+.intelligence-compact {
+  display: block;
+  margin-top: var(--s1);
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+.crm-intelligence {
+  border-block: 1px solid var(--border);
+  padding-block: var(--s4);
+}
+.crm-intelligence .secondary {
+  font-size: 12px;
+}
+.crm-intelligence ul {
+  margin: 0;
+  padding-left: var(--s5);
+}
+.health {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-weight: 600;
+}
+.health::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--secondary);
+  content: '';
+}
+.health-healthy::before {
+  background: var(--success);
+}
+.health-attention::before {
+  background: var(--warning);
+}
+.health-at_risk::before {
+  background: var(--danger);
+}
 @media (max-width: 767px) {
   .kanban.crm-kanban {
     grid-template-columns: minmax(0, 1fr);
@@ -845,9 +885,318 @@ input[type='checkbox'] {
 .panel dd {
   margin: 0;
 }
+.crm-import {
+  display: grid;
+  gap: var(--s4);
+}
+.crm-import > label {
+  display: grid;
+  gap: var(--s2);
+  font-weight: 600;
+}
+.crm-import input[type='file'] {
+  width: 100%;
+  padding: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+.import-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: var(--s4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-subtle);
+}
+.import-summary div {
+  min-width: 0;
+}
+.import-summary dd {
+  font-weight: 700;
+}
+.import-errors {
+  max-height: 240px;
+  overflow: auto;
+  padding: 0 var(--s4) var(--s4);
+  border-left: 3px solid var(--danger);
+}
+.import-errors ul {
+  padding-left: var(--s5);
+}
 .timeline-event {
   border-left: 2px solid var(--action);
   padding-left: var(--s4);
+}
+.agenda-toolbar,
+.agenda-range,
+.agenda-views,
+.agenda-detail-summary,
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+.agenda-toolbar {
+  justify-content: space-between;
+  margin-bottom: var(--s4);
+}
+.agenda-range input,
+.agenda-create input,
+.agenda-create select,
+.agenda-create textarea,
+.agenda-actions input,
+.agenda-actions select {
+  min-height: var(--control);
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: var(--s2) var(--s3);
+  color: var(--text);
+  background: var(--surface);
+}
+.agenda-filters {
+  display: flex;
+  gap: var(--s3);
+  align-items: end;
+}
+.agenda-filters label,
+.agenda-create label,
+.agenda-actions label {
+  display: grid;
+  gap: var(--s1);
+  font-weight: 600;
+}
+.agenda-list {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.agenda-list article + article {
+  border-top: 1px solid var(--border);
+}
+.agenda-list article > button {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--s4);
+  border: 0;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+}
+.agenda-list article > button:hover {
+  background: var(--subtle);
+}
+.agenda-item-main {
+  display: grid;
+  gap: var(--s1);
+  flex: 1;
+  min-width: 0;
+}
+.agenda-item-main span {
+  color: var(--secondary);
+  font-size: 12px;
+}
+.agenda-type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: var(--s1) var(--s2);
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--subtle);
+}
+.agenda-type.appointment {
+  border-left: 4px solid var(--action);
+}
+.agenda-type.task {
+  border-left: 4px solid var(--warning);
+}
+.agenda-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow-x: auto;
+}
+.agenda-week > section {
+  min-height: 420px;
+  border-right: 1px solid var(--border);
+}
+.agenda-week > section:last-child {
+  border-right: 0;
+}
+.agenda-week section > header {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--s3);
+  border-bottom: 1px solid var(--border);
+}
+.agenda-week section > div {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s2);
+}
+.agenda-week section button {
+  display: grid;
+  gap: var(--s1);
+  padding: var(--s3);
+  border: 0;
+  border-left: 3px solid var(--warning);
+  border-radius: var(--r-sm);
+  background: var(--subtle);
+  color: var(--text);
+  text-align: left;
+}
+.agenda-week section button.appointment {
+  border-left-color: var(--action);
+}
+.agenda-week section button span,
+.agenda-week section button small {
+  color: var(--secondary);
+}
+.agenda-detail,
+.agenda-create,
+.agenda-actions,
+.agenda-actions form,
+.agenda-actions fieldset {
+  display: grid;
+  gap: var(--s4);
+}
+.agenda-detail-summary {
+  flex-wrap: wrap;
+}
+.agenda-create fieldset,
+.agenda-actions fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: var(--s4);
+}
+.agenda-history {
+  display: grid;
+  gap: var(--s3);
+  padding-left: var(--s5);
+}
+.agenda-history li span {
+  display: block;
+  color: var(--secondary);
+  font-size: 12px;
+}
+.field-list .field-status,
+.field-status {
+  display: inline-flex;
+  align-items: center;
+  min-width: 104px;
+  padding: var(--s1) var(--s2);
+  border-left: 4px solid var(--action);
+  border-radius: var(--r-sm);
+  background: var(--subtle);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+.field-status.in_progress {
+  border-left-color: var(--warning);
+}
+.field-status.completed {
+  border-left-color: var(--success);
+}
+.field-status.cancelled,
+.field-status.no_show {
+  border-left-color: var(--danger);
+}
+.field-detail,
+.field-actions {
+  display: grid;
+  gap: var(--s4);
+}
+.field-detail dl {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) minmax(0, 2fr);
+  gap: var(--s2) var(--s4);
+}
+.field-detail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.field-action-primary {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--s2) 0;
+  background: var(--surface);
+}
+.field-actions label:not(.check),
+.agenda-toolbar label {
+  display: grid;
+  gap: var(--s1);
+}
+.field-actions input:not([type='checkbox']),
+.field-actions textarea,
+.agenda-toolbar input,
+.agenda-create input {
+  min-height: var(--control);
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: var(--s2) var(--s3);
+  color: var(--text);
+  background: var(--surface);
+}
+@media (max-width: 767px) {
+  .agenda-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .agenda-range {
+    justify-content: space-between;
+  }
+  .agenda-views {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .agenda-views .button {
+    padding-inline: var(--s2);
+    font-size: 12px;
+  }
+  .agenda-week {
+    display: block;
+    overflow: visible;
+  }
+  .agenda-week > section {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .agenda-week > section > div:empty {
+    display: none;
+  }
+  .agenda-list article > button {
+    gap: var(--s3);
+  }
+  .agenda-type {
+    min-width: 76px;
+  }
+  .agenda-detail dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .field-detail dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .field-list article > button {
+    align-items: flex-start;
+  }
+  .field-status {
+    min-width: 88px;
+  }
 }
 .filter-fields {
   display: flex;

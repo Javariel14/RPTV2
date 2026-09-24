@@ -15,11 +15,19 @@ import {
   recruitingCreate,
   recruitingListQuery,
   recruitingMutation,
+  agendaCreate,
+  agendaListQuery,
+  agendaMutation,
+  fieldVisitCreate,
+  fieldVisitListQuery,
+  fieldVisitMutation,
   uuid,
   idempotencyKey,
 } from '@rpt/contracts';
 import { detailCrm, commandCrm } from './crm-detail.js';
 import { crmContext, listCrm, listCrmViews, saveCrmView } from './crm.js';
+import { confirmCrmImport, previewCrmImport } from './crm-import.js';
+import type { ImportFile } from './crm-import-parser.js';
 import {
   commandRecruitmentProfile,
   createRecruitmentProfile,
@@ -27,9 +35,123 @@ import {
   listRecruitmentProfiles,
   recruitingContext,
 } from './recruiting.js';
+import {
+  commandAgendaItem,
+  createAgendaItem,
+  detailAgendaItem,
+  listAgendaItems,
+} from './agenda.js';
+import {
+  commandFieldVisit,
+  createFieldVisit,
+  detailFieldVisit,
+  fieldVisitContext,
+  listFieldVisits,
+} from './field-visits.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  fieldVisitContext(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'visit.list', fieldVisitContext);
+  }
+  listFieldVisits(identity: Identity, requestId: string, input: unknown) {
+    const query = fieldVisitListQuery.parse(input);
+    return this.execute(identity, requestId, requestId, 'visit.list', (client) =>
+      listFieldVisits(client, query),
+    );
+  }
+  detailFieldVisit(identity: Identity, requestId: string, id: string) {
+    uuid.parse(id);
+    return this.execute(identity, requestId, id, 'visit.detail', (client) =>
+      detailFieldVisit(client, id),
+    );
+  }
+  async createFieldVisit(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = fieldVisitCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(
+      identity,
+      requestId,
+      command.workspaceId,
+      'visit.create',
+      (client, context) => createFieldVisit(client, context, command, key, hash),
+    );
+  }
+  async commandFieldVisit(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    idempotencyKey.parse(key);
+    const command = fieldVisitMutation.parse(input);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'visit.command', (client, context) =>
+      commandFieldVisit(client, context, id, command, key, hash),
+    );
+  }
+  listAgendaItems(identity: Identity, requestId: string, input: unknown) {
+    const query = agendaListQuery.parse(input);
+    return this.execute(identity, requestId, requestId, 'agenda.list', (client) =>
+      listAgendaItems(client, query),
+    );
+  }
+  detailAgendaItem(identity: Identity, requestId: string, id: string) {
+    uuid.parse(id);
+    return this.execute(identity, requestId, id, 'agenda.detail', (client) =>
+      detailAgendaItem(client, id),
+    );
+  }
+  async createAgendaItem(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = agendaCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(
+      identity,
+      requestId,
+      command.workspaceId,
+      'agenda.create',
+      (client, context) => createAgendaItem(client, context, command, key, hash),
+    );
+  }
+  async commandAgendaItem(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    idempotencyKey.parse(key);
+    const command = agendaMutation.parse(input);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'agenda.command', (client, context) =>
+      commandAgendaItem(client, context, id, command, key, hash),
+    );
+  }
+  previewCrmImport(identity: Identity, requestId: string, file: ImportFile) {
+    return this.execute(identity, requestId, requestId, 'crm.import.preview', (client) =>
+      previewCrmImport(client, file),
+    );
+  }
+  confirmCrmImport(
+    identity: Identity,
+    requestId: string,
+    file: ImportFile,
+    previewHash: string,
+    key: string,
+  ) {
+    z.string()
+      .regex(/^[0-9a-f]{64}$/)
+      .parse(previewHash);
+    idempotencyKey.parse(key);
+    return this.execute(identity, requestId, requestId, 'crm.import.confirm', (client, context) =>
+      confirmCrmImport(client, context, file, previewHash, key),
+    );
+  }
   recruitingContext(identity: Identity, requestId: string) {
     return this.execute(identity, requestId, requestId, 'recruiting.context', recruitingContext);
   }

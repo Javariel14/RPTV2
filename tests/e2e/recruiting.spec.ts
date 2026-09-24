@@ -5,15 +5,21 @@ import { expect, test, type Page } from '@playwright/test';
 const visual = 'work/e1b-visual';
 async function login(page: Page) {
   await page.goto('/crm/recruiting');
-  const code = page.getByLabel('Código de sesión local');
+  const code = page.getByTestId('recruiting-session-code');
   await expect(code).toBeVisible();
   await code.fill('recruiting-e2e-code');
-  await page.getByRole('button', { name: 'Iniciar sesión local' }).click();
-  const records = page.getByText('18 perfiles');
-  const retry = page.getByRole('button', { name: 'Reintentar' });
-  await expect(records.or(retry)).toBeVisible();
-  if (await retry.isVisible()) await retry.click();
-  await expect(records).toBeVisible();
+  await page.getByTestId('recruiting-session-submit').click();
+  await expect
+    .poll(
+      async () => {
+        if (await page.locator('[data-focus-return]:visible').first().isVisible()) return true;
+        const retry = page.getByTestId('recruiting-retry');
+        if (await retry.isVisible()) await retry.click();
+        return false;
+      },
+      { timeout: 45_000 },
+    )
+    .toBe(true);
 }
 async function openFirst(page: Page) {
   const trigger = page.locator('[data-focus-return]:visible').first();
@@ -34,6 +40,7 @@ test.beforeAll(async () => mkdir(visual, { recursive: true }));
 
 test('persistent list, filters, lifecycle Kanban and authorized detail', async ({ page }) => {
   await login(page);
+  await page.getByLabel('Tema', { exact: true }).selectOption('light');
   await expect(page.getByText('18 perfiles')).toBeVisible();
   await page.screenshot({ path: `${visual}/desktop-light-es-list.png`, fullPage: true });
   const search = page.getByLabel('Buscar personas');
@@ -94,9 +101,6 @@ test('all E1A actions persist and stale expectedVersion becomes conflict', async
   await page.getByRole('dialog').getByLabel('Referencia opcional').fill('cohorte-sintetica');
   await submitAction(page);
   await expect(page.getByRole('dialog')).toContainText('cohorte-sintetica');
-  await chooseAction(page, 'reassign_owner');
-  await page.getByRole('dialog').getByLabel('Responsable').selectOption({ label: 'Autorizado' });
-  await submitAction(page);
   const detail = await page.evaluate(async (profileId) => {
     const response = await fetch(`/api/recruiting/profiles/${profileId}`);
     return ((await response.json()) as { data: { row: { version: number } } }).data;
@@ -175,7 +179,7 @@ test('mobile 390 System FR main flow has no critical overflow', async ({ page })
 test('mobile 390 Dark PT forbidden state is explicit and accessible', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/crm/recruiting');
-  const code = page.getByLabel('Código de sesión local');
+  const code = page.getByTestId('recruiting-session-code');
   await expect(code).toBeVisible();
   await code.fill('recruiting-e2e-code');
   await page.getByLabel('Idioma').selectOption('pt');
@@ -187,9 +191,61 @@ test('mobile 390 Dark PT forbidden state is explicit and accessible', async ({ p
       body: JSON.stringify({ error: { code: 'FORBIDDEN' } }),
     }),
   );
-  await page.getByRole('button', { name: 'Iniciar sessão local' }).click();
+  await page.getByTestId('recruiting-session-submit').click();
   await expect(page.getByRole('alert').getByText('Acesso negado')).toBeVisible();
   await page.screenshot({ path: `${visual}/mobile-dark-pt-forbidden.png` });
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((item) => item.impact === 'critical')).toEqual([]);
+});
+
+test('E1 closure mobile System PT supports keyboard, authorized action and focus return', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
+  await login(page);
+  await page.getByLabel('Idioma').selectOption('pt');
+  await page.getByLabel('Tema', { exact: true }).selectOption('system');
+  const trigger = page.locator('.mobile-list [data-focus-return]').first();
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByText(/prioridade operacional/)).toBeVisible();
+  await dialog.getByLabel('Salvar', { exact: true }).selectOption('priority');
+  await dialog.getByLabel('Prioridade operacional').selectOption('B');
+  await dialog.getByRole('button', { name: 'Salvar', exact: true }).click();
+  await expect(dialog.getByText('Alteração salva')).toBeVisible();
+  await expect(dialog).not.toContainText(/interest_qualified|initial_contact|operational_priority/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  for (let index = 0; index < 12; index++) {
+    await page.keyboard.press('Tab');
+    expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
+  }
+  await dialog.getByRole('button', { name: 'Fechar', exact: true }).focus();
+  expect(
+    await dialog
+      .getByRole('button', { name: 'Fechar', exact: true })
+      .evaluate((node) => getComputedStyle(node).outlineStyle),
+  ).not.toBe('none');
+  expect(
+    (await new AxeBuilder({ page }).analyze()).violations.filter((item) =>
+      ['critical', 'serious'].includes(item.impact ?? ''),
+    ),
+  ).toEqual([]);
+  await mkdir('work/e1-closure-visual', { recursive: true });
+  await page.screenshot({ path: 'work/e1-closure-visual/recruiting-mobile-system-pt.png' });
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
+// Ownership transfer is intentionally terminal: the original actor may lose access and cannot
+// safely reverse the command through the UI after revocation.
+test('owner reassignment persists as the terminal state-changing scenario', async ({ page }) => {
+  await login(page);
+  await openFirst(page);
+  await chooseAction(page, 'reassign_owner');
+  await page.getByRole('dialog').getByLabel('Responsable').selectOption({ label: 'Autorizado' });
+  await submitAction(page);
 });

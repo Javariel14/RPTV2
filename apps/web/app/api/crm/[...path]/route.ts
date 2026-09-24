@@ -21,15 +21,21 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     /^opportunities\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\/commands)?$/i.test(
       path,
     );
-  if (!['session', 'context', 'opportunities', 'views'].includes(path) && !entityPath)
+  const importPath = ['imports/preview', 'imports/confirm'].includes(path);
+  if (
+    !['session', 'context', 'opportunities', 'views'].includes(path) &&
+    !entityPath &&
+    !importPath
+  )
     return Response.json({ error: { code: 'NOT_FOUND' } }, { status: 404, headers: noStore });
-  const headers = new Headers({ 'X-RPT-Bridge': secret, 'Content-Type': 'application/json' });
+  const headers = new Headers({ 'X-RPT-Bridge': secret });
+  headers.set('Content-Type', request.headers.get('content-type') ?? 'application/json');
   headers.set('Cookie', request.headers.get('cookie') ?? '');
   if (request.headers.has('Idempotency-Key'))
     headers.set('Idempotency-Key', request.headers.get('Idempotency-Key')!);
   try {
-    const body = request.method === 'POST' ? await request.text() : undefined;
-    if (body && new TextEncoder().encode(body).length > 16384)
+    const body = request.method === 'POST' ? await request.arrayBuffer() : undefined;
+    if (body && body.byteLength > (importPath ? 640 * 1024 : 16_384))
       return new Response(null, { status: 413, headers: noStore });
     const response = await fetch(
       `${origin}/${path === 'session' ? 'session' : `v1/crm/${path}`}${request.nextUrl.search}`,
@@ -39,7 +45,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
         ...(body ? { body } : {}),
         cache: 'no-store',
         redirect: 'error',
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(importPath ? 30000 : 15000),
       },
     );
     const output = new Headers(noStore);

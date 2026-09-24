@@ -16,7 +16,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     return Response.json({ error: { code: 'FORBIDDEN' } }, { status: 403, headers: noStore });
   const path = (await context.params).path.join('/');
   const entity = /^profiles\/[0-9a-f-]{36}(\/commands)?$/i.test(path);
-  if (!['session', 'context', 'profiles'].includes(path) && !entity)
+  if (!['ready', 'session', 'context', 'profiles'].includes(path) && !entity)
     return Response.json({ error: { code: 'NOT_FOUND' } }, { status: 404, headers: noStore });
   const headers = new Headers({ 'X-RPT-Bridge': secret, 'Content-Type': 'application/json' });
   headers.set('Cookie', request.headers.get('cookie') ?? '');
@@ -27,7 +27,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     if (body && new TextEncoder().encode(body).length > 16384)
       return new Response(null, { status: 413, headers: noStore });
     const response = await fetch(
-      `${origin}/${path === 'session' ? 'session' : `v1/recruiting/${path}`}${request.nextUrl.search}`,
+      `${origin}/${['ready', 'session'].includes(path) ? path : `v1/recruiting/${path}`}${request.nextUrl.search}`,
       {
         method: request.method,
         headers,

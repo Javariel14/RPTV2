@@ -68,6 +68,87 @@ export const crmCreate = z
   })
   .strict();
 export type CrmCreate = z.infer<typeof crmCreate>;
+export const crmImportRow = z
+  .object({
+    displayName: name,
+    email: z.union([z.email().max(254), z.literal('')]).default(''),
+    phone: z
+      .string()
+      .max(32)
+      .regex(/^[+0-9 ()-]*$/)
+      .default(''),
+    opportunityTitle: name,
+    source: crmSource.default('import'),
+    priority: z.enum(['normal', 'high']).default('normal'),
+    stage: z.literal('new').default('new'),
+    owner: z.literal('self').default('self'),
+    referrerEmail: z.union([z.email().max(254), z.literal('')]).default(''),
+    referrerPhone: z
+      .string()
+      .max(32)
+      .regex(/^[+0-9 ()-]*$/)
+      .default(''),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (!value.email && !value.phone)
+      context.addIssue({ code: 'custom', path: ['email'], message: 'identity_required' });
+    if (value.source !== 'referral' && (value.referrerEmail || value.referrerPhone))
+      context.addIssue({ code: 'custom', path: ['source'], message: 'referrer_requires_referral' });
+  });
+export type CrmImportRow = z.infer<typeof crmImportRow>;
+
+export const crmImportErrorCode = z.enum([
+  'invalid_file',
+  'invalid_header',
+  'invalid_row',
+  'duplicate_identity',
+  'ambiguous_identity',
+  'forbidden',
+  'cross_tenant',
+  'conflict',
+  'unsupported_value',
+]);
+export type CrmImportErrorCode = z.infer<typeof crmImportErrorCode>;
+export interface CrmImportRowError {
+  row: number;
+  code: CrmImportErrorCode;
+  field?: string;
+  reason: string;
+}
+export interface CrmImportPreviewRow {
+  row: number;
+  displayName: string;
+  opportunityTitle: string;
+  status: 'valid' | 'invalid' | 'conflict';
+  personResolution: 'new' | 'existing' | null;
+  errors: CrmImportRowError[];
+}
+export interface CrmImportPreview {
+  accepted: boolean;
+  format: 'csv' | 'xlsx' | 'unknown';
+  filename: string;
+  previewHash: string;
+  totalRows: number;
+  validRows: number;
+  invalidRows: number;
+  newPersons: number;
+  linkedPersons: number;
+  conflicts: number;
+  opportunitiesToCreate: number;
+  rows: CrmImportPreviewRow[];
+  errors: CrmImportRowError[];
+}
+export interface CrmImportSummary {
+  batchId: string;
+  status: 'completed';
+  totalRows: number;
+  createdPersons: number;
+  linkedPersons: number;
+  createdOpportunities: number;
+  rejectedRows: number;
+  conflictRows: number;
+}
 const strictCommand = <T extends z.ZodRawShape>(shape: T) => z.object(shape).strict();
 export const crmCommand = z.discriminatedUnion('type', [
   strictCommand({ type: z.literal('stage'), stage: crmStage }),
@@ -124,6 +205,20 @@ export const crmCommand = z.discriminatedUnion('type', [
       .max(32)
       .regex(/^[+0-9 ()-]*$/),
   }),
+  strictCommand({
+    type: z.literal('add_collaborator'),
+    userId: z.uuid(),
+    access: z.enum(['read', 'update']),
+    until: dateTime,
+  }),
+  strictCommand({ type: z.literal('remove_collaborator'), userId: z.uuid() }),
+  strictCommand({
+    type: z.literal('activity'),
+    kind: z.enum(['call', 'message']),
+    occurredAt: dateTime,
+    summary: z.string().trim().min(1).max(1000),
+  }),
+  strictCommand({ type: z.literal('set_referral'), referrerPersonId: z.uuid() }),
 ]);
 export type CrmCommand = z.infer<typeof crmCommand>;
 export const crmMutation = z
@@ -144,7 +239,56 @@ export const crmSaveView = z
   })
   .strict();
 
-export interface CrmRow {
+export type CrmRelationshipHealth = 'healthy' | 'attention' | 'at_risk';
+export type CrmIntelligenceReason =
+  | 'recent_activity'
+  | 'recent_update'
+  | 'inactive_7d'
+  | 'inactive_14d'
+  | 'overdue_task'
+  | 'overdue_next_action'
+  | 'missing_next_action'
+  | 'pending_objection'
+  | 'pending_commitment'
+  | 'scheduled_appointment'
+  | 'closed_stage';
+export interface CrmScoreReason {
+  code: CrmIntelligenceReason;
+  impact: number;
+}
+export interface CrmNextBestAction {
+  type:
+    | 'appointment'
+    | 'prepare_appointment'
+    | 'demo'
+    | 'quote'
+    | 'submit_order'
+    | 'reconcile_mock'
+    | 'delivery'
+    | 'curation'
+    | 'complete_task'
+    | 'entry'
+    | 'none';
+  reason: CrmIntelligenceReason | 'stage_next_step';
+  priority: 'low' | 'normal' | 'high';
+  reference: { type: 'task' | 'appointment' | 'opportunity'; id: string };
+  explanation: string;
+  generatedAt: string;
+  ruleVersion: 'commercial-beta-v1';
+  advisory: true;
+}
+export interface CrmIntelligence {
+  relationshipHealth: CrmRelationshipHealth;
+  relationshipHealthReasons: CrmIntelligenceReason[];
+  operationalScore: number;
+  scoreReasons: CrmScoreReason[];
+  nextBestAction: CrmNextBestAction;
+  nextBestActionReason: CrmNextBestAction['reason'];
+  intelligenceCalculatedAt: string;
+  intelligenceRuleVersion: 'commercial-beta-v1';
+}
+
+export interface CrmRow extends CrmIntelligence {
   id: string;
   personId: string;
   title: string;
@@ -179,6 +323,17 @@ export interface CrmSession {
 export interface CrmDetail {
   row: CrmRow;
   contact: { email: string | null; phone: string | null } | null;
+  referrer: { id: string; name: string } | null;
+  collaborators: { userId: string; access: 'read' | 'update'; until: string }[];
+  activities: {
+    id: string;
+    kind: 'call' | 'message';
+    occurredAt: string;
+    actorId: string;
+    summary: string;
+    source: 'RPT_USER';
+    requestId: string;
+  }[];
   appointments: { id: string; startsAt: string; timezone: string; channel: string }[];
   demos: { id: string; outcome: string; occurredAt: string }[];
   quotes: { id: string; product: string; amount: string; currency: string; revision: number }[];
@@ -202,6 +357,8 @@ export interface CrmDetail {
     source: string;
     authority: string;
     requestId: string;
+    actorId: string;
+    summary: string | null;
   }[];
   permissions: {
     order: boolean;
@@ -214,6 +371,9 @@ export interface CrmDetail {
     notes: boolean;
     editPerson: boolean;
     editContact: boolean;
+    manageCollaborators: boolean;
+    recordActivity: boolean;
+    setReferral: boolean;
   };
 }
 export interface CrmSavedView {
