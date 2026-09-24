@@ -59,7 +59,7 @@
     "@opentelemetry/sdk-trace-base": "2.11.0",
     "fflate": "0.8.3",
     "hono": "4.13.5",
-    "jose": "6.2.10",
+    "jose": "6.2.12",
     "pg": "8.23.0",
     "read-excel-file": "9.3.10",
     "uuid": "14.0.2",
