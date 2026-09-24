@@ -45,11 +45,15 @@ import {
   commandFieldVisit,
   createFieldVisit,
   detailFieldVisit,
+  fieldVisitContext,
   listFieldVisits,
 } from './field-visits.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  fieldVisitContext(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'visit.list', fieldVisitContext);
+  }
   listFieldVisits(identity: Identity, requestId: string, input: unknown) {
     const query = fieldVisitListQuery.parse(input);
     return this.execute(identity, requestId, requestId, 'visit.list', (client) =>

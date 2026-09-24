@@ -1090,6 +1090,67 @@ input[type='checkbox'] {
   color: var(--secondary);
   font-size: 12px;
 }
+.field-list .field-status,
+.field-status {
+  display: inline-flex;
+  align-items: center;
+  min-width: 104px;
+  padding: var(--s1) var(--s2);
+  border-left: 4px solid var(--action);
+  border-radius: var(--r-sm);
+  background: var(--subtle);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+.field-status.in_progress {
+  border-left-color: var(--warning);
+}
+.field-status.completed {
+  border-left-color: var(--success);
+}
+.field-status.cancelled,
+.field-status.no_show {
+  border-left-color: var(--danger);
+}
+.field-detail,
+.field-actions {
+  display: grid;
+  gap: var(--s4);
+}
+.field-detail dl {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) minmax(0, 2fr);
+  gap: var(--s2) var(--s4);
+}
+.field-detail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.field-action-primary {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--s2) 0;
+  background: var(--surface);
+}
+.field-actions label:not(.check),
+.agenda-toolbar label {
+  display: grid;
+  gap: var(--s1);
+}
+.field-actions input:not([type='checkbox']),
+.field-actions textarea,
+.agenda-toolbar input,
+.agenda-create input {
+  min-height: var(--control);
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: var(--s2) var(--s3);
+  color: var(--text);
+  background: var(--surface);
+}
 @media (max-width: 767px) {
   .agenda-toolbar {
     align-items: stretch;
@@ -1126,6 +1187,15 @@ input[type='checkbox'] {
   }
   .agenda-detail dl {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .field-detail dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .field-list article > button {
+    align-items: flex-start;
+  }
+  .field-status {
+    min-width: 88px;
   }
 }
 .filter-fields {

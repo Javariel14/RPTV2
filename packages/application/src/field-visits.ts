@@ -200,6 +200,19 @@ export async function listFieldVisits(
   };
 }
 
+export async function fieldVisitContext(client: Client) {
+  await requireVisitReadCapability(client);
+  const row = (
+    await client.query<{ id: string }>(
+      `SELECT w.id FROM rpt.crm_workspace w
+     WHERE w.tenant_id=authz.tenant_id()
+       AND authz.visit_workspace_right(w.id,'create','CONFIDENTIAL')
+     ORDER BY w.id LIMIT 1`,
+    )
+  ).rows[0];
+  return { workspaceId: row?.id ?? null };
+}
+
 export async function detailFieldVisit(client: Client, id: string): Promise<FieldVisitDetail> {
   await requireVisitReadCapability(client);
   const row = (

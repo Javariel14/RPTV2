@@ -54,6 +54,8 @@ void test('E2C Field Visits Core', async (t) => {
     }
 
     const service = new FoundationService(new PostgresDatabase(cluster.runtimeConfig()));
+    const fieldContext = await service.fieldVisitContext(a.identities.owner, randomUUID());
+    assert.equal(fieldContext.workspaceId, a.workspace);
     const appointmentInput = {
       schemaVersion: 1 as const,
       type: 'appointment' as const,

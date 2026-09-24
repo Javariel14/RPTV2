@@ -6,6 +6,7 @@ import {
   ChevronRight,
   FlaskConical,
   List,
+  MapPin,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
@@ -169,6 +170,10 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
           <a className="active" href="/agenda" aria-current="page">
             <CalendarDays size={20} />
             <span>{label('agenda')}</span>
+          </a>
+          <a href="/field">
+            <MapPin size={20} />
+            <span>{label('field')}</span>
           </a>
         </nav>
         <div className="sidebar-bottom">
