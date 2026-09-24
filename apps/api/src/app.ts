@@ -195,6 +195,12 @@ export function createApi(
       ),
     }),
   );
+  api.get('/v1/visits/context', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await service.fieldVisitContext(c.get('identity'), c.get('requestId')),
+    }),
+  );
   api.get('/v1/visits', async (c) =>
     c.json({
       schemaVersion: 1,

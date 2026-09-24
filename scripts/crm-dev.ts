@@ -17,6 +17,23 @@ const root = await cluster.migrate();
 const fixture = await seedCrm(root, 'crm-local');
 await seedRecruiting(root, fixture);
 await root.query(
+  "INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from) VALUES($1,$2,'field_visits_core',1,true,100,'2020-01-01')",
+  [fixture.tenant, randomUUID()],
+);
+for (const verb of ['read', 'create', 'update']) {
+  for (const field of ['CONFIDENTIAL', 'RESTRICTED_LOCATION']) {
+    await root.query(
+      "INSERT INTO authz.role_capability VALUES($1,'owner','field_visit',$2,$3,false,1)",
+      [fixture.tenant, verb, field],
+    );
+    await root.query(
+      `INSERT INTO authz.workspace_permission(tenant_id,id,workspace_id,user_id,object_type,verb,field_class,policy_version)
+       VALUES($1,$2,$3,$4,'field_visit',$5,$6,1)`,
+      [fixture.tenant, randomUUID(), fixture.workspace, fixture.users.owner, verb, field],
+    );
+  }
+}
+await root.query(
   "INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from) VALUES($1,$2,'agenda_tasks_core',1,true,100,'2020-01-01')",
   [fixture.tenant, randomUUID()],
 );
@@ -37,6 +54,7 @@ const agendaItems = [
   { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 16 },
 ] as const;
 const service = new FoundationService(new PostgresDatabase(cluster.runtimeConfig()));
+let linkedFieldAppointment: string | undefined;
 for (const item of agendaItems) {
   const start = new Date();
   start.setUTCHours(item.hour, 0, 0, 0);
@@ -60,7 +78,7 @@ for (const item of agendaItems) {
       preparationMinutes: 10,
     },
   };
-  await service.createAgendaItem(
+  const created = await service.createAgendaItem(
     fixture.identities.owner,
     randomUUID(),
     item.type === 'appointment'
@@ -73,7 +91,41 @@ for (const item of agendaItems) {
       : { ...common, type: 'task', dueAt: start.toISOString(), priority: 'normal' },
     `agenda-local-${item.type}-${item.day}`,
   );
+  if (item.type === 'appointment' && item.day === 0) linkedFieldAppointment = created.id;
 }
+if (linkedFieldAppointment) {
+  await service.createFieldVisit(
+    fixture.identities.owner,
+    randomUUID(),
+    {
+      schemaVersion: 1,
+      workspaceId: fixture.workspace,
+      agendaItemId: linkedFieldAppointment,
+      personId: null,
+      opportunityId: null,
+      scheduledAt: null,
+      purpose: 'Visita comercial sintética',
+    },
+    'field-local-linked-01',
+  );
+}
+const upcomingVisit = new Date();
+upcomingVisit.setUTCHours(16, 0, 0, 0);
+upcomingVisit.setUTCDate(upcomingVisit.getUTCDate() + 1);
+await service.createFieldVisit(
+  fixture.identities.owner,
+  randomUUID(),
+  {
+    schemaVersion: 1,
+    workspaceId: fixture.workspace,
+    agendaItemId: null,
+    personId: null,
+    opportunityId: null,
+    scheduledAt: upcomingVisit.toISOString(),
+    purpose: 'Seguimiento en campo sintético',
+  },
+  'field-local-upcoming-01',
+);
 // The local bridge is not ready until PostgreSQL has statistics for the complete
 // synthetic CRM/Recruiting/Agenda dataset. This prevents first-run query-plan
 // drift after state-changing E2E scenarios without weakening runtime timeouts.
@@ -196,6 +248,7 @@ const next = spawn(
 console.log('CRM: http://127.0.0.1:3101/crm/commercial');
 console.log('Recruiting: http://127.0.0.1:3101/crm/recruiting');
 console.log('Agenda: http://127.0.0.1:3101/agenda');
+console.log('Field Sales: http://127.0.0.1:3101/field');
 console.log(`Código de sesión local (1 hora): ${loginCode}`);
 console.log(
   'Datos sintéticos en PostgreSQL; conservados al recargar. Cada arranque crea un laboratorio aislado.',
