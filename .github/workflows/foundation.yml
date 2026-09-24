@@ -74,6 +74,40 @@ jobs:
             work/u5-visual/
             work/u5-e2e-results.json
           retention-days: 14
+  recruiting-agenda-field-e2e:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.14.1
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: Recruiting E2E (synthetic PostgreSQL)
+        run: npm run test:recruiting:e2e
+      - name: Agenda E2E (synthetic PostgreSQL)
+        run: npm run test:agenda:e2e
+      - name: Field Sales E2E (synthetic PostgreSQL)
+        run: npm run test:field:e2e
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: recruiting-agenda-field-evidence
+          path: |
+            work/e1b-e2e-results.json
+            work/e1b-playwright-report/
+            work/e1b-visual/
+            work/e2b-e2e-results.json
+            work/e2b-playwright-report/
+            work/e2b-visual/
+            work/e2d-e2e-results.json
+            work/e2d-playwright-report/
+            work/e2d-visual/
+          retention-days: 14
   sast:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -104,7 +138,7 @@ jobs:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
   staging-readiness:
     if: vars.RPT_STAGING_CHECKS_ENABLED == 'true'
-    needs: [verify, crm-e2e, sast, secrets]
+    needs: [verify, crm-e2e, recruiting-agenda-field-e2e, sast, secrets]
     runs-on: windows-latest
     environment: staging
     steps:
