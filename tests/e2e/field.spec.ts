@@ -150,7 +150,11 @@ test('mobile 390 System FR is action-first and accessible', async ({ page }) => 
   await login(page);
   await page.getByLabel('Idioma').selectOption('fr');
   await page.getByLabel('Thème').selectOption('system');
-  await page.locator('.field-list [data-focus-return]').first().click();
+  const seededVisit = page
+    .locator('.field-list article')
+    .filter({ has: page.getByText('Visita comercial sintética', { exact: true }) });
+  await expect(seededVisit).toHaveCount(1);
+  await seededVisit.getByRole('button').click();
   await expect(page.getByRole('dialog')).toContainText('Visita comercial sintética');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `${visual}/mobile-system-fr.png` });
