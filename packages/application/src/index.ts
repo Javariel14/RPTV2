@@ -21,6 +21,9 @@ import {
   fieldVisitCreate,
   fieldVisitListQuery,
   fieldVisitMutation,
+  productCreate,
+  productCommand,
+  productListQuery,
   uuid,
   idempotencyKey,
 } from '@rpt/contracts';
@@ -48,9 +51,49 @@ import {
   fieldVisitContext,
   listFieldVisits,
 } from './field-visits.js';
+import { createProduct, commandProduct, listProducts, detailProduct } from './product-master.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  listProducts(identity: Identity, requestId: string, input: unknown) {
+    const query = productListQuery.parse(input);
+    return this.execute(identity, requestId, requestId, 'product.list', (client) =>
+      listProducts(client, query),
+    );
+  }
+  detailProduct(identity: Identity, requestId: string, id: string) {
+    uuid.parse(id);
+    return this.execute(identity, requestId, id, 'product.detail', (client) =>
+      detailProduct(client, id),
+    );
+  }
+  async createProduct(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = productCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(
+      identity,
+      requestId,
+      command.workspaceId,
+      'product.create',
+      (client, context) => createProduct(client, context, command, key, hash),
+    );
+  }
+  async commandProduct(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    idempotencyKey.parse(key);
+    const command = productCommand.parse(input);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'product.command', (client, context) =>
+      commandProduct(client, context, id, command, key, hash),
+    );
+  }
   fieldVisitContext(identity: Identity, requestId: string) {
     return this.execute(identity, requestId, requestId, 'visit.list', fieldVisitContext);
   }

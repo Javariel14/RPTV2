@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, createHash } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { generateKeyPair, exportJWK, createLocalJWKSet, SignJWT } from 'jose';
 import { z } from 'zod';
 import { PostgresDatabase } from '@rpt/persistence';
@@ -61,11 +61,15 @@ await test('real PostgreSQL Foundation acceptance', { timeout: 240_000 }, async 
     await t.test(
       'forward migrations: all sensitive tables have RLS and runtime is not owner',
       async () => {
-        assert.equal(
-          (await admin.query('SELECT count(*)::int AS count FROM public.foundation_migration'))
-            .rows[0]?.count,
-          12,
-        );
+        const files = (await readdir('supabase/migrations'))
+          .filter((name) => name.endsWith('.sql'))
+          .sort();
+        const applied = (
+          await admin.query<{ name: string }>(
+            'SELECT name FROM public.foundation_migration ORDER BY name',
+          )
+        ).rows.map((row) => row.name);
+        assert.deepEqual(applied, files);
         const tables = await admin.query(
           "SELECT tablename FROM pg_tables JOIN pg_class c ON c.oid=(quote_ident(schemaname)||'.'||quote_ident(tablename))::regclass WHERE schemaname IN ('rpt','authz') AND NOT c.relrowsecurity",
         );
