@@ -8,6 +8,7 @@
     "./crm": "./src/crm.ts",
     "./recruiting": "./src/recruiting.ts",
     "./agenda": "./src/agenda.ts",
-    "./field-visits": "./src/field-visits.ts"
+    "./field-visits": "./src/field-visits.ts",
+    "./product-master": "./src/product-master.ts"
   }
 }

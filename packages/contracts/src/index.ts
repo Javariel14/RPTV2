@@ -3,6 +3,7 @@ export * from './crm.js';
 export * from './recruiting.js';
 export * from './agenda.js';
 export * from './field-visits.js';
+export * from './product-master.js';
 export const uuid = z.uuid();
 export const identityClaims = z.object({
   iss: z.string().url(),

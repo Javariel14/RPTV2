@@ -1,0 +1,16 @@
+# E3A1 — Product Master + Taxonomy
+
+- Model: tenant-local, market-independent `product_node` tree (`product → model → variant`). Stable keys identify nodes; equal names never merge. Root/model lifecycle is global, not market availability. Historical models remain readable.
+- Codes: node-linked, typed and unique within `(tenant, scope kind, scope key, code kind, code)`; market/source scope is identification context only.
+- Taxonomy: tenant-scoped group catalog with seeded canonical groups, authorized `define_group`, registered terms and explicit node assignments. New groups need no enum/CHECK migration.
+- Facts: append-only typed text/decimal/taxon values; exact PostgreSQL `numeric(18,6)` and original source literal are separate. Pending/name-only evidence cannot carry a normalized value. Corrections append with `previous_fact_id`.
+- Evidence: reuses immutable `rpt.source_observation` (`product_master` domain), source authority, observed time, scoped source, literal and evidence level. The database binds observation subject/level/literal/scope to facts and relations. No research dataset was imported.
+- Relations: explicit node-to-node links; self-links and duplicate relation identities are rejected. No commercial Bundle.
+- Security: existing product capability, workspace permission, ownership projection, immediate session/role revocation, tenant-composite FKs, RLS and server-side authorization. Network ancestry grants nothing. Legacy Trust policies exclude Product observations for both read and write.
+- Migration: `20260924100000_e3a1_product_master.sql` is forward-only. Runtime remains a non-owner. Audit triggers cover product changes; receipt keys and root version serialize retries/mutations.
+- Out of scope: Country Catalog/MarketProduct, availability, prices, taxes, financing and PriceList (E3A2); CPQ/quotes/orders, external sync, AI and product UI (later packages).
+- Review correction v5-007-F1: v5-007-R1 = FAIL; its policy-name concern was clarified against the second historical migration, which split `trust_write` into `trust_insert`/`trust_update`. The previous PASS report was invalidated by R1 and is not closure evidence for this revision. E3A1 now removes either historical policy form and adds scoped legacy policies; the negative Trust-only Product read/insert test detects the bypass.
+- R2 = FAIL: F1 added `trust_legacy_approve_read`, unintentionally making `trust.approve` imply legacy SELECT. F2 removes that policy, restoring historical `trust.read` versus `trust.approve` separation without changing Product evidence policies. A same-tenant approve-only actor now proves legacy/Product SELECT denial and legacy INSERT allowance.
+- Prior F1 validation: clean migration harness PASS; E3A1 unit 1/1 and PostgreSQL integration 5/5 PASS; full verify PASS, but R2 invalidated its checkpoint readiness. F2 clean migration, E3A1 unit 1/1, PostgreSQL integration 5/5 and security PASS. Final `npm.cmd run verify` PASS (format, lint, typecheck, 27 unit tests, security, 91 integration tests, web/API build).
+- Non-blocking debt: no bulk import or specialized code-retirement command in E3A1; future changes need append-only correction semantics.
+- Blockers: none locally. Ready for orchestrator R3 final review before checkpoint.

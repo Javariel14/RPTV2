@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readdir } from 'node:fs/promises';
 import { generateKeyPair, exportJWK, createLocalJWKSet, SignJWT } from 'jose';
 import { FoundationService } from '@rpt/application';
 import { PostgresDatabase } from '@rpt/persistence';
@@ -60,11 +61,15 @@ await test('U3 real PostgreSQL + API continuity', { timeout: 240000 }, async (t)
       'Content-Type': 'application/json',
     };
     await t.test('existing CRM migration applies; runtime cannot bypass RLS', async () => {
-      assert.equal(
-        (await admin.query('SELECT count(*)::int AS n FROM public.foundation_migration')).rows[0]
-          ?.n,
-        12,
-      );
+      const files = (await readdir('supabase/migrations'))
+        .filter((name) => name.endsWith('.sql'))
+        .sort();
+      const applied = (
+        await admin.query<{ name: string }>(
+          'SELECT name FROM public.foundation_migration ORDER BY name',
+        )
+      ).rows.map((row) => row.name);
+      assert.deepEqual(applied, files);
       assert.equal(
         (
           await admin.query(
