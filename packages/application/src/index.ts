@@ -1,4 +1,5 @@
 import type { Client } from 'pg';
+export { CommercialCalculatorService } from './commercial-calculator.js';
 import { z } from 'zod';
 import {
   FoundationError,
