@@ -108,3 +108,5 @@ export function evaluateFlag(
     bucket < chosen.rolloutPercent
   );
 }
+export * from './commercial-calculator.js';
+export { Exact } from './commercial-decimal.js';

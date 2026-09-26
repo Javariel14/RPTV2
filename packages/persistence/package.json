@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./product-master": "./src/product-master.ts",
-    "./country-catalog": "./src/country-catalog.ts"
+    "./country-catalog": "./src/country-catalog.ts",
+    "./commercial-calculator": "./src/commercial-calculator.ts"
   }
 }
