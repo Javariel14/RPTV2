@@ -24,6 +24,24 @@ import {
   productCreate,
   productCommand,
   productListQuery,
+  catalogMarketCreate,
+  marketProductCreate,
+  marketAvailabilityChange,
+  priceListCreate,
+  priceListClose,
+  priceEntryCreate,
+  marketCatalogQuery,
+  priceQuery,
+  priceHistoryQuery,
+  currencyRegister,
+  currencyStatus,
+  marketStatus,
+  adminMarketScopeGrant,
+  actorMarketAssignment,
+  priceListActivate,
+  exchangeRateCreate,
+  exchangeRateQuery,
+  referenceConversionQuery,
   uuid,
   idempotencyKey,
 } from '@rpt/contracts';
@@ -52,9 +70,235 @@ import {
   listFieldVisits,
 } from './field-visits.js';
 import { createProduct, commandProduct, listProducts, detailProduct } from './product-master.js';
+import {
+  catalogMarkets,
+  createCatalogMarket,
+  createCatalogProduct,
+  changeCatalogAvailability,
+  marketCatalog,
+  createCatalogPriceList,
+  closeCatalogPriceList,
+  addCatalogPrice,
+  readCatalogPrice,
+  readCatalogPriceHistory,
+  catalogOperationalMarket,
+  createCurrency,
+  changeCurrencyStatus,
+  grantCatalogMarketScope,
+  revokeCatalogMarketScope,
+  assignCatalogActorMarket,
+  changeCatalogMarketStatus,
+  activateCatalogPriceList,
+  createCatalogExchangeRate,
+  readCatalogExchangeRate,
+  deriveCatalogReference,
+} from './country-catalog.js';
 type Outcome<T> = { value: T } | { error: ErrorCode };
 export class FoundationService {
   constructor(private readonly database: Database) {}
+  operationalMarket(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'catalog.list', catalogOperationalMarket);
+  }
+  async registerCatalogCurrency(
+    identity: Identity,
+    requestId: string,
+    input: unknown,
+    key: string,
+  ) {
+    const command = currencyRegister.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(identity, requestId, requestId, 'catalog.admin', (client, context) =>
+      createCurrency(client, context, command, key, hash),
+    );
+  }
+  async setCatalogCurrencyStatus(
+    identity: Identity,
+    requestId: string,
+    code: string,
+    input: unknown,
+    key: string,
+  ) {
+    const command = currencyStatus.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ code, ...command });
+    return this.execute(identity, requestId, requestId, 'catalog.admin', (client) =>
+      changeCurrencyStatus(client, code, command, key, hash),
+    );
+  }
+  async grantAdminMarketScope(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = adminMarketScopeGrant.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(identity, requestId, command.marketId, 'catalog.admin', (client, context) =>
+      grantCatalogMarketScope(client, context, command, key, hash),
+    );
+  }
+  async revokeAdminMarketScope(identity: Identity, requestId: string, id: string, key: string) {
+    uuid.parse(id);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ id });
+    return this.execute(identity, requestId, id, 'catalog.admin', (client) =>
+      revokeCatalogMarketScope(client, id, key, hash),
+    );
+  }
+  async assignOperationalMarket(
+    identity: Identity,
+    requestId: string,
+    input: unknown,
+    key: string,
+  ) {
+    const command = actorMarketAssignment.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(identity, requestId, command.marketId, 'catalog.admin', (client, context) =>
+      assignCatalogActorMarket(client, context, command, key, hash),
+    );
+  }
+  async setCatalogMarketStatus(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    const command = marketStatus.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'catalog.admin', (client) =>
+      changeCatalogMarketStatus(client, id, command, key, hash),
+    );
+  }
+  async activatePriceList(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    const command = priceListActivate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'pricing.command', (client) =>
+      activateCatalogPriceList(client, id, command, key, hash),
+    );
+  }
+  async recordExchangeRate(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = exchangeRateCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(identity, requestId, command.marketId, 'pricing.fx', (client, context) =>
+      createCatalogExchangeRate(client, context, command, key, hash),
+    );
+  }
+  catalogExchangeRate(identity: Identity, requestId: string, input: unknown) {
+    const q = exchangeRateQuery.parse(input);
+    return this.execute(identity, requestId, q.marketId, 'pricing.fx', (client) =>
+      readCatalogExchangeRate(client, q.marketId, q.baseCurrency, q.quoteCurrency, q.asOf),
+    );
+  }
+  referenceConversion(identity: Identity, requestId: string, input: unknown) {
+    const q = referenceConversionQuery.parse(input);
+    return this.execute(identity, requestId, q.marketId, 'pricing.fx', (client) =>
+      deriveCatalogReference(client, q.marketId, q.baseCurrency, q.quoteCurrency, q.asOf, q.amount),
+    );
+  }
+  listCatalogMarkets(identity: Identity, requestId: string) {
+    return this.execute(identity, requestId, requestId, 'catalog.list', catalogMarkets);
+  }
+  async createCatalogMarket(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = catalogMarketCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(identity, requestId, requestId, 'catalog.create', (client, context) =>
+      createCatalogMarket(client, context, command, key, hash),
+    );
+  }
+  listMarketCatalog(identity: Identity, requestId: string, input: unknown) {
+    const query = marketCatalogQuery.parse(input);
+    return this.execute(identity, requestId, query.marketId, 'catalog.list', (client) =>
+      marketCatalog(client, query.marketId, query.asOf, query.limit),
+    );
+  }
+  async createMarketProduct(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = marketProductCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(identity, requestId, command.nodeId, 'catalog.create', (client, context) =>
+      createCatalogProduct(client, context, command, key, hash),
+    );
+  }
+  async changeMarketAvailability(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    const command = marketAvailabilityChange.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'catalog.command', (client, context) =>
+      changeCatalogAvailability(client, context, id, command, key, hash),
+    );
+  }
+  async createPriceList(identity: Identity, requestId: string, input: unknown, key: string) {
+    const command = priceListCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash(command);
+    return this.execute(
+      identity,
+      requestId,
+      command.marketId,
+      'pricing.create',
+      (client, context) => createCatalogPriceList(client, context, command, key, hash),
+    );
+  }
+  async closePriceList(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    const command = priceListClose.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'pricing.command', (client) =>
+      closeCatalogPriceList(client, id, command, key, hash),
+    );
+  }
+  async addPriceEntry(
+    identity: Identity,
+    requestId: string,
+    id: string,
+    input: unknown,
+    key: string,
+  ) {
+    uuid.parse(id);
+    const command = priceEntryCreate.parse(input);
+    idempotencyKey.parse(key);
+    const hash = await this.commandHash({ id, ...command });
+    return this.execute(identity, requestId, id, 'pricing.command', (client, context) =>
+      addCatalogPrice(client, context, id, command, key, hash),
+    );
+  }
+  currentCatalogPrice(identity: Identity, requestId: string, input: unknown) {
+    const query = priceQuery.parse(input);
+    return this.execute(identity, requestId, query.priceListId, 'pricing.list', (client) =>
+      readCatalogPrice(client, query.priceListId, query.marketProductId, query.asOf),
+    );
+  }
+  catalogPriceHistory(identity: Identity, requestId: string, input: unknown) {
+    const query = priceHistoryQuery.parse(input);
+    return this.execute(identity, requestId, query.priceListId, 'pricing.list', (client) =>
+      readCatalogPriceHistory(client, query.priceListId, query.marketProductId, query.limit),
+    );
+  }
   listProducts(identity: Identity, requestId: string, input: unknown) {
     const query = productListQuery.parse(input);
     return this.execute(identity, requestId, requestId, 'product.list', (client) =>
@@ -318,7 +562,7 @@ export class FoundationService {
           const code: ErrorCode =
             error instanceof FoundationError
               ? error.code
-              : pgCode.success && pgCode.data.code === '23505'
+              : pgCode.success && ['23505', '23P01'].includes(pgCode.data.code)
                 ? 'CONFLICT'
                 : pgCode.success && ['23514', '22P02'].includes(pgCode.data.code)
                   ? 'INVALID_REQUEST'

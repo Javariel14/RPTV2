@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./product-master": "./src/product-master.ts"
+    "./product-master": "./src/product-master.ts",
+    "./country-catalog": "./src/country-catalog.ts"
   }
 }
