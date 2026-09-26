@@ -9,6 +9,7 @@
     "./recruiting": "./src/recruiting.ts",
     "./agenda": "./src/agenda.ts",
     "./field-visits": "./src/field-visits.ts",
-    "./product-master": "./src/product-master.ts"
+    "./product-master": "./src/product-master.ts",
+    "./country-catalog": "./src/country-catalog.ts"
   }
 }
