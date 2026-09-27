@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./product-master": "./src/product-master.ts",
     "./country-catalog": "./src/country-catalog.ts",
-    "./commercial-calculator": "./src/commercial-calculator.ts"
+    "./commercial-calculator": "./src/commercial-calculator.ts",
+    "./cpq": "./src/cpq.ts"
   }
 }

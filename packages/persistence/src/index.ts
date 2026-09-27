@@ -18,6 +18,7 @@ export interface Database {
     identity: Identity,
     requestId: string,
     operation: (client: Client, context: AuthContext) => Promise<T>,
+    options?: { isolation: 'repeatable_read' },
   ): Promise<T>;
 }
 export class PostgresDatabase implements Database {
@@ -26,6 +27,7 @@ export class PostgresDatabase implements Database {
     identity: Identity,
     requestId: string,
     operation: (client: Client, context: AuthContext) => Promise<T>,
+    options?: { isolation: 'repeatable_read' },
   ): Promise<T> {
     const client = new Client({
       ...this.config,
@@ -41,7 +43,11 @@ export class PostgresDatabase implements Database {
         )
       ).rows[0];
       if (!role?.safe) throw new FoundationError('UNAVAILABLE');
-      await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+      await client.query(
+        options?.isolation === 'repeatable_read'
+          ? 'BEGIN ISOLATION LEVEL REPEATABLE READ'
+          : 'BEGIN ISOLATION LEVEL READ COMMITTED',
+      );
       const found = (
         await client.query('SELECT * FROM authz.resolve_identity($1,$2,$3)', [
           identity.iss,
