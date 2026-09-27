@@ -1,5 +1,7 @@
 import type { Client } from 'pg';
 export { CommercialCalculatorService } from './commercial-calculator.js';
+export { QuoteService } from './cpq.js';
+export { createQuoteCalculationAttestor } from './cpq-attestation.js';
 import { z } from 'zod';
 import {
   FoundationError,

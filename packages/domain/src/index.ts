@@ -110,3 +110,4 @@ export function evaluateFlag(
 }
 export * from './commercial-calculator.js';
 export { Exact } from './commercial-decimal.js';
+export { nextQuoteStatus } from './cpq.js';
