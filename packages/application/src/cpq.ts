@@ -33,6 +33,7 @@ import {
 } from '@rpt/persistence/cpq';
 import { CommercialCalculatorService } from './commercial-calculator.js';
 import type { QuoteCalculationAttestor } from './cpq-attestation.js';
+import { insertAcceptance } from '@rpt/persistence/quote-workflow';
 
 async function digest(value: unknown) {
   const bytes = await crypto.subtle.digest(
@@ -212,13 +213,29 @@ export class QuoteService {
     });
   }
   transitionQuoteStatus(identity: Identity, request: string, id: string, input: unknown) {
-    return this.execute(identity, request, id, 'cpq.transition', async (c) => {
+    return this.execute(identity, request, id, 'cpq.transition', async (c, a) => {
       uuid.parse(id);
       const command = quoteTransition.parse(input);
       await this.require(c, id, command.action);
       const q = await quote(c, id, true);
       if (!q) throw new FoundationError('NOT_FOUND');
       if (q.version !== command.expectedVersion) throw new FoundationError('CONFLICT');
+      if (command.action === 'accept') {
+        nextQuoteStatus(q.status, command.action);
+        const current = (await quoteHistory(c, id, q.current_version_number - 1, 1))[0];
+        if (
+          !current ||
+          !(await insertAcceptance(
+            c,
+            a,
+            current.id,
+            'administrative_record',
+            'Recorded acceptance through the authorized quote lifecycle command',
+          ))
+        )
+          throw new FoundationError('NOT_FOUND');
+        return quote(c, id);
+      }
       return transitionQuote(
         c,
         id,
