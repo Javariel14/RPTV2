@@ -208,7 +208,7 @@ void test('E3B3 exact-version approval, acceptance and immutable Order on real P
     assert.equal(
       (await root.query('SELECT count(*)::integer AS n FROM public.foundation_migration')).rows[0]
         .n,
-      17,
+      18,
     );
     for (const f of [a, b]) {
       await grant(f, 'owner', 'quote_approval', ['read', 'request', 'decide']);
