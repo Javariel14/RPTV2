@@ -2,6 +2,7 @@ import type { Client } from 'pg';
 export { CommercialCalculatorService } from './commercial-calculator.js';
 export { QuoteService } from './cpq.js';
 export { QuoteWorkflowService } from './quote-workflow.js';
+export { OrderCommercialService } from './order-commercial.js';
 export { createQuoteCalculationAttestor } from './cpq-attestation.js';
 import { z } from 'zod';
 import {
