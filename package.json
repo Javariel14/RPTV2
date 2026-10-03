@@ -51,14 +51,14 @@
     "tsx": "4.23.13",
     "typescript": "5.9.3",
     "typescript-eslint": "8.69.0",
-    "wrangler": "4.131.2"
+    "wrangler": "4.147.0"
   },
   "dependencies": {
     "@opentelemetry/api": "1.9.1",
     "@opentelemetry/sdk-metrics": "2.11.0",
     "@opentelemetry/sdk-trace-base": "2.11.0",
     "fflate": "0.8.3",
-    "hono": "4.13.5",
+    "hono": "4.13.12",
     "jose": "6.2.10",
     "pg": "8.23.0",
     "read-excel-file": "9.3.10",
