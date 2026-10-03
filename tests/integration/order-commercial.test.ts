@@ -78,12 +78,12 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
         await c.query('ROLLBACK TO SAVEPOINT lifecycle_attack');
       });
     await t.test(
-      '18 clean forward migrations safely bootstrap a pre-E3B4 genuine canonical Order',
+      '19 clean forward migrations safely bootstrap a pre-E3B4 genuine canonical Order',
       async () => {
         assert.equal(
           (await root!.query('SELECT count(*)::integer AS n FROM public.foundation_migration'))
             .rows[0].n,
-          18,
+          19,
         );
         assert.deepEqual(
           (
@@ -1119,7 +1119,7 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
   }
 });
 
-void test('E3B4 empty fresh PostgreSQL applies all 18 migrations with least-privilege helpers and RLS', async () => {
+void test('E3B4 empty fresh PostgreSQL applies all 19 migrations with least-privilege helpers and RLS', async () => {
   const cluster = await startPostgres();
   let root: Awaited<ReturnType<typeof cluster.migrate>> | undefined;
   try {
@@ -1127,7 +1127,7 @@ void test('E3B4 empty fresh PostgreSQL applies all 18 migrations with least-priv
     assert.equal(
       (await root.query('SELECT count(*)::integer AS n FROM public.foundation_migration')).rows[0]
         .n,
-      18,
+      19,
     );
     for (const table of ['order_commercial_state', 'order_commercial_event', 'order_replacement']) {
       const privileges: { read: boolean; write: boolean } = (

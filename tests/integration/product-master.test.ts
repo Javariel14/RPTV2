@@ -487,7 +487,7 @@ void test('E3A1 tenant-local Product Master', async (t) => {
         "INSERT INTO authz.role_capability VALUES($1,'admin','trust','approve','OFFICIAL_COMPENSATION',false,1)",
         [a.tenant],
       );
-      for (const domain of ['product_master', 'legacy-test'])
+      for (const domain of ['product_master', 'rank'])
         for (const actorId of [a.users.ai, a.users.outsider])
           await db.query(
             `INSERT INTO authz.source_authority
@@ -575,29 +575,29 @@ void test('E3A1 tenant-local Product Master', async (t) => {
         '42501',
       );
       assert.equal(
-        await insertObservation(a.identities.ai, a.users.ai, 'legacy-test', randomUUID()),
+        await insertObservation(a.identities.ai, a.users.ai, 'rank', randomUUID()),
         'INSERTED',
       );
-      const legacyVisible = await runtime.request(a.identities.ai, randomUUID(), (client) =>
+      const genericVisible = await runtime.request(a.identities.ai, randomUUID(), (client) =>
         client.query<{ n: string }>(
-          "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='legacy-test'",
+          "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='rank'",
         ),
       );
-      assert.equal(legacyVisible.rows[0]?.n, '1');
+      assert.equal(genericVisible.rows[0]?.n, '1');
       const approveOnly = await runtime.request(a.identities.outsider, randomUUID(), (client) =>
         client.query<{
           approve: boolean;
           read: boolean;
           productRead: boolean;
           productUpdate: boolean;
-          legacyCount: string;
+          genericCount: string;
           productCount: string;
         }>(
           `SELECT authz.tenant_allowed($1,'trust','approve','OFFICIAL_COMPENSATION') AS approve,
           authz.tenant_allowed($1,'trust','read','OFFICIAL_COMPENSATION') AS read,
           authz.tenant_allowed($1,'product','read','CONFIDENTIAL') AS "productRead",
           authz.product_allowed($2,'update') AS "productUpdate",
-          (SELECT count(*)::text FROM rpt.source_observation WHERE domain_key='legacy-test') AS "legacyCount",
+          (SELECT count(*)::text FROM rpt.source_observation WHERE domain_key='rank') AS "genericCount",
           (SELECT count(*)::text FROM rpt.source_observation WHERE domain_key='product_master') AS "productCount"`,
           [a.tenant, ids.first],
         ),
@@ -607,16 +607,11 @@ void test('E3A1 tenant-local Product Master', async (t) => {
         read: false,
         productRead: false,
         productUpdate: false,
-        legacyCount: '0',
+        genericCount: '0',
         productCount: '0',
       });
       assert.equal(
-        await insertObservation(
-          a.identities.outsider,
-          a.users.outsider,
-          'legacy-test',
-          randomUUID(),
-        ),
+        await insertObservation(a.identities.outsider, a.users.outsider, 'rank', randomUUID()),
         'INSERTED',
       );
       assert.equal(
@@ -628,31 +623,31 @@ void test('E3A1 tenant-local Product Master', async (t) => {
         ),
         '42501',
       );
-      const legacyAfterApproveInsert = await runtime.request(
+      const genericAfterApproveInsert = await runtime.request(
         a.identities.ai,
         randomUUID(),
         (client) =>
           client.query<{ n: string }>(
-            "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='legacy-test'",
+            "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='rank'",
           ),
       );
-      assert.equal(legacyAfterApproveInsert.rows[0]?.n, '2');
+      assert.equal(genericAfterApproveInsert.rows[0]?.n, '2');
       const approveStillCannotRead = await runtime.request(
         a.identities.outsider,
         randomUUID(),
         (client) =>
           client.query<{ n: string }>(
-            "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='legacy-test'",
+            "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='rank'",
           ),
       );
       assert.equal(approveStillCannotRead.rows[0]?.n, '0');
-      const foreignLegacy = await runtime.request(b.identities.owner, randomUUID(), (client) =>
+      const foreignGeneric = await runtime.request(b.identities.owner, randomUUID(), (client) =>
         client.query<{ n: string }>(
-          "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='legacy-test' AND tenant_id=$1",
+          "SELECT count(*)::text AS n FROM rpt.source_observation WHERE domain_key='rank' AND tenant_id=$1",
           [a.tenant],
         ),
       );
-      assert.equal(foreignLegacy.rows[0]?.n, '0');
+      assert.equal(foreignGeneric.rows[0]?.n, '0');
       await assert.rejects(
         () => service.detailProduct(b.identities.owner, randomUUID(), ids.first),
         (e: unknown) => e instanceof FoundationError && e.code === 'NOT_FOUND',

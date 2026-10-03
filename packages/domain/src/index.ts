@@ -113,3 +113,4 @@ export { Exact } from './commercial-decimal.js';
 export { nextQuoteStatus } from './cpq.js';
 export { quoteApprovalState } from './quote-workflow.js';
 export { nextOrderCommercialStatus } from './order-commercial.js';
+export { classifyExternalOrderEvent, canResolveExternalOrder } from './order-reconciliation.js';
