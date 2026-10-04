@@ -18,16 +18,65 @@ export async function workflowRight(c: Client, id: string, domain: string, verb:
 export async function workflowReceipt(c: Client, operation: string, key: string, hash: string) {
   return (
     (
-      await c.query<{ value: { id: string } | null }>(
-        'SELECT authz.quote_workflow_receipt($1,$2,$3) AS value',
-        [operation, key, hash],
+      await c.query<{
+        value: { id: string; businessOrderNumber?: string } | null;
+      }>('SELECT authz.quote_workflow_receipt($1,$2,$3) AS value', [operation, key, hash])
+    ).rows[0]?.value ?? null
+  );
+}
+export async function workflowFinish(
+  c: Client,
+  operation: string,
+  key: string,
+  result: string | { id: string; businessOrderNumber: string },
+): Promise<{ id: string; businessOrderNumber?: string }> {
+  const value = typeof result === 'string' ? { id: result } : result;
+  await c.query('SELECT authz.quote_workflow_finish($1,$2,$3)', [operation, key, value]);
+  return value;
+}
+export type OrderCreationReceipt = { id: string; businessOrderNumber?: string };
+export async function orderCreationReceipt(
+  c: Client,
+  key: string,
+  hash: string,
+  quoteVersionId: string,
+  acceptanceId: string,
+  expectedVersion: number,
+): Promise<OrderCreationReceipt | null> {
+  const supported = (
+    await c.query<{ present: boolean }>(
+      "SELECT to_regprocedure('authz.order_creation_receipt(text,text,uuid,uuid,integer)') IS NOT NULL AS present",
+    )
+  ).rows[0]?.present;
+  if (!supported) return workflowReceipt(c, 'order', key, hash);
+  return (
+    (
+      await c.query<{ value: OrderCreationReceipt | null }>(
+        'SELECT authz.order_creation_receipt($1,$2,$3,$4,$5) AS value',
+        [key, hash, quoteVersionId, acceptanceId, expectedVersion],
       )
     ).rows[0]?.value ?? null
   );
 }
-export async function workflowFinish(c: Client, operation: string, key: string, id: string) {
-  await c.query('SELECT authz.quote_workflow_finish($1,$2,$3)', [operation, key, { id }]);
-  return { id };
+export async function orderCreationFinish(
+  c: Client,
+  key: string,
+  orderId: string,
+): Promise<OrderCreationReceipt> {
+  const supported = (
+    await c.query<{ present: boolean }>(
+      "SELECT to_regprocedure('authz.order_creation_finish(text,uuid)') IS NOT NULL AS present",
+    )
+  ).rows[0]?.present;
+  if (!supported) return workflowFinish(c, 'order', key, orderId);
+  const value = (
+    await c.query<{ value: OrderCreationReceipt }>(
+      'SELECT authz.order_creation_finish($1,$2) AS value',
+      [key, orderId],
+    )
+  ).rows[0]?.value;
+  if (!value) throw new Error('missing authoritative Order receipt');
+  return value;
 }
 export async function workflowArtifact(c: Client, table: WorkflowTable, id: string) {
   // Only internal literal table choices, never request-supplied identifiers.
@@ -120,14 +169,17 @@ export async function insertOrder(c: Client, a: AuthContext, version: string, ac
   const q = await quote(c, v.quote_id, true);
   if (!q) return undefined;
   const previous = (
-    await c.query<{ id: string }>('SELECT id FROM rpt.cpq_order WHERE quote_version_id=$1', [
-      version,
-    ])
+    await c.query<{ id: string; business_order_number: string | null }>(
+      `SELECT id,to_jsonb(o)->>'business_order_number' AS business_order_number
+ FROM rpt.cpq_order o WHERE quote_version_id=$1`,
+      [version],
+    )
   ).rows[0];
   if (previous) return previous.id;
   const id = crypto.randomUUID();
   await c.query(
-    'INSERT INTO rpt.cpq_order(tenant_id,id,quote_version_id,acceptance_id,person_id,currency,commercial_snapshot) VALUES($1,$2,$3,$4,$5,$6,$7)',
+    `INSERT INTO rpt.cpq_order(tenant_id,id,quote_version_id,acceptance_id,person_id,currency,commercial_snapshot)
+ VALUES($1,$2,$3,$4,$5,$6,$7)`,
     [a.tenantId, id, version, acceptance, q.person_id, v.currency, v.output_snapshot],
   );
   return id;

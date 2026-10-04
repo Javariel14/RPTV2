@@ -13,12 +13,13 @@ import {
   type Identity,
 } from '@rpt/contracts';
 import type { IdentityVerifier } from '@rpt/policy';
-import type { FoundationService } from '@rpt/application';
+import type { FoundationService, OrderReadService } from '@rpt/application';
 import { FoundationTelemetry } from '@rpt/telemetry';
 export function createApi(
   service: FoundationService,
   verifier: IdentityVerifier,
   telemetry = new FoundationTelemetry(),
+  orderReads?: OrderReadService,
 ) {
   const api = new Hono<{ Variables: { identity: Identity; requestId: string } }>();
   const standardLimit = bodyLimit({
@@ -137,6 +138,37 @@ export function createApi(
     c.json({
       schemaVersion: 1,
       data: await service.revokeGrant(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+      ),
+    }),
+  );
+  api.get('/v1/orders', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await requiredOrderReads(orderReads).list(
+        c.get('identity'),
+        c.get('requestId'),
+        queryParameters(c.req.url),
+      ),
+    }),
+  );
+  api.get('/v1/orders/:id/history', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await requiredOrderReads(orderReads).history(
+        c.get('identity'),
+        c.get('requestId'),
+        uuid.parse(c.req.param('id')),
+        queryParameters(c.req.url),
+      ),
+    }),
+  );
+  api.get('/v1/orders/:id', async (c) =>
+    c.json({
+      schemaVersion: 1,
+      data: await requiredOrderReads(orderReads).detail(
         c.get('identity'),
         c.get('requestId'),
         uuid.parse(c.req.param('id')),
@@ -418,4 +450,18 @@ function isUploadedFile(
     'arrayBuffer' in value &&
     typeof value.arrayBuffer === 'function'
   );
+}
+
+function requiredOrderReads(service: OrderReadService | undefined) {
+  if (!service) throw new FoundationError('UNAVAILABLE');
+  return service;
+}
+
+function queryParameters(url: string) {
+  const result: Record<string, string> = {};
+  for (const [key, value] of new URL(url).searchParams) {
+    if (key in result) throw new FoundationError('INVALID_REQUEST');
+    result[key] = value;
+  }
+  return result;
 }

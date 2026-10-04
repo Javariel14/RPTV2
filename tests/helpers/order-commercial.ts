@@ -12,9 +12,13 @@ import { PostgresDatabase } from '@rpt/persistence';
 import { seedTenant } from './fixtures.js';
 export const lifecycleRequest = () => randomUUID();
 const at = (date: string) => `${date}T00:00:00.000Z`;
-export async function orderCommercialFixture(root: Client, config: ClientConfig) {
-  const a = await seedTenant(root, 'order-life-a'),
-    b = await seedTenant(root, 'order-life-b');
+export async function orderCommercialFixture(
+  root: Client,
+  config: ClientConfig,
+  tenantPrefix = 'order-life',
+) {
+  const a = await seedTenant(root, `${tenantPrefix}-a`),
+    b = await seedTenant(root, `${tenantPrefix}-b`);
   const db = new PostgresDatabase(config),
     foundation = new FoundationService(db),
     calculator = new CommercialCalculatorService(db),

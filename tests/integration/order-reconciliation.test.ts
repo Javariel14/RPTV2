@@ -14,7 +14,7 @@ void test('E3C1 PostgreSQL Order reconciliation is scoped, typed, append-only an
     assert.equal(
       (await root.query('SELECT count(*)::integer AS n FROM public.foundation_migration')).rows[0]
         ?.n,
-      19,
+      20,
     );
     const f = await orderCommercialFixture(root, cluster.runtimeConfig());
     const svc = new OrderReconciliationService(f.db);

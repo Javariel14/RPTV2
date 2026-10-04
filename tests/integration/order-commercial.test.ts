@@ -13,6 +13,7 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
   let root: Awaited<ReturnType<typeof cluster.migrate>> | undefined;
   let f!: Awaited<ReturnType<typeof orderCommercialFixture>>;
   let historical!: Awaited<ReturnType<typeof f.create>>;
+  let historicalSecond!: Awaited<ReturnType<typeof f.create>>;
   let historicalBefore: unknown;
   try {
     root = await cluster.migrate('rpt_foundation', Infinity, async (r, count) => {
@@ -20,10 +21,18 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
         root = r;
         f = await orderCommercialFixture(r, cluster.runtimeConfig());
         historical = await f.create(false, f.a.person, f.a.workspace, true);
+        await r.query(
+          `UPDATE authz.idempotency_receipt
+ SET response=response||jsonb_build_object('businessOrderNumber','ORD-9999999999')
+ WHERE tenant_id=$1 AND operation='quote_workflow.order' AND key=$2`,
+          [f.a.tenant, historical.key],
+        );
+        historicalSecond = await f.create();
         historicalBefore = (
-          await r.query('SELECT to_jsonb(o) AS value FROM rpt.cpq_order o WHERE id=$1', [
-            historical.id,
-          ])
+          await r.query(
+            "SELECT to_jsonb(o)-'business_order_number' AS value FROM rpt.cpq_order o WHERE id=$1",
+            [historical.id],
+          )
         ).rows[0].value;
       }
     });
@@ -78,21 +87,63 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
         await c.query('ROLLBACK TO SAVEPOINT lifecycle_attack');
       });
     await t.test(
-      '19 clean forward migrations safely bootstrap a pre-E3B4 genuine canonical Order',
+      '20 clean forward migrations bootstrap lifecycle and deterministically number historical canonical Orders',
       async () => {
         assert.equal(
           (await root!.query('SELECT count(*)::integer AS n FROM public.foundation_migration'))
             .rows[0].n,
-          19,
+          20,
         );
         assert.deepEqual(
           (
-            await root!.query('SELECT to_jsonb(o) AS value FROM rpt.cpq_order o WHERE id=$1', [
-              historical.id,
-            ])
+            await root!.query(
+              "SELECT to_jsonb(o)-'business_order_number' AS value FROM rpt.cpq_order o WHERE id=$1",
+              [historical.id],
+            )
           ).rows[0].value,
           historicalBefore,
         );
+        const backfilled = (
+          await root!.query(
+            `SELECT id,business_order_number FROM rpt.cpq_order
+ WHERE id IN ($1,$2) ORDER BY created_at,id`,
+            [historical.id, historicalSecond.id],
+          )
+        ).rows;
+        assert.deepEqual(
+          backfilled.map((row) => row.business_order_number),
+          ['ORD-0000000001', 'ORD-0000000002'],
+        );
+        assert.deepEqual(
+          (
+            await root!.query(
+              `SELECT response FROM authz.idempotency_receipt
+ WHERE tenant_id=$1 AND operation='quote_workflow.order' AND key=$2`,
+              [f.a.tenant, historical.key],
+            )
+          ).rows[0].response,
+          { id: historical.id, businessOrderNumber: 'ORD-9999999999' },
+        );
+        await root!.query(
+          "UPDATE authz.workspace_permission SET revoked_at=clock_timestamp() WHERE tenant_id=$1 AND user_id=$2 AND object_type='cpq_order' AND verb='read'",
+          [f.a.tenant, f.a.users.delegate],
+        );
+        try {
+          await assert.rejects(
+            workflow.createOrderFromAcceptedQuote(
+              historical.actor,
+              req(),
+              historical.key,
+              historical.input,
+            ),
+            conflict,
+          );
+        } finally {
+          await root!.query(
+            "UPDATE authz.workspace_permission SET revoked_at=NULL WHERE tenant_id=$1 AND user_id=$2 AND object_type='cpq_order' AND verb='read'",
+            [f.a.tenant, f.a.users.delegate],
+          );
+        }
         const s = await state(historical.id),
           history = await lifecycle.listOrderCommercialHistory(advisor, req(), historical.id);
         assert.equal(s.status, 'created');
@@ -578,14 +629,15 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
     await t.test(
       'retry of original Quote-to-Order conversion never reactivates cancelled source',
       async () => {
-        assert.deepEqual(
-          await workflow.createOrderFromAcceptedQuote(
-            advisor,
-            req(),
-            historical.key,
-            historical.input,
-          ),
-          { id: historical.id },
+        const businessOrderNumber = (
+          await root!.query<{ business_order_number: string }>(
+            'SELECT business_order_number FROM rpt.cpq_order WHERE id=$1',
+            [historical.id],
+          )
+        ).rows[0]!.business_order_number;
+        await assert.rejects(
+          workflow.createOrderFromAcceptedQuote(advisor, req(), historical.key, historical.input),
+          conflict,
         );
         assert.deepEqual(
           await workflow.createOrderFromAcceptedQuote(
@@ -594,7 +646,7 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
             randomUUID(),
             historical.input,
           ),
-          { id: historical.id },
+          { id: historical.id, businessOrderNumber },
         );
         assert.equal((await state(historical.id)).status, 'cancelled');
       },
@@ -626,9 +678,15 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
         assert.equal(r.original_order_id, original.id);
         assert.equal(r.successor_order_id, successor.id);
         assert.equal(r.event_id, result.eventId);
+        const businessOrderNumber = (
+          await root!.query<{ business_order_number: string }>(
+            'SELECT business_order_number FROM rpt.cpq_order WHERE id=$1',
+            [original.id],
+          )
+        ).rows[0]!.business_order_number;
         assert.deepEqual(
           await workflow.createOrderFromAcceptedQuote(advisor, req(), original.key, original.input),
-          { id: original.id },
+          { id: original.id, businessOrderNumber },
         );
         assert.equal((await state(original.id)).status, 'superseded');
       },
@@ -1119,7 +1177,7 @@ void test('E3B4 real PostgreSQL commercial lifecycle, bootstrap, immutability an
   }
 });
 
-void test('E3B4 empty fresh PostgreSQL applies all 19 migrations with least-privilege helpers and RLS', async () => {
+void test('E3B4 empty fresh PostgreSQL applies all 20 migrations with least-privilege helpers and RLS', async () => {
   const cluster = await startPostgres();
   let root: Awaited<ReturnType<typeof cluster.migrate>> | undefined;
   try {
@@ -1127,7 +1185,7 @@ void test('E3B4 empty fresh PostgreSQL applies all 19 migrations with least-priv
     assert.equal(
       (await root.query('SELECT count(*)::integer AS n FROM public.foundation_migration')).rows[0]
         .n,
-      19,
+      20,
     );
     for (const table of ['order_commercial_state', 'order_commercial_event', 'order_replacement']) {
       const privileges: { read: boolean; write: boolean } = (

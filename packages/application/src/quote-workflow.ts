@@ -19,6 +19,8 @@ import {
   workflowRight,
   workflowReceipt,
   workflowFinish,
+  orderCreationReceipt,
+  orderCreationFinish,
   insertApprovalRequest,
   insertApprovalDecision,
   approvalDetail,
@@ -171,12 +173,19 @@ export class QuoteWorkflowService {
       const acceptance = await workflowArtifact(c, 'quote_acceptance', command.acceptanceId);
       if (!acceptance || acceptance.quote_version_id !== command.quoteVersionId)
         throw new FoundationError('NOT_FOUND');
-      const old = await workflowReceipt(c, 'order', key, await digest(command));
+      const old = await orderCreationReceipt(
+        c,
+        key,
+        await digest(command),
+        command.quoteVersionId,
+        command.acceptanceId,
+        command.expectedVersion,
+      );
       if (old) return old;
       if (q.version !== command.expectedVersion) throw new FoundationError('CONFLICT');
       const id = await insertOrder(c, a, command.quoteVersionId, command.acceptanceId);
       if (!id) throw new FoundationError('NOT_FOUND');
-      return workflowFinish(c, 'order', key, id);
+      return orderCreationFinish(c, key, id);
     });
   }
   getOrder(identity: Identity, request: string, id: string) {
