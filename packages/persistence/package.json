@@ -11,6 +11,7 @@
     "./cpq": "./src/cpq.ts",
     "./quote-workflow": "./src/quote-workflow.ts",
     "./order-commercial": "./src/order-commercial.ts",
-    "./order-reconciliation": "./src/order-reconciliation.ts"
+    "./order-reconciliation": "./src/order-reconciliation.ts",
+    "./order-read": "./src/order-read.ts"
   }
 }

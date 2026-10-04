@@ -4,6 +4,7 @@ export { QuoteService } from './cpq.js';
 export { QuoteWorkflowService } from './quote-workflow.js';
 export { OrderCommercialService } from './order-commercial.js';
 export { OrderReconciliationService } from './order-reconciliation.js';
+export { OrderReadService } from './order-read.js';
 export { createQuoteCalculationAttestor } from './cpq-attestation.js';
 import { z } from 'zod';
 import {

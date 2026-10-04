@@ -208,7 +208,7 @@ void test('E3B3 exact-version approval, acceptance and immutable Order on real P
     assert.equal(
       (await root.query('SELECT count(*)::integer AS n FROM public.foundation_migration')).rows[0]
         .n,
-      19,
+      20,
     );
     for (const f of [a, b]) {
       await grant(f, 'owner', 'quote_approval', ['read', 'request', 'decide']);
@@ -540,6 +540,74 @@ void test('E3B3 exact-version approval, acceptance and immutable Order on real P
       },
     );
     await t.test(
+      'Order receipt finalization rejects caller-chosen identity and cross-actor context',
+      async () => {
+        const key = randomUUID(),
+          hash = 'a'.repeat(64);
+        await db.request(advisor, req(), async (c) => {
+          assert.equal(
+            (
+              await c.query<{ value: unknown }>(
+                'SELECT authz.order_creation_receipt($1,$2,$3,$4,$5) AS value',
+                [key, hash, primary.versionId, accepted.id, 3],
+              )
+            ).rows[0]?.value,
+            null,
+          );
+        });
+        await sqlRejected(
+          advisor,
+          'SELECT authz.quote_workflow_receipt($1,$2,$3)',
+          ['order', randomUUID(), 'd'.repeat(64)],
+          '42501',
+        );
+        await sqlRejected(
+          advisor,
+          'SELECT authz.quote_workflow_finish($1,$2,$3)',
+          ['order', key, { id: randomUUID(), businessOrderNumber: 'ORD-9999999999' }],
+          '42501',
+        );
+        await sqlRejected(
+          advisor,
+          'SELECT authz.order_creation_finish($1,$2)',
+          [key, randomUUID()],
+          '42501',
+        );
+        await sqlRejected(
+          owner,
+          'SELECT authz.order_creation_finish($1,$2)',
+          [key, randomUUID()],
+          '42501',
+        );
+        await sqlRejected(
+          b.identities.owner,
+          'SELECT authz.order_creation_finish($1,$2)',
+          [key, randomUUID()],
+          '42501',
+        );
+        await sqlRejected(
+          advisor,
+          'SELECT authz.order_creation_receipt($1,$2,$3,$4,$5)',
+          [randomUUID(), 'b'.repeat(64), primary.versionId, randomUUID(), 3],
+          '42501',
+        );
+        const receipt = (
+          await root!.query(
+            `SELECT response,order_quote_version_id,order_acceptance_id,order_expected_version
+ FROM authz.idempotency_receipt
+ WHERE tenant_id=$1 AND operation='quote_workflow.order' AND key=$2`,
+            [a.tenant, key],
+          )
+        ).rows[0];
+        assert.deepEqual(receipt, {
+          response: null,
+          order_quote_version_id: primary.versionId,
+          order_acceptance_id: accepted.id,
+          order_expected_version: 3,
+        });
+      },
+    );
+    await t.test(
       'Order copies accepted snapshot without repricing after live source changes',
       async () => {
         await foundation.addPriceEntry(
@@ -605,6 +673,42 @@ void test('E3B3 exact-version approval, acceptance and immutable Order on real P
         await root!.query(
           "UPDATE authz.workspace_permission SET revoked_at=NULL WHERE tenant_id=$1 AND user_id=$2 AND object_type='pricing' AND verb='read'",
           [a.tenant, a.users.delegate],
+        );
+      },
+    );
+    await t.test(
+      'Order receipt cannot substitute an Order from another accepted context',
+      async () => {
+        const unrelated = await create('workflow-receipt-unrelated', false);
+        await issue(unrelated.id);
+        const unrelatedAcceptance = await accept(unrelated.versionId),
+          key = randomUUID();
+        await db.request(advisor, req(), async (c) => {
+          assert.equal(
+            (
+              await c.query<{ value: unknown }>(
+                'SELECT authz.order_creation_receipt($1,$2,$3,$4,$5) AS value',
+                [key, 'c'.repeat(64), unrelated.versionId, unrelatedAcceptance.id, 3],
+              )
+            ).rows[0]?.value,
+            null,
+          );
+        });
+        await sqlRejected(
+          advisor,
+          'SELECT authz.order_creation_finish($1,$2)',
+          [key, canonicalOrder.id],
+          '42501',
+        );
+        assert.equal(
+          (
+            await root!.query(
+              `SELECT response FROM authz.idempotency_receipt
+ WHERE tenant_id=$1 AND operation='quote_workflow.order' AND key=$2`,
+              [a.tenant, key],
+            )
+          ).rows[0].response,
+          null,
         );
       },
     );

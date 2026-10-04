@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FoundationService } from '@rpt/application';
+import { FoundationService, OrderReadService } from '@rpt/application';
 import { PostgresDatabase } from '@rpt/persistence';
 import { supabaseVerifier } from '@rpt/policy';
 import { FoundationTelemetry } from '@rpt/telemetry';
@@ -29,12 +29,15 @@ export default {
     // Runtime connection credentials are provided only by the Hyperdrive binding.
     const telemetry = new FoundationTelemetry();
     try {
-      const service = new FoundationService(
-        new PostgresDatabase({ connectionString: env.HYPERDRIVE.connectionString }),
-      );
-      return await createApi(service, supabaseVerifier(parsed.data.AUTH_ISSUER), telemetry).fetch(
-        request,
-      );
+      const database = new PostgresDatabase({ connectionString: env.HYPERDRIVE.connectionString });
+      const service = new FoundationService(database);
+      const orderReads = new OrderReadService(database);
+      return await createApi(
+        service,
+        supabaseVerifier(parsed.data.AUTH_ISSUER),
+        telemetry,
+        orderReads,
+      ).fetch(request);
     } finally {
       ctx.waitUntil(telemetry.flush().finally(() => telemetry.shutdown()));
     }
