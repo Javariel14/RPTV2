@@ -10,6 +10,7 @@ import { createApi } from '../apps/api/src/app.js';
 import { startPostgres } from '../tests/helpers/postgres.js';
 import { seedCrm } from '../tests/helpers/crm-fixtures.js';
 import { seedRecruiting } from '../tests/helpers/recruiting-fixtures.js';
+import { localFixtureTime } from '../tests/helpers/local-business-day.js';
 
 // An isolated synthetic, on-disk PostgreSQL lab. Never launches a remote release.
 const cluster = await startPostgres();
@@ -49,16 +50,15 @@ for (const verb of ['read', 'create', 'update', 'share']) {
   );
 }
 const agendaItems = [
-  { type: 'appointment', title: 'Revisión comercial sintética', day: 0, hour: 15 },
-  { type: 'task', title: 'Preparar seguimiento sintético', day: 0, hour: 18 },
-  { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 16 },
+  { type: 'appointment', title: 'Revisión comercial sintética', day: 0, hour: 10 },
+  { type: 'task', title: 'Preparar seguimiento sintético', day: 0, hour: 13 },
+  { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 11 },
 ] as const;
 const service = new FoundationService(new PostgresDatabase(cluster.runtimeConfig()));
 let linkedFieldAppointment: string | undefined;
+const fixtureNow = new Date();
 for (const item of agendaItems) {
-  const start = new Date();
-  start.setUTCHours(item.hour, 0, 0, 0);
-  start.setUTCDate(start.getUTCDate() + item.day);
+  const start = localFixtureTime(fixtureNow, item.day, item.hour);
   const common = {
     schemaVersion: 1 as const,
     workspaceId: fixture.workspace,

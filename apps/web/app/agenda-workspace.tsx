@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -19,11 +19,17 @@ import { Button, Panel, State } from '@rpt/ui';
 import { type Locale } from './catalog';
 import { agendaCatalogs } from './agenda-catalog';
 import { AgendaDrawer } from './agenda-drawer';
-import { rangeFor, zonedInstant } from './agenda-time';
+import {
+  addCalendarDays,
+  agendaAnchorForTimeZone,
+  calendarDayInTimeZone,
+  rangeFor,
+  zonedInstant,
+} from './agenda-time';
 import { AgendaHttpError, agendaRequest, useAgendaData } from './use-agenda-data';
 
 type View = 'today' | 'day' | 'week' | 'list';
-const isoDay = (date = new Date()) => date.toISOString().slice(0, 10);
+const deviceTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: string }) {
   const [locale, setLocale] = useState<Locale>('es');
@@ -32,7 +38,9 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
   const [theme, setTheme] = useState(initialTheme);
   const [collapsed, setCollapsed] = useState(false);
   const [view, setView] = useState<View>('today');
-  const [anchor, setAnchor] = useState(isoDay());
+  const [agendaTimezone, setAgendaTimezone] = useState(deviceTimeZone);
+  const [anchor, setAnchor] = useState(() => calendarDayInTimeZone(new Date(), deviceTimeZone()));
+  const followsToday = useRef(true);
   const [mine, setMine] = useState(true);
   const [type, setType] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -41,13 +49,14 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
   const [filters, setFilters] = useState(false);
   const [sessionCode, setSessionCode] = useState('');
   const [feedback, setFeedback] = useState('');
-  const [agendaTimezone, setAgendaTimezone] = useState(
-    () => Intl.DateTimeFormat().resolvedOptions().timeZone,
-  );
   const range = useMemo(
     () => rangeFor(anchor, view, agendaTimezone),
     [anchor, view, agendaTimezone],
   );
+  const rangeDateFormatter = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeZone: agendaTimezone,
+  });
   const config = useMemo(
     () =>
       JSON.stringify({
@@ -70,8 +79,22 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
     document.documentElement.lang = locale;
   }, [locale]);
   useEffect(() => {
-    if (remote.timezone) setAgendaTimezone(remote.timezone);
-  }, [remote.timezone]);
+    if (!remote.timezone) return;
+    try {
+      const authenticatedTimeZone = remote.timezone;
+      const now = new Date();
+      const nextAnchor = agendaAnchorForTimeZone(
+        anchor,
+        followsToday.current && view === 'today',
+        now,
+        authenticatedTimeZone,
+      );
+      setAnchor(nextAnchor);
+      setAgendaTimezone(authenticatedTimeZone);
+    } catch {
+      // Preserve the supported device fallback when authenticated context is malformed.
+    }
+  }, [anchor, remote.timezone, view]);
   useEffect(() => {
     try {
       const value = JSON.parse(localStorage.getItem('rpt.preferences') ?? '{}') as {
@@ -93,6 +116,7 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
     }
   }
   function move(direction: number) {
+    followsToday.current = false;
     const date = new Date(`${anchor}T00:00:00Z`);
     date.setUTCDate(
       date.getUTCDate() + direction * (view === 'week' ? 7 : view === 'list' ? 31 : 1),
@@ -252,7 +276,10 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
                   aria-label={label('date')}
                   type="date"
                   value={anchor}
-                  onChange={(event) => setAnchor(event.target.value)}
+                  onChange={(event) => {
+                    followsToday.current = false;
+                    setAnchor(event.target.value);
+                  }}
                 />
               </label>
               <Button aria-label={label('next')} onClick={() => move(1)}>
@@ -266,7 +293,9 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
                   aria-pressed={view === value}
                   onClick={() => {
                     setView(value);
-                    if (value === 'today') setAnchor(isoDay());
+                    followsToday.current = value === 'today';
+                    if (value === 'today')
+                      setAnchor(calendarDayInTimeZone(new Date(), agendaTimezone));
                   }}
                 >
                   {label(value)}
@@ -286,13 +315,8 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
               <strong>{httpStatus === 200 ? items.length : '—'}</strong> {label('records')}
             </span>
             <span>
-              {new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
-                new Date(range.from),
-              )}{' '}
-              –{' '}
-              {new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
-                new Date(Date.parse(range.to) - 1),
-              )}
+              {rangeDateFormatter.format(new Date(range.from))} –{' '}
+              {rangeDateFormatter.format(new Date(Date.parse(range.to) - 1))}
             </span>
           </div>
           <p className="feedback" role="status" aria-live="polite">
@@ -378,13 +402,20 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
           aria-current={view === 'today' ? 'page' : undefined}
           onClick={() => {
             setView('today');
-            setAnchor(isoDay());
+            followsToday.current = true;
+            setAnchor(calendarDayInTimeZone(new Date(), agendaTimezone));
           }}
         >
           <CalendarDays size={20} />
           {label('today')}
         </button>
-        <button aria-current={view === 'list' ? 'page' : undefined} onClick={() => setView('list')}>
+        <button
+          aria-current={view === 'list' ? 'page' : undefined}
+          onClick={() => {
+            followsToday.current = false;
+            setView('list');
+          }}
+        >
           <List size={20} />
           {label('list')}
         </button>
@@ -406,6 +437,7 @@ export function AgendaWorkspace({ initialTheme = 'system' }: { initialTheme?: st
       {creating && remote.workspaceId && (
         <CreateAgenda
           workspaceId={remote.workspaceId}
+          timeZone={agendaTimezone}
           label={label}
           onClose={() => setCreating(false)}
           onCreated={(id) => {
@@ -542,18 +574,21 @@ function localInputDay(item: AgendaItem) {
 
 function CreateAgenda({
   workspaceId,
+  timeZone,
   label,
   onClose,
   onCreated,
 }: {
   workspaceId: string;
+  timeZone: string;
   label: (key: string) => string;
   onClose: () => void;
   onCreated: (id: string) => void;
 }) {
   const [kind, setKind] = useState<'appointment' | 'task'>('appointment');
   const [error, setError] = useState('');
-  const defaultStart = `${isoDay()}T10:00`;
+  const defaultDay = calendarDayInTimeZone(new Date(), timeZone);
+  const defaultStart = `${defaultDay}T10:00`;
   async function submit(form: HTMLFormElement) {
     const data = new FormData(form);
     const timezone = String(data.get('timezone'));
@@ -651,14 +686,14 @@ function CreateAgenda({
         {kind === 'appointment' ? (
           <label>
             {label('endsAt')}
-            <input name="end" type="datetime-local" defaultValue={`${isoDay()}T11:00`} required />
+            <input name="end" type="datetime-local" defaultValue={`${defaultDay}T11:00`} required />
           </label>
         ) : (
-          <input name="end" type="hidden" value={`${isoDay()}T11:00`} />
+          <input name="end" type="hidden" value={`${defaultDay}T11:00`} />
         )}
         <label>
           {label('timezone')}
-          <input name="timezone" defaultValue="America/Guayaquil" required maxLength={64} />
+          <input name="timezone" defaultValue={timeZone} required maxLength={64} />
         </label>
         {kind === 'task' && (
           <label>
@@ -682,11 +717,7 @@ function CreateAgenda({
         </label>
         <label>
           {label('until')}
-          <input
-            name="until"
-            type="date"
-            defaultValue={isoDay(new Date(Date.now() + 7 * 86400000))}
-          />
+          <input name="until" type="date" defaultValue={addCalendarDays(defaultDay, 7)} />
         </label>
         <fieldset>
           <legend>{label('reminders')}</legend>
