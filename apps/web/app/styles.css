@@ -1,4 +1,297 @@
 @import 'tailwindcss';
+/* E3C3A read workspace: presentation only; existing workspaces stay unchanged. */
+.order-shell main {
+  min-width: 0;
+}
+.order-shell .page-header {
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.order-shell h1 {
+  overflow-wrap: anywhere;
+}
+.order-shell .sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0.5rem;
+}
+.order-shell .sidebar nav a.active {
+  background: var(--action);
+  color: var(--on-action);
+}
+.order-mobile-nav {
+  display: none;
+}
+.order-context,
+.order-reference {
+  color: var(--secondary);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+.order-eyebrow {
+  color: var(--secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+.order-breadcrumb,
+.order-state-actions,
+.order-pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.order-shell a {
+  color: var(--action);
+}
+.order-filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+.order-filters label {
+  display: grid;
+  gap: 0.4rem;
+}
+.order-filters input,
+.order-filters select,
+.order-shell .topbar select {
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--surface);
+  color: var(--text);
+}
+.order-table {
+  overflow-x: auto;
+}
+.order-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.order-table th,
+.order-table td {
+  text-align: left;
+  padding: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+.order-table th {
+  background: var(--surface);
+}
+.order-table .order-reference {
+  display: block;
+  max-width: 15rem;
+}
+.order-number {
+  font-weight: 650;
+  white-space: nowrap;
+}
+.order-status {
+  display: inline-block;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+}
+.order-cards {
+  display: none;
+}
+.order-pagination {
+  justify-content: flex-end;
+  margin: 1rem 0;
+}
+.order-section {
+  min-width: 0;
+  margin: 1.25rem 0;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  overflow-wrap: anywhere;
+}
+.order-section h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+.order-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.order-detail-grid .order-section {
+  margin-bottom: 0;
+}
+.order-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 0.5rem 1rem;
+}
+.order-facts dt {
+  color: var(--secondary);
+}
+.order-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.order-facts > div {
+  display: contents;
+}
+.order-totals {
+  max-width: 45rem;
+}
+.order-totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.order-totals dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.order-totals > div:last-child {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.order-immutable {
+  border-left: 3px solid var(--action);
+  padding: 0.5rem 1rem;
+}
+.order-lines {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+}
+.order-lines article {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  min-width: 0;
+}
+.order-lines h4 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+.order-history {
+  padding-left: 1.5rem;
+}
+.order-history li {
+  padding: 0 0 1rem 0.5rem;
+  border-left: 2px solid var(--border);
+}
+.order-history h3 {
+  margin: 0.4rem 0;
+}
+.order-history time {
+  color: var(--secondary);
+}
+.order-back {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+.order-loading {
+  min-height: 12rem;
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .order-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .order-table th,
+  .order-table td {
+    padding: 0.5rem;
+  }
+}
+@media (max-width: 639px) {
+  .order-shell .sidebar {
+    display: none;
+  }
+  .order-shell .workspace {
+    margin-left: 0;
+    padding-bottom: 5rem;
+  }
+  .order-shell main {
+    padding: 1rem;
+  }
+  .order-shell .topbar {
+    padding: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .order-table {
+    display: none;
+  }
+  .order-cards {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .order-cards article {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 0.5rem;
+  }
+  .order-cards p {
+    margin: 0;
+  }
+  .order-cards .order-status {
+    justify-self: start;
+  }
+  .order-filters label:first-child {
+    flex: 1 1 100%;
+  }
+  .order-filters input {
+    width: 100%;
+    min-width: 0;
+  }
+  .order-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .order-section {
+    padding: 1rem;
+  }
+  .order-facts {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .order-facts dd {
+    margin-bottom: 0.6rem;
+  }
+  .order-totals > div {
+    flex-wrap: wrap;
+  }
+  .order-mobile-nav {
+    display: flex;
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--z-shell);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .order-mobile-nav a {
+    flex: 1 0 auto;
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    padding: 0.6rem;
+    font-size: 0.7rem;
+    text-decoration: none;
+  }
+  .order-mobile-nav a.active {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+}
 @theme inline {
   --color-action: var(--action);
   --color-canvas: var(--canvas);

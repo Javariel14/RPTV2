@@ -17,6 +17,7 @@ export default defineConfig({
   use: {
     ...devices['Desktop Chrome'],
     baseURL: 'http://127.0.0.1:3101',
+    timezoneId: 'America/Guayaquil',
     trace: 'retain-on-failure',
   },
   webServer: {

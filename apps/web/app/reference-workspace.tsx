@@ -380,6 +380,12 @@ export function ReferenceWorkspace({
             </button>
           )}
           {persistent && (
+            <a href="/orders">
+              <Users size={20} />
+              <span>Órdenes</span>
+            </a>
+          )}
+          {persistent && (
             <a href="/agenda">
               <CalendarDays size={20} />
               <span>Agenda</span>
@@ -1026,6 +1032,7 @@ export function ReferenceWorkspace({
         </main>
       </div>
       <nav className="mobile-nav" aria-label={t.workspace}>
+        {persistent && <a href="/orders">Órdenes</a>}
         <button onClick={() => setLab(false)} aria-current={!lab ? 'page' : undefined}>
           <Users size={20} />
           {t.reference}
