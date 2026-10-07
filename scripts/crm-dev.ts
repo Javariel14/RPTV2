@@ -3,19 +3,22 @@ import { spawn } from 'node:child_process';
 import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { resolve } from 'node:path';
 import { generateKeyPair, exportJWK, createLocalJWKSet, SignJWT } from 'jose';
-import { FoundationService } from '@rpt/application';
+import { FoundationService, OrderReadService } from '@rpt/application';
 import { PostgresDatabase } from '@rpt/persistence';
 import { JwtIdentityVerifier } from '@rpt/policy';
 import { createApi } from '../apps/api/src/app.js';
 import { startPostgres } from '../tests/helpers/postgres.js';
 import { seedCrm } from '../tests/helpers/crm-fixtures.js';
 import { seedRecruiting } from '../tests/helpers/recruiting-fixtures.js';
+import { seedOrderReadWorkspace } from '../tests/helpers/order-commercial.js';
+import { localFixtureTime } from '../tests/helpers/local-business-day.js';
 
 // An isolated synthetic, on-disk PostgreSQL lab. Never launches a remote release.
 const cluster = await startPostgres();
 const root = await cluster.migrate();
 const fixture = await seedCrm(root, 'crm-local');
 await seedRecruiting(root, fixture);
+await seedOrderReadWorkspace(root, cluster.runtimeConfig(), fixture);
 await root.query(
   "INSERT INTO rpt.feature_flag(tenant_id,id,key,policy_version,enabled,rollout_percent,effective_from) VALUES($1,$2,'field_visits_core',1,true,100,'2020-01-01')",
   [fixture.tenant, randomUUID()],
@@ -49,16 +52,17 @@ for (const verb of ['read', 'create', 'update', 'share']) {
   );
 }
 const agendaItems = [
-  { type: 'appointment', title: 'Revisión comercial sintética', day: 0, hour: 15 },
-  { type: 'task', title: 'Preparar seguimiento sintético', day: 0, hour: 18 },
-  { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 16 },
+  { type: 'appointment', title: 'Revisión comercial sintética', day: 0, hour: 10 },
+  { type: 'task', title: 'Preparar seguimiento sintético', day: 0, hour: 13 },
+  { type: 'appointment', title: 'Sesión de planificación sintética', day: 2, hour: 11 },
 ] as const;
-const service = new FoundationService(new PostgresDatabase(cluster.runtimeConfig()));
+const database = new PostgresDatabase(cluster.runtimeConfig());
+const service = new FoundationService(database);
+const orderReads = new OrderReadService(database);
 let linkedFieldAppointment: string | undefined;
+const fixtureNow = new Date();
 for (const item of agendaItems) {
-  const start = new Date();
-  start.setUTCHours(item.hour, 0, 0, 0);
-  start.setUTCDate(start.getUTCDate() + item.day);
+  const start = localFixtureTime(fixtureNow, item.day, item.hour);
   const common = {
     schemaVersion: 1 as const,
     workspaceId: fixture.workspace,
@@ -109,9 +113,7 @@ if (linkedFieldAppointment) {
     'field-local-linked-01',
   );
 }
-const upcomingVisit = new Date();
-upcomingVisit.setUTCHours(16, 0, 0, 0);
-upcomingVisit.setUTCDate(upcomingVisit.getUTCDate() + 1);
+const upcomingVisit = localFixtureTime(fixtureNow, 1, 11);
 await service.createFieldVisit(
   fixture.identities.owner,
   randomUUID(),
@@ -141,6 +143,8 @@ const api = createApi(
     'authenticated',
     createLocalJWKSet({ keys: [{ ...jwk, kid: 'local' }] }),
   ),
+  undefined,
+  orderReads,
 );
 const loginCode = process.env.RPT_CRM_TEST_CODE ?? randomBytes(18).toString('base64url');
 const bridgeSecret = randomBytes(32).toString('hex');
@@ -249,6 +253,7 @@ console.log('CRM: http://127.0.0.1:3101/crm/commercial');
 console.log('Recruiting: http://127.0.0.1:3101/crm/recruiting');
 console.log('Agenda: http://127.0.0.1:3101/agenda');
 console.log('Field Sales: http://127.0.0.1:3101/field');
+console.log('Orders: http://127.0.0.1:3101/orders');
 console.log(`Código de sesión local (1 hora): ${loginCode}`);
 console.log(
   'Datos sintéticos en PostgreSQL; conservados al recargar. Cada arranque crea un laboratorio aislado.',

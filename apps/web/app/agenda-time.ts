@@ -16,6 +16,27 @@ export function localInput(instant: string, timeZone: string) {
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 }
 
+export function calendarDayInTimeZone(instant: Date | string, timeZone: string) {
+  const date = instant instanceof Date ? instant : new Date(instant);
+  if (Number.isNaN(date.getTime())) throw new RangeError('INVALID_INSTANT');
+  return localInput(date.toISOString(), timeZone).slice(0, 10);
+}
+
+export function agendaAnchorForTimeZone(
+  currentAnchor: string,
+  followsToday: boolean,
+  instant: Date | string,
+  timeZone: string,
+) {
+  return followsToday ? calendarDayInTimeZone(instant, timeZone) : currentAnchor;
+}
+
+export function addCalendarDays(calendarDay: string, days: number) {
+  const date = new Date(`${calendarDay}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 export function zonedInstant(local: string, timeZone: string) {
   const wanted = Date.UTC(
     Number(local.slice(0, 4)),

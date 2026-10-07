@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { calendarDayInTimeZone } from '../../apps/web/app/agenda-time.js';
 
 const visual = 'work/e2b-visual';
 async function login(page: Page) {
@@ -12,10 +13,34 @@ async function login(page: Page) {
   await expect(page.locator('.agenda-list article')).toHaveCount(2);
 }
 
+async function authenticatedCalendarDay(page: Page) {
+  const context = await page.evaluate(async () => {
+    const response = await fetch('/api/crm/context', { cache: 'no-store' });
+    const body = (await response.json()) as { data?: { timezone?: string } };
+    if (!response.ok || typeof body.data?.timezone !== 'string')
+      throw new Error('AUTHENTICATED_TIMEZONE_UNAVAILABLE');
+    return { instant: new Date().toISOString(), timezone: body.data.timezone };
+  });
+  return { ...context, calendarDay: calendarDayInTimeZone(context.instant, context.timezone) };
+}
+
 test.beforeAll(async () => mkdir(visual, { recursive: true }));
 
 test('Today, Week and detail use persistent authorized items', async ({ page }) => {
   await login(page);
+  const liveInstant = new Date();
+  await page.clock.setFixedTime(new Date('2026-10-05T03:52:00Z'));
+  await page.getByRole('button', { name: 'Hoy', exact: true }).click();
+  const temporal = await authenticatedCalendarDay(page);
+  const visibleDay = new Intl.DateTimeFormat('es', {
+    dateStyle: 'medium',
+    timeZone: temporal.timezone,
+  }).format(new Date(temporal.instant));
+  await expect(page.getByLabel('Fecha')).toHaveValue(temporal.calendarDay);
+  await expect(page.locator('.list-meta span').nth(1)).toHaveText(`${visibleDay} – ${visibleDay}`);
+  await page.clock.setFixedTime(liveInstant);
+  await page.getByRole('button', { name: 'Hoy', exact: true }).click();
+  await expect(page.locator('.agenda-list article')).toHaveCount(2);
   await page.getByLabel('Tema').selectOption('light');
   await expect(page.locator('.agenda-list article')).toHaveCount(2);
   await page.locator('.agenda-list [data-focus-return]').first().click();
@@ -43,8 +68,9 @@ test('confirm, reschedule, reminders and task completion persist without duplica
   await dialog.getByRole('button', { name: 'Confirmar' }).click();
   await expect(dialog.getByText('Cambio guardado')).toBeVisible();
   await expect(dialog).toContainText('Confirmada');
-  await dialog.getByLabel('Inicio').fill(`${new Date().toISOString().slice(0, 10)}T12:00`);
-  await dialog.getByLabel('Fin').fill(`${new Date().toISOString().slice(0, 10)}T13:00`);
+  const { calendarDay } = await authenticatedCalendarDay(page);
+  await dialog.getByLabel('Inicio').fill(`${calendarDay}T12:00`);
+  await dialog.getByLabel('Fin').fill(`${calendarDay}T13:00`);
   await dialog.getByRole('button', { name: 'Guardar', exact: true }).first().click();
   await expect(dialog.getByText('Cambio guardado')).toBeVisible();
   await dialog.getByLabel('1 hora antes').check();

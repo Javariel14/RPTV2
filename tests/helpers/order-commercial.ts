@@ -16,8 +16,9 @@ export async function orderCommercialFixture(
   root: Client,
   config: ClientConfig,
   tenantPrefix = 'order-life',
+  primaryTenant?: Awaited<ReturnType<typeof seedTenant>>,
 ) {
-  const a = await seedTenant(root, `${tenantPrefix}-a`),
+  const a = primaryTenant ?? (await seedTenant(root, `${tenantPrefix}-a`)),
     b = await seedTenant(root, `${tenantPrefix}-b`);
   const db = new PostgresDatabase(config),
     foundation = new FoundationService(db),
@@ -383,5 +384,47 @@ export async function orderCommercialFixture(
     grant,
     evidence,
     create,
+  };
+}
+
+/** Real canonical data for the local Orders workspace; never a production seed. */
+export async function seedOrderReadWorkspace(
+  root: Client,
+  config: ClientConfig,
+  primaryTenant?: Awaited<ReturnType<typeof seedTenant>>,
+) {
+  const fixture = await orderCommercialFixture(root, config, 'orders-ui', primaryTenant);
+  const orders = [];
+  for (let i = 0; i < 12; i++)
+    orders.push(await fixture.create(false, fixture.a.person, fixture.a.workspace, true));
+  await fixture.lifecycle.cancelOrder(orders[0]!.actor, lifecycleRequest(), randomUUID(), {
+    schemaVersion: 1,
+    orderId: orders[0]!.id,
+    expectedVersion: 1,
+    reason: 'Cancelación sintética para QA local',
+  });
+  await fixture.lifecycle.replaceOrder(orders[1]!.actor, lifecycleRequest(), randomUUID(), {
+    schemaVersion: 1,
+    orderId: orders[1]!.id,
+    expectedVersion: 1,
+    successorOrderId: orders[2]!.id,
+    successorExpectedVersion: 1,
+    reason: 'Reemplazo sintético por una orden aceptada de forma independiente',
+  });
+  const foreign = await orderCommercialFixture(root, config, 'orders-ui-foreign');
+  const foreignOrder = await foreign.create();
+  await root.query(
+    `UPDATE authz.workspace_permission SET revoked_at=clock_timestamp()
+    WHERE tenant_id=$1 AND user_id=ANY($2::uuid[]) AND object_type='cpq_order' AND verb='read'`,
+    [fixture.a.tenant, [fixture.a.users.delegate, fixture.a.users.ancestor]],
+  );
+  return {
+    ...fixture,
+    orders,
+    foreignOrder,
+    foreign,
+    createOnly: fixture.a.identities.delegate,
+    revoked: fixture.a.identities.ancestor,
+    empty: fixture.b.identities.owner,
   };
 }
